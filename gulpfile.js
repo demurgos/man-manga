@@ -13,7 +13,7 @@ buildTools.projectTasks.registerAll(gulp, {project: projectOptions, tslintOption
 const serverTarget = {
   type: "node",
   baseDir: "server",
-  scripts: ["server/**/*.ts", "app/**/*.ts"],
+  scripts: ["server/**/*.ts", "app/**/*.ts", "lib/**/*.ts"],
   typeRoots: ["../typings/globals", "../typings/modules", "../node_modules/@types"],
   mainModule: "server/main"
 };
