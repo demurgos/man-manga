@@ -1,0 +1,60 @@
+{
+  "name": "man-manga",
+  "version": "0.0.1",
+  "description": "Web sémantique",
+  "main": "dist/node/node/main.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/if-h4102/man-manga.git"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "prestart": "gulp server:build",
+    "start": "node build/server/server/main.js",
+    "build-client": "gulp client:build && webpack"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "2.1.0",
+    "@angular/compiler": "2.1.0",
+    "@angular/core": "2.1.0",
+    "@angular/forms": "2.1.0",
+    "@angular/http": "2.1.0",
+    "@angular/platform-browser": "2.1.0",
+    "@angular/platform-browser-dynamic": "2.1.0",
+    "@angular/platform-server": "2.1.0",
+    "@angular/router": "3.1.0",
+    "@types/node": "^6.0.45",
+    "angular2-express-engine": "~2.1.0-rc.1",
+    "angular2-platform-node": "~2.1.0-rc.1",
+    "angular2-universal": "~2.1.0-rc.1",
+    "angular2-universal-polyfills": "~2.1.0-rc.1",
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "cheerio": "^0.22.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "methods": "~1.1.2",
+    "preboot": "~4.5.2",
+    "request": "^2.75.0",
+    "rxjs": "5.0.0-rc.1",
+    "zone.js": "~0.6.26"
+  },
+  "devDependencies": {
+    "demurgos-web-build-tools": "^0.12.1",
+    "gulp": "^3.9.1",
+    "typescript": "^2.1.1",
+    "@types/body-parser": "^0.0.33",
+    "@types/compression": "^0.0.33",
+    "@types/cookie-parser": "^1.3.29",
+    "@types/express": "^4.0.32",
+    "@types/express-serve-static-core": "^4.0.38",
+    "@types/hammerjs": "^2.0.32",
+    "@types/mime": "0.0.29",
+    "@types/node": "^6.0.46",
+    "@types/serve-static": "^1.7.27",
+    "webpack": "2.1.0-beta.25"
+  }
+}
