@@ -7,14 +7,18 @@ import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import {IRouterHandler, IRouterMatcher, IRouter} from "express-serve-static-core";
 
 // Angular 2
-import { enableProdMode } from '@angular/core';
+import {enableProdMode} from '@angular/core';
 // Angular 2 Universal
-import { createEngine } from 'angular2-express-engine';
+import {FileSystemResourceLoader} from './node-polyfill';
+import {ResourceLoader} from '@angular/compiler';
+import {platformNodeDynamic} from 'angular2-universal/node';
+import {createEngine} from 'angular2-express-engine';
 
 // App
-import { MainModule } from './app.server';
+import {MainModule} from './app.server';
 
 // enable prod for faster renders
 enableProdMode();
@@ -24,22 +28,40 @@ const ROOT = path.join(path.resolve(__dirname, '../../..'));
 
 // Express View
 app.engine('.html', createEngine({
+  // Fix server-side resource-loading, see ./node-polyfill.ts
+  // See https://github.com/angular/universal/issues/579
+  platform: (extraProviders: any) => {
+    const platform = platformNodeDynamic(extraProviders);
+    (<any> platform).cacheModuleFactory_old = platform.cacheModuleFactory;
+
+    platform.cacheModuleFactory = (moduleType: any, compilerOptions?: any): Promise<any> => {
+      if(!compilerOptions) {
+        compilerOptions = {
+          providers: [
+            {provide: ResourceLoader, useClass: FileSystemResourceLoader}
+          ]
+        }
+      }
+      return (<any> platform).cacheModuleFactory_old(moduleType, compilerOptions);
+    };
+    return platform;
+  },
   precompile: true,
   ngModule: MainModule
 }));
 app.set('views', path.resolve(ROOT, "build/client"));
 app.set('view engine', 'html');
 
-app.use(cookieParser('Angular 2 Universal'));
-app.use(bodyParser.json());
+(<IRouterHandler<IRouter>> app.use)(cookieParser('Angular 2 Universal'));
+(<IRouterHandler<IRouter>> app.use)(bodyParser.json());
 
 // Serve static files
-app.use(express.static(path.join(ROOT, 'build/client'), {index: false}));
+(<IRouterHandler<IRouter>> app.use)(express.static(path.join(ROOT, 'build/client'), {index: false}));
 
 
-import { serverApi } from './api';
+import {serverApi} from './api';
 // Our API for demos only
-app.get('/data.json', serverApi);
+(<IRouterMatcher<IRouter>> app.get)('/data.json', serverApi);
 
 function ngApp(req: any, res: any) {
   res.render('index', {
@@ -53,17 +75,18 @@ function ngApp(req: any, res: any) {
 }
 // Routes with html5pushstate
 // ensure routes match client-side-app
-app.get('/', ngApp);
-app.get('/about', ngApp);
-app.get('/about/*', ngApp);
-app.get('/home', ngApp);
-app.get('/home/*', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/about', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/about/*', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/home', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/home/*', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/search', ngApp);
+(<IRouterMatcher<IRouter>> app.get)('/search/*', ngApp);
 
-
-app.get('*', function(req, res) {
+(<IRouterMatcher<IRouter>> app.get)('*', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
-  var pojo = { status: 404, message: 'No Content' };
-  var json = JSON.stringify(pojo, null, 2);
+  const pojo = {status: 404, message: 'No Content'};
+  const json = JSON.stringify(pojo, null, 2);
   res.status(404).send(json);
 });
 

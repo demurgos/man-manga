@@ -54,8 +54,10 @@
     "@types/node": "^6.0.46",
     "@types/request": "0.0.36",
     "@types/serve-static": "^1.7.27",
-    "demurgos-web-build-tools": "^0.12.2",
+    "angular2-template-loader": "^0.6.0",
+    "demurgos-web-build-tools": "^0.12.3",
     "gulp": "^3.9.1",
+    "raw-loader": "^0.5.1",
     "typescript": "^2.1.1",
     "webpack": "2.1.0-beta.25"
   }

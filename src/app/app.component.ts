@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {SearchComponent} from "./search/search.component";
 
 @Component({
   selector: 'mmg-app',
+  moduleId: module.id,
   template: `
     <div class="wrapper">
       <div class="header">
@@ -13,10 +15,9 @@ import { Component } from '@angular/core';
           <a routerLink="/about">Infos</a>
         </nav>
         <router-outlet></router-outlet>
+        <mmg-search></mmg-search>
       </div>
     </div>
   `
 })
-export class AppComponent {
-
-}
+export class AppComponent {}

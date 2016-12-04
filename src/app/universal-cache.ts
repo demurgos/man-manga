@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
 
 export function rehydrateCache(defaultValue: any) {
   const win: any = window;
@@ -20,26 +20,32 @@ export function rehydrateCache(defaultValue: any) {
 @Injectable()
 export class Cache {
   _cache = {};
+
   constructor(@Inject('isBrowser') isBrowser: boolean) {
     if (isBrowser) {
       let serverCache = rehydrateCache(this._cache);
       this.rehydrate(serverCache);
     }
   }
+
   has(key: string): boolean {
     return key in this._cache;
   }
+
   set(key: string, value: any): void {
     (<any>this._cache)[key] = value;
   }
+
   get(key: string): any {
     return (<any>this._cache)[key];
   }
+
   clear(): void {
     Object.keys(this._cache).forEach((key) => {
       delete (<any>this._cache)[key];
     });
   }
+
   dehydrate() {
     let json = {};
     Object.keys(this._cache).forEach((key: string) => {
@@ -47,6 +53,7 @@ export class Cache {
     });
     return json;
   }
+
   rehydrate(json: any) {
     Object.keys(json).forEach((key: string) => {
       (<any> this._cache)[key] = (<any> json)[key];

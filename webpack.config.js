@@ -18,7 +18,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.ts$/, loaders: ['angular2-template-loader'] },
+      { test: /\.js$/, loaders: ['angular2-template-loader'] },
       { test: /\.json$/, loader: 'json-loader' }
     ]
   },
