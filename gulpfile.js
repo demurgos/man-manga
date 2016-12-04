@@ -25,6 +25,7 @@ buildTools.targetGenerators.node.generateTarget(
     project: projectOptions,
     target: serverTarget,
     tsOptions: {
+      skipLibCheck: true,
       typescript: typescript,
       lib: ["es6", "dom"]
     }
@@ -35,7 +36,7 @@ const clientTarget = {
   type: "angular",
   baseDir: "client",
   tmpDir: "client.tmp",
-  assetsDir: "assets",
+  assetsDir: "static",
   scripts: ["client/**/*.ts", "app/**/*.ts"],
   typeRoots: ["../typings/globals", "../typings/modules", "../node_modules/@types"],
   mainModule: "client/main"
@@ -48,6 +49,7 @@ buildTools.targetGenerators.angular.generateTarget(
     project: projectOptions,
     target: clientTarget,
     tsOptions: {
+      skipLibCheck: true,
       typescript: typescript,
       lib: ["es6", "dom"]
     },
