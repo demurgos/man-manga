@@ -58,11 +58,6 @@ app.set('view engine', 'html');
 // Serve static files
 (<IRouterHandler<IRouter>> app.use)(express.static(path.join(ROOT, 'build/client'), {index: false}));
 
-
-import {serverApi} from './server.api';
-// Our API for demos only
-(<IRouterMatcher<IRouter>> app.get)('/data.json', serverApi);
-
 function ngApp(req: any, res: any) {
   res.render('index', {
     req,

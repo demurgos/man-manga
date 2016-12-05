@@ -10,10 +10,8 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {UniversalModule, isBrowser, isNode} from 'angular2-universal/node'; // for AoT we need to manually split universal packages
 
-import {HomeModule} from '../app/home/home.module';
-import {AboutModule} from '../app/about/about.module';
-import {SearchModule} from "../app/search/search.module";
 import {AppComponent} from '../app/app.component';
+import {AppModule} from '../app/app.module';
 import {AppRoutingModule} from '../app/app-routing.module';
 
 @NgModule({
@@ -23,10 +21,7 @@ import {AppRoutingModule} from '../app/app-routing.module';
     UniversalModule, // NodeModule, NodeHttpModule, and NodeJsonpModule are included
     FormsModule,
 
-    HomeModule,
-    AboutModule,
-    SearchModule,
-
+		AppModule,
     AppRoutingModule
   ],
   providers: [
@@ -38,12 +33,4 @@ export class AppServerModule {
   constructor() {
     console.log("Serve");
   }
-
-  // we need to use the arrow function here to bind the context as this is a gotcha in Universal for now until it's fixed
-  universalDoDehydrate = (universalCache: any) => {
-    // universalCache['Cache'] = JSON.stringify(this.cache.dehydrate());
-  };
-  universalAfterDehydrate = () => {
-    // this.cache.clear();
-  };
 }
