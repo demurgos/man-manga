@@ -1,32 +1,40 @@
-// the polyfills must be one of the first things imported in node.js.
+// The polyfills must be one of the first things imported in node.js.
 // The only modules to be imported higher - node modules with es6-promise 3.x or other Promise polyfill dependency
 // (rule of thumb: do it if you have zone.js exception that it has been overwritten)
 import 'angular2-universal-polyfills';
 
-import * as path from 'path';
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
-import {IRouterHandler, IRouterMatcher, IRouter} from "express-serve-static-core";
+import * as path          from 'path';
+import * as express       from 'express';
+import * as bodyParser    from 'body-parser';
+import * as cookieParser  from 'cookie-parser';
+import {
+	IRouterHandler,
+	IRouter}                from "express-serve-static-core";
+import {enableProdMode}   from '@angular/core';
 
-// Angular 2
-import {enableProdMode} from '@angular/core';
 // Angular 2 Universal
 import {FileSystemResourceLoader} from './node-polyfill';
-import {ResourceLoader} from '@angular/compiler';
-import {platformNodeDynamic} from 'angular2-universal/node';
-import {createEngine} from 'angular2-express-engine';
+import {ResourceLoader}           from '@angular/compiler';
+import {platformNodeDynamic}      from 'angular2-universal/node';
+import {createEngine}             from 'angular2-express-engine';
 
 // App
-import {AppServerModule} from './app.server.module';
+import {AppServerModule}  from './app.server.module';
 
-// enable prod for faster renders
+// Server's routers
+import {globalRouter}     from './server.routes';
+import {apiRouter}        from './server.api';
+
+// Server config
+import {ROOT} from './server.config';
+
+// Enable Angular's prod for faster renders
 enableProdMode();
 
+// Create the server's app
 const app = express();
-const ROOT = path.join(path.resolve(__dirname, '../../..'));
 
-// Express View
+// Create the express engine for the Angular app
 app.engine('.html', createEngine({
   // Fix server-side resource-loading, see ./node-polyfill.ts
   // See https://github.com/angular/universal/issues/579
@@ -49,46 +57,21 @@ app.engine('.html', createEngine({
   precompile: true,
   ngModule: AppServerModule
 }));
+
+// Set app variables
 app.set('views', path.resolve(ROOT, "build/client"));
 app.set('view engine', 'html');
 
-(<IRouterHandler<IRouter>> app.use)(cookieParser('Angular 2 Universal'));
+// Configure the server to parse body
+(<IRouterHandler<IRouter>> app.use)(cookieParser('ManManGa awesome app!'));
 (<IRouterHandler<IRouter>> app.use)(bodyParser.json());
 
-// Serve static files
-(<IRouterHandler<IRouter>> app.use)(express.static(path.join(ROOT, 'build/client'), {index: false}));
-
-function ngApp(req: any, res: any) {
-  res.render('index', {
-    req,
-    res,
-    preboot: false,
-    baseUrl: '/',
-    requestUrl: req.originalUrl,
-    originUrl: 'http://localhost:3000'
-  });
-}
-// Routes with html5pushstate
-// ensure routes match client-side-app
-(<IRouterMatcher<IRouter>> app.get)('/', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/about', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/about/*', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/home', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/home/*', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/search', ngApp);
-(<IRouterMatcher<IRouter>> app.get)('/search/*', ngApp);
-
-import {apiRouter} from './server.api'
+// Configure routes
+// NOTE: globalRouter must be the last used, since it defines defaults routes
 (<IRouterHandler<IRouter>> app.use)(apiRouter);
+(<IRouterHandler<IRouter>> app.use)(globalRouter);
 
-(<IRouterMatcher<IRouter>> app.get)('*', function (req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  const pojo = {status: 404, message: 'No Content'};
-  const json = JSON.stringify(pojo, null, 2);
-  res.status(404).send(json);
-});
-
-// Server
+// Instantiate the server
 let server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on: http://localhost:${server.address().port}`);
 });
