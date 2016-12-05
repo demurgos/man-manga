@@ -16,7 +16,6 @@ import {AppRoutingModule} from '../app/app-routing.module';
 
 @NgModule({
   bootstrap: [AppComponent],
-  declarations: [AppComponent],
   imports: [
     UniversalModule, // NodeModule, NodeHttpModule, and NodeJsonpModule are included
     FormsModule,

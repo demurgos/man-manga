@@ -8,7 +8,6 @@ import {AppModule} from "../app/app.module";
 
 @NgModule({
   bootstrap: [AppComponent],
-  declarations: [AppComponent],
   imports: [
     UniversalModule, // BrowserModule, HttpModule, and JsonpModule are included
     FormsModule,
