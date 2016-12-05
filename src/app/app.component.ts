@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
-import {SearchComponent} from "./search/search.component";
 
 @Component({
   selector: 'mmg-app',
-  moduleId: module.id,
+  moduleId: "app.component",
   template: `
     <div class="wrapper">
       <div class="header">
