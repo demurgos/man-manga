@@ -10,6 +10,11 @@ import {SearchModule} from './search/search.module';
 		AboutModule,
 		SearchModule
 	],
+	exports: [
+		HomeModule,
+		AboutModule,
+		SearchModule
+	]
 })
 export class AppModule {
 }
