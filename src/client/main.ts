@@ -8,7 +8,7 @@ import {platformUniversalDynamic} from 'angular2-universal';
 // enable prod for faster renders
 enableProdMode();
 
-import {MainModule} from './client.module';
+import {MainModule} from './app.client.module';
 
 const platformRef = platformUniversalDynamic();
 

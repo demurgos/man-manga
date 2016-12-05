@@ -18,7 +18,7 @@ import {platformNodeDynamic} from 'angular2-universal/node';
 import {createEngine} from 'angular2-express-engine';
 
 // App
-import {MainModule} from './app.server';
+import {MainModule} from './app.server.module';
 
 // enable prod for faster renders
 enableProdMode();
