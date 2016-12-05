@@ -18,7 +18,7 @@ import {platformNodeDynamic} from 'angular2-universal/node';
 import {createEngine} from 'angular2-express-engine';
 
 // App
-import {MainModule} from './app.server';
+import {MainModule} from './app.server.module';
 
 // enable prod for faster renders
 enableProdMode();
@@ -59,7 +59,7 @@ app.set('view engine', 'html');
 (<IRouterHandler<IRouter>> app.use)(express.static(path.join(ROOT, 'build/client'), {index: false}));
 
 
-import {serverApi} from './api';
+import {serverApi} from './server.api';
 // Our API for demos only
 (<IRouterMatcher<IRouter>> app.get)('/data.json', serverApi);
 

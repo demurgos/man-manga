@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import {SearchComponent} from './search.component';
+import {SearchComponent} from './search-bar/search-bar.component';
 
 @NgModule({
   imports: [

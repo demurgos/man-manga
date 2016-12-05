@@ -99,3 +99,14 @@ gulp.task("server:build:copy", ["client:build:assets"], function() {
     )
     .pipe(gulp.dest(path.join(root, "build/server/app")));
 });
+
+gulp.task("server:_clean-build", ["server:clean"], () => {
+  // Task server:clean is done now
+});
+gulp.task("server:clean-build", ["server:_clean-build", "server:build"]);
+
+gulp.task("client:_clean-build", ["client:clean"], () => {
+  // Task client:clean is done now
+});
+gulp.task("client:clean-build", ["client:_clean-build", "client:build"]);
+

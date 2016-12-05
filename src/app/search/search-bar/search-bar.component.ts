@@ -2,9 +2,9 @@ import {Component, OnInit} from "@angular/core";
 
 @Component({
   selector: "mmg-search",
-  moduleId: "search/search.component",
-  templateUrl: "search.component.html",
-  styleUrls: ["search.component.css"]
+  moduleId: "search/search-bar/search-bar.component",
+  templateUrl: "search-bar.component.html",
+  styleUrls: ["search-bar.component.css"]
 })
 export class SearchComponent implements OnInit {
   ngOnInit(): void {
