@@ -3,3 +3,13 @@
 body {
   background-color: #98e57f;
 }
+
+$color: red;
+
+ol {
+  background-color: $color;
+
+  li {
+    background-color: $color;
+  }
+}

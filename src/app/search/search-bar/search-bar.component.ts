@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 
 @Component({
   selector: "mmg-search",
-  moduleId: module.id,
+  moduleId: "search/search.component",
   templateUrl: "search.component.html",
   styleUrls: ["search.component.css"]
 })

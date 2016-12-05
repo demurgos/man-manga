@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'home',
-  moduleId: module.id,
+  moduleId: "home/home.component",
   template: 'Accueil, News, toussa'
 })
 export class HomeComponent {}

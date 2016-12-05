@@ -3,7 +3,7 @@ import {SearchComponent} from "./search/search-bar/search.component";
 
 @Component({
   selector: 'mmg-app',
-  moduleId: module.id,
+  moduleId: "app.component",
   template: `
     <div class="wrapper">
       <div class="header">
