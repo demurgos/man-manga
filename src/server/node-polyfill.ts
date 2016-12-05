@@ -7,17 +7,17 @@ import * as fs from 'fs';
 import {ResourceLoader} from "@angular/compiler";
 
 const ROOT = path.join(path.resolve(__dirname, '../../..'));
-const APP_DIR = path.join(ROOT, "build/client.tmp");
+const APP_DIR = path.join(ROOT, "build/client.tmp/app");
 
 export class FileSystemResourceLoader extends ResourceLoader {
   resolve(url: string, baseUrl: string): string {
     //Angular assembles absolute URL's and prefixes them with //
-    if (url.indexOf("/") !== 0) {
+    //if (url.indexOf("/") !== 0) {
       //Resolve relative URL's based on the app root.
       return path.join(baseUrl, url);
-    } else {
-      return url;
-    }
+    // } else {
+    //   return url;
+    // }
   }
 
   get(url: string): Promise<string> {
