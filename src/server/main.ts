@@ -78,6 +78,9 @@ function ngApp(req: any, res: any) {
 (<IRouterMatcher<IRouter>> app.get)('/search', ngApp);
 (<IRouterMatcher<IRouter>> app.get)('/search/*', ngApp);
 
+import {apiRouter} from './server.api'
+(<IRouterHandler<IRouter>> app.use)(apiRouter);
+
 (<IRouterMatcher<IRouter>> app.get)('*', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   const pojo = {status: 404, message: 'No Content'};
