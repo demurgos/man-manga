@@ -18,7 +18,7 @@ import {platformNodeDynamic} from 'angular2-universal/node';
 import {createEngine} from 'angular2-express-engine';
 
 // App
-import {MainModule} from './app.server.module';
+import {AppServerModule} from './app.server.module';
 
 // enable prod for faster renders
 enableProdMode();
@@ -47,7 +47,7 @@ app.engine('.html', createEngine({
     return platform;
   },
   precompile: true,
-  ngModule: MainModule
+  ngModule: AppServerModule
 }));
 app.set('views', path.resolve(ROOT, "build/client"));
 app.set('view engine', 'html');

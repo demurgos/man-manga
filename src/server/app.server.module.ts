@@ -34,7 +34,7 @@ import {AppRoutingModule} from '../app/app-routing.module';
     {provide: 'isNode', useValue: isNode}
   ]
 })
-export class MainModule {
+export class AppServerModule {
   constructor() {
     console.log("Serve");
   }

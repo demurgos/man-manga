@@ -6,7 +6,7 @@ import {Component, OnInit} from "@angular/core";
   templateUrl: "search-bar.component.html",
   styleUrls: ["search-bar.component.css"]
 })
-export class SearchComponent implements OnInit {
+export class SearchBarComponent implements OnInit {
   ngOnInit(): void {
     console.log("Initialized search page");
   }

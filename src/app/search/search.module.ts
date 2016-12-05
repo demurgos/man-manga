@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 
-import {SearchComponent} from './search-bar/search-bar.component';
+import {SearchBarComponent} from './search-bar/search-bar.component';
 import {SearchRoutingModule} from "./search-routing.module";
 
 @NgModule({
@@ -8,10 +8,10 @@ import {SearchRoutingModule} from "./search-routing.module";
     SearchRoutingModule
   ],
   declarations: [
-    SearchComponent
+    SearchBarComponent
   ],
   exports: [
-    SearchComponent
+    SearchBarComponent
   ]
 })
 export class SearchModule {}

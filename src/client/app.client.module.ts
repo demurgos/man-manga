@@ -28,8 +28,8 @@ import {SearchModule} from "../app/search/search.module";
     // Cache
   ]
 })
-export class MainModule {
+export class AppClientModule {
   constructor() {
-    console.log("Generating MainModule")
+    console.log("Generating AppClientModule")
   }
 }

@@ -3,20 +3,9 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'mmg-app',
   moduleId: "app.component",
-  template: `
-    <div class="wrapper">
-      <div class="header">
-        <h1>Web sémantique</h1>
-      </div>
-      <div class="content">
-        <nav>
-          <a routerLink="/home">Accueil</a>
-          <a routerLink="/about">Infos</a>
-        </nav>
-        <router-outlet></router-outlet>
-        <mmg-search></mmg-search>
-      </div>
-    </div>
-  `
+  templateUrl: "app.component.html",
+	styleUrls: [
+		"app.component.css"
+	]
 })
 export class AppComponent {}
