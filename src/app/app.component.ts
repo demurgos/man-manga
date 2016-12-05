@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {SearchComponent} from "./search/search.component";
+import {SearchComponent} from "./search/search-bar/search.component";
 
 @Component({
   selector: 'mmg-app',

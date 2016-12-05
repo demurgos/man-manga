@@ -14,8 +14,7 @@ import {HomeModule} from '../app/home/home.module';
 import {AboutModule} from '../app/about/about.module';
 import {SearchModule} from "../app/search/search.module";
 import {AppComponent} from '../app/app.component';
-import {AppRoutingModule} from '../app/app-routing';
-import {Cache} from '../app/universal-cache';
+import {AppRoutingModule} from '../app/app-routing.module';
 
 @NgModule({
   bootstrap: [AppComponent],

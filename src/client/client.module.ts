@@ -5,7 +5,7 @@ import {UniversalModule, isBrowser, isNode} from 'angular2-universal/browser'; /
 import {HomeModule} from '../app/home/home.module';
 import {AboutModule} from '../app/about/about.module';
 import {AppComponent} from '../app/app.component';
-import {AppRoutingModule} from '../app/app-routing';
+import {AppRoutingModule} from '../app/app-routing.module';
 import {SearchModule} from "../app/search/search.module";
 // import { Cache } from '../app/universal-cache';
 

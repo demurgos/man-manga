@@ -59,7 +59,7 @@ app.set('view engine', 'html');
 (<IRouterHandler<IRouter>> app.use)(express.static(path.join(ROOT, 'build/client'), {index: false}));
 
 
-import {serverApi} from './api';
+import {serverApi} from './server.api';
 // Our API for demos only
 (<IRouterMatcher<IRouter>> app.get)('/data.json', serverApi);
 
