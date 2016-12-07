@@ -1,5 +1,45 @@
-$bgColor: #ff8ba7;
+$bgColor: #c9f8ff;
 
-input {
+
+.searchbar {
+  padding-top: 250px;
+  margin: auto;
+  width: 60%;
+}
+
+.title {
+  text-align: center;
+  font-size: 50px;
+  font-family: "Verdana Pro Light";
+  padding-bottom: 5px;
+}
+
+.subTitle {
+  font-size: 20px;
+  padding-bottom: 5px;
+}
+
+.comp {
+  background-color: lightgrey;;
+  border: 1px solid snow;
+  font-family: Calibri;
+  text-align: center;
+}
+.input {
   background-color: $bgColor;
+  width: 80%;
+  margin: auto;
+  padding: -2px;
+  height: 2em;
+  border: 2px solid snow;
+}
+
+.button {
+  margin-top:10px;
+  height: 2em;
+  padding: 0.3em;
+  background-color: #f9f6f9;
+
+  border-radius: 4px;
+  color: #535797;
 }
