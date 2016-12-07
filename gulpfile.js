@@ -16,7 +16,7 @@ const serverTarget = {
   type: "node",
   baseDir: "server",
   scripts: ["server/**/*.ts", "app/**/*.ts", "lib/**/*.ts"],
-  typeRoots: ["../typings/globals", "../typings/modules", "../node_modules/@types"],
+  typeRoots: ["./custom-typings", "../typings/globals", "../typings/modules", "../node_modules/@types"],
   mainModule: "server/main",
 };
 
@@ -40,7 +40,7 @@ const clientTarget = {
   tmpDir: "client.tmp",
   assetsDir: "app",
   scripts: ["client/**/*.ts", "app/**/*.ts"],
-  typeRoots: ["../typings/globals", "../typings/modules", "../node_modules/@types"],
+  typeRoots: ["custom-typings", "../typings/globals", "../typings/modules", "../node_modules/@types"],
   mainModule: "client/main"
 };
 
