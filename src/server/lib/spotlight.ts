@@ -21,12 +21,12 @@ export async function query(text: string, language: string): Promise<string[]> {
     uri: apiUri,
     queryString: {
       text: text, // Text to analyze
-      confidence: "1", // Confidence of the return URI (btw 0 and 1)
-      support: "0", // ???
+      confidence: "0.8", // Confidence of the return URI (btw 0 and 1)
+      support: "0", // Min number of incoming links require
       spotter: "Default", // ???
       disambiguator: "Default", // ???
       policy: "whiteliste", // ???
-      types: "", // ???
+      types: "", // DBpedia type.
       sparql: "", // Potential sparql request to eliminate some returns URI
     }
   };
