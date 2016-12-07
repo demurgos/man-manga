@@ -1,24 +1,10 @@
-// Our API for demos only
-import {fakeDataBase} from './db';
-import {fakeDemoRedisCache} from './server.cache';
+import {Router} from 'express';
 
-// you would use cookies/token etc
-var USER_ID = 'f9d98cf1-1b96-464e-8755-bcc2a5c09077'; // hardcoded as an example
+const router: Router = Router();
 
-// Our API for demos only
-export function serverApi(req: any, res: any) {
-  let key = USER_ID + '/data.json';
-  let cache = fakeDemoRedisCache.get(key);
-  if (cache !== undefined) {
-    console.log('/data.json Cache Hit');
-    return res.json(cache);
-  }
-  console.log('/data.json Cache Miss');
+router.get("/api/test", (req, res, next) => {
+	res.setHeader('Content-Type', 'application/json');
+	res.status(200).send(JSON.stringify({"api-call": "You got it!"}, null, 2));
+});
 
-  fakeDataBase.get()
-    .then(data => {
-      fakeDemoRedisCache.set(key, data);
-      return data;
-    })
-    .then(data => res.json(data));
-}
+export const apiRouter = router;

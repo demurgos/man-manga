@@ -12,7 +12,7 @@
     "test": "gulp test",
     "prestart": "gulp server:build",
     "start": "node build/server/server/main.js",
-    "build-client": "gulp client:build && webpack"
+    "build-client": "gulp client:build"
   },
   "keywords": [],
   "license": "MIT",
