@@ -51,8 +51,8 @@ declare module "google" {
 
   declare interface Google {
     (query: string, callback?: () => any);
-    (query: string, callback?: (err: Error | null) => any);
-    (query: string, callback?: (err: Error | null, res: google.Result) => any);
+    (query: string, callback?: (err: Error) => any);
+    (query: string, callback?: (err: Error | null, res: google.Result) => any);
   }
 
   declare const google: Google;
