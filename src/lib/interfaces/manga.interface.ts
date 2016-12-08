@@ -1,5 +1,5 @@
-import {Author} from './author.interface.ts';
-import {Character} from './character.interface.ts';
+import {Author} from './author.interface';
+import {Character} from './character.interface';
 
 export interface Manga {
 
@@ -46,7 +46,12 @@ export interface Manga {
   volumes?: number;
 
   /**
-   * The first publicatin date.
+   * The first publication date.
    */
-  publicationDate: string; // TODO: datify
+  publicationDate?: string; // TODO: datify
+
+  /**
+   * The manga's list of known publishers.
+   */
+  publishers?: string[];
 }
