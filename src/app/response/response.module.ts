@@ -1,4 +1,5 @@
 import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 import {AnimeComponent} from './anime-response/anime-response.component';
 import {AuthorComponent} from './author-response/author-response.component';
@@ -7,7 +8,8 @@ import {ResponseRoutingModule} from "./response-routing.module";
 
 @NgModule({
   imports: [
-    ResponseRoutingModule
+    ResponseRoutingModule,
+    CommonModule
   ],
   declarations: [
     AnimeComponent,
@@ -20,4 +22,5 @@ import {ResponseRoutingModule} from "./response-routing.module";
     MangaComponent
   ]
 })
-export class ResponseModule {}
+export class ResponseModule {
+}

@@ -1,8 +1,8 @@
 import {Component, OnInit} from "@angular/core";
 
 @Component({
-  selector: "mmg-search",
-  moduleId: "search/manga-response/manga-response.component",
+  selector: "mmg-manga-response",
+  moduleId: "response/manga-response/manga-response.component",
   templateUrl: "manga-response.component.html",
   styleUrls: ["manga-response.component.css"]
 })
