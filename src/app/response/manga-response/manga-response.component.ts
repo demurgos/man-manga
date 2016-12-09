@@ -1,4 +1,14 @@
 import {Component, OnInit} from "@angular/core";
+import {Manga} from "../../../lib/interfaces/manga.interface"
+
+const MANGATEST: Manga = {
+  title: 'Death Note',
+  author: {name :'Tsugumi Oba'},
+  illustrator : 'Takeshi Obata',
+  volumes : 12,
+  theme: ['Thriller'],
+  snippet: 'Kira kill the world with a book from hell'
+};
 
 @Component({
   selector: "mmg-manga-response",
@@ -7,11 +17,15 @@ import {Component, OnInit} from "@angular/core";
   styleUrls: ["manga-response.component.css"]
 })
 export class MangaComponent implements OnInit {
+  protected manga : Manga;
+
+  constructor() {
+    // this.manga = MANGATEST; // 1/2 won't work
+  }
+
   ngOnInit(): void {
     console.log("Manga !");
+    this.manga = MANGATEST;
   }
-  name: string;
-  author: string;
-  illustrator: string;
-  volumes: number;
+
 }

@@ -6,25 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
-var ANIMETEST = {
-    title: 'One piece'
-};
-var AnimeComponent = (function () {
-    function AnimeComponent() {
-        this.anime = ANIMETEST;
-        this.test = 10;
+var SearchBarComponent = (function () {
+    function SearchBarComponent() {
     }
-    AnimeComponent.prototype.ngOnInit = function () {
-        console.log("Anime !");
+    SearchBarComponent.prototype.ngOnInit = function () {
+        console.log("Initialized search page");
     };
-    return AnimeComponent;
+    return SearchBarComponent;
 }());
-AnimeComponent = __decorate([
+SearchBarComponent = __decorate([
     core_1.Component({
-        selector: "mmg-anime-response",
-        moduleId: "response/anime-response/anime-response.component",
-        templateUrl: "anime-response.component.html",
-        styleUrls: ["anime-response.component.css"]
+        selector: "mmg-search",
+        moduleId: "search/search-bar/search-bar.component",
+        templateUrl: "search-bar.component.html",
+        styleUrls: ["search-bar.component.css"]
     })
-], AnimeComponent);
-exports.AnimeComponent = AnimeComponent;
+], SearchBarComponent);
+exports.SearchBarComponent = SearchBarComponent;

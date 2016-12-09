@@ -6,25 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
-var ANIMETEST = {
-    title: 'One piece'
-};
-var AnimeComponent = (function () {
-    function AnimeComponent() {
-        this.anime = ANIMETEST;
-        this.test = 10;
+var router_1 = require("@angular/router");
+var search_bar_component_1 = require("./search-bar/search-bar.component");
+var SearchRoutingModule = (function () {
+    function SearchRoutingModule() {
     }
-    AnimeComponent.prototype.ngOnInit = function () {
-        console.log("Anime !");
-    };
-    return AnimeComponent;
+    return SearchRoutingModule;
 }());
-AnimeComponent = __decorate([
-    core_1.Component({
-        selector: "mmg-anime-response",
-        moduleId: "response/anime-response/anime-response.component",
-        templateUrl: "anime-response.component.html",
-        styleUrls: ["anime-response.component.css"]
+SearchRoutingModule = __decorate([
+    core_1.NgModule({
+        imports: [
+            router_1.RouterModule.forChild([
+                { path: 'search', component: search_bar_component_1.SearchBarComponent }
+            ])
+        ],
+        exports: [
+            router_1.RouterModule
+        ]
     })
-], AnimeComponent);
-exports.AnimeComponent = AnimeComponent;
+], SearchRoutingModule);
+exports.SearchRoutingModule = SearchRoutingModule;

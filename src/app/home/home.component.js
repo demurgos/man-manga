@@ -6,25 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
-var ANIMETEST = {
-    title: 'One piece'
-};
-var AnimeComponent = (function () {
-    function AnimeComponent() {
-        this.anime = ANIMETEST;
-        this.test = 10;
+var HomeComponent = (function () {
+    function HomeComponent() {
     }
-    AnimeComponent.prototype.ngOnInit = function () {
-        console.log("Anime !");
-    };
-    return AnimeComponent;
+    return HomeComponent;
 }());
-AnimeComponent = __decorate([
+HomeComponent = __decorate([
     core_1.Component({
-        selector: "mmg-anime-response",
-        moduleId: "response/anime-response/anime-response.component",
-        templateUrl: "anime-response.component.html",
-        styleUrls: ["anime-response.component.css"]
+        selector: 'home',
+        moduleId: "home/home.component",
+        template: 'Accueil, News, toussa'
     })
-], AnimeComponent);
-exports.AnimeComponent = AnimeComponent;
+], HomeComponent);
+exports.HomeComponent = HomeComponent;

@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
+var common_1 = require("@angular/common");
 var anime_response_component_1 = require("./anime-response/anime-response.component");
 var author_response_component_1 = require("./author-response/author-response.component");
 var manga_response_component_1 = require("./manga-response/manga-response.component");
@@ -18,7 +19,8 @@ var ResponseModule = (function () {
 ResponseModule = __decorate([
     core_1.NgModule({
         imports: [
-            response_routing_module_1.ResponseRoutingModule
+            response_routing_module_1.ResponseRoutingModule,
+            common_1.CommonModule
         ],
         declarations: [
             anime_response_component_1.AnimeComponent,

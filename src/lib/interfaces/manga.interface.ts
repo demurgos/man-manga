@@ -18,7 +18,7 @@ export interface Manga {
   /**
    * The illustrator's name.
    */
-  illustrator?: string
+  illustrator?: string;
 
   /**
    * The list of all known characters.
@@ -48,5 +48,5 @@ export interface Manga {
   /**
    * The first publicatin date.
    */
-  publicationDate: string; // TODO: datify
+  publicationDate?: string; // TODO: datify
 }

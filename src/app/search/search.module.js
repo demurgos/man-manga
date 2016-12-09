@@ -6,25 +6,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
-var ANIMETEST = {
-    title: 'One piece'
-};
-var AnimeComponent = (function () {
-    function AnimeComponent() {
-        this.anime = ANIMETEST;
-        this.test = 10;
+var search_bar_component_1 = require("./search-bar/search-bar.component");
+var search_routing_module_1 = require("./search-routing.module");
+var SearchModule = (function () {
+    function SearchModule() {
     }
-    AnimeComponent.prototype.ngOnInit = function () {
-        console.log("Anime !");
-    };
-    return AnimeComponent;
+    return SearchModule;
 }());
-AnimeComponent = __decorate([
-    core_1.Component({
-        selector: "mmg-anime-response",
-        moduleId: "response/anime-response/anime-response.component",
-        templateUrl: "anime-response.component.html",
-        styleUrls: ["anime-response.component.css"]
+SearchModule = __decorate([
+    core_1.NgModule({
+        imports: [
+            search_routing_module_1.SearchRoutingModule
+        ],
+        declarations: [
+            search_bar_component_1.SearchBarComponent
+        ],
+        exports: [
+            search_bar_component_1.SearchBarComponent
+        ]
     })
-], AnimeComponent);
-exports.AnimeComponent = AnimeComponent;
+], SearchModule);
+exports.SearchModule = SearchModule;

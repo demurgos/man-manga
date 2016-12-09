@@ -16,7 +16,7 @@ var AuthorComponent = (function () {
 }());
 AuthorComponent = __decorate([
     core_1.Component({
-        selector: "mmg-search",
+        selector: "mmg-author-response",
         moduleId: "response/author-response/author-response.component",
         templateUrl: "author-response.component.html",
         styleUrls: ["author-response.component.css"]

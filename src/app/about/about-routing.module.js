@@ -6,25 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require("@angular/core");
-var ANIMETEST = {
-    title: 'One piece'
-};
-var AnimeComponent = (function () {
-    function AnimeComponent() {
-        this.anime = ANIMETEST;
-        this.test = 10;
+var router_1 = require("@angular/router");
+var about_component_1 = require("./about.component");
+var AboutRoutingModule = (function () {
+    function AboutRoutingModule() {
     }
-    AnimeComponent.prototype.ngOnInit = function () {
-        console.log("Anime !");
-    };
-    return AnimeComponent;
+    return AboutRoutingModule;
 }());
-AnimeComponent = __decorate([
-    core_1.Component({
-        selector: "mmg-anime-response",
-        moduleId: "response/anime-response/anime-response.component",
-        templateUrl: "anime-response.component.html",
-        styleUrls: ["anime-response.component.css"]
+AboutRoutingModule = __decorate([
+    core_1.NgModule({
+        imports: [
+            router_1.RouterModule.forChild([
+                { path: 'about', component: about_component_1.AboutComponent }
+            ])
+        ],
+        exports: [
+            router_1.RouterModule
+        ]
     })
-], AnimeComponent);
-exports.AnimeComponent = AnimeComponent;
+], AboutRoutingModule);
+exports.AboutRoutingModule = AboutRoutingModule;

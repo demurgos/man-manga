@@ -1,0 +1,10 @@
+.manga
+  .infos
+    .title Title : {{manga.title}}
+    .author Author : {{manga.author.name}}
+    .illustrator( "*ngIf"="manga.illustrator") Illustrator : {{manga.illustrator}}
+    .snippet( "*ngIf"="manga.snippet") Abstract : {{manga.snippet}}
+    .themes( "*ngIf"="manga.theme")
+      .theme("*ngFor"="let t of manga.theme") Theme : {{t}}
+    .volumes( "*ngIf"="manga.volumes") Volumes : {{manga.volumes}}
+
