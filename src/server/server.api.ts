@@ -60,9 +60,9 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
 /**
  * GET api/sparql/manga/:name
  *    :name  The name of the manga (according to dbpedia; beware of the case)
- *
- * Known issues:
- *    The request to dbpedia refuses to send more fields than 6.
+ * Gather all available information about the manga named ':name'.
+ * Returns a manga as JSON,
+ * or a 404 error if there was a problem with the request.
  */
 router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
   let mangaName = req.params["name"];
