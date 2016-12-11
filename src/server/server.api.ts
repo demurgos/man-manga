@@ -1,8 +1,9 @@
-import * as request from 'request';
-import * as _ from 'lodash';
+import * as request   from 'request-promise';
+import * as _         from 'lodash';
 
-import {Router} from 'express';
-import {Manga}  from "../lib/interfaces/manga.interface";
+import {Router}   from 'express';
+import {Manga}    from '../lib/interfaces/manga.interface';
+import {DBPedia}  from './lib/dbpedia';
 
 const router: Router = Router();
 
@@ -37,23 +38,23 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
   request({
     url: "http://dbpedia.org/sparql?query=" + query + "&format=application/json",
     json: true
-  }, (err, response, body) => {
-    if (err) {
-      console.log("ERROR with the request");
-      res.status(404).send(err);
+  })
+  .then((body: any) => {
+    if (body["results"]["bindings"].length === 0) {
+      res.status(200).send(JSON.stringify({
+        resource: resource,
+        isManga: false
+      }, null, 2));
     } else {
-      if (body["results"]["bindings"].length === 0) {
-        res.status(200).send(JSON.stringify({
-          resource: resource,
-          isManga: false
-        }, null, 2));
-      } else {
-        res.status(200).send(JSON.stringify({
-          resource: resource,
-          isManga: true
-        }, null, 2));
-      }
+      res.status(200).send(JSON.stringify({
+        resource: resource,
+        isManga: true
+      }, null, 2));
     }
+  })
+  .catch((err: any) => {
+    console.log("ERROR with the request");
+    res.status(404).send(err);
   });
 });
 
@@ -65,9 +66,9 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
  *    The request refuse to send more fields than 6.
  *    This results in the field "publisher" missing.
  */
-router.get("/api/sparql/manga/:name", (req, res, next) => {
+router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
   let manga = req.params["name"];
-  let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?abstract ?publisher"
+  let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher"
     + "where {"
     + "values ?title {dbr:" + manga + "}. "
     + "?title a dbo:Manga. "
@@ -76,36 +77,61 @@ router.get("/api/sparql/manga/:name", (req, res, next) => {
     + "OPTIONAL { ?title dbo:firstPublicationDate ?publicationDate }. "
     + "OPTIONAL { ?title dbo:illustrator ?illustrator }. "
     + "OPTIONAL { ?title dbo:publisher ?publisher }. "
-    + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'en')) }. "
     + "}";
   res.setHeader('Content-Type', 'application/json');
   request({
     url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
     json: true
-  }, (err, response, body) => {
-    if (err) {
-      console.log("ERROR with the request");
-      res.status(404).send(err);
-    } else {
-      manga = sparqlToManga(crossArray(body["results"]["bindings"]));
-      res.status(200).send(JSON.stringify(manga, null, 2));
-    }
+  })
+  .then((body: any) => {
+    req["manga"] = sparqlToManga(crossArray(body["results"]["bindings"]));
+    next();
+  })
+  .catch((err: any) => {
+    console.log("ERROR with the request from /api/sparql/manga/" + manga);
+    res.status(404).send(err);
+  });
+});
+
+/**
+ * Gathers the given manga's abstract.
+ */
+router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
+  let mangaParam = req.params["name"];
+  let abstractParam = req.params["abstract"];
+  let manga: Manga;
+  if(!abstractParam) {
+    manga = req["manga"];
+  }
+  let query: string = "select distinct ?abstract "
+    + "where {"
+    + "values ?title {dbr:" + mangaParam + "}. "
+    + "?title a dbo:Manga. "
+    + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'en')) }. "
+    + "}";
+  request({
+    url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
+    json: true
+  })
+  .then((body: any) => {
+    manga.snippet = body["results"]["bindings"][0]["abstract"]["value"];
+    res.status(200).send(JSON.stringify(manga, null, 2));
+  })
+  .catch((err: any) => {
+    console.log("ERROR with the request from /api/sparql/manga/" + mangaParam + "/abstract");
+    console.log(err);
+    res.status(404).send(err);
   });
 });
 
 export const apiRouter = router;
 
 function sparqlToManga(sparqlResult: any): Manga {
-  let manga: Manga = {
-    title: "",
-    author: {
-      name: ""
-    }
-  };
+  let manga: any = {};
   for(let key in sparqlResult[0]) {
     if (!sparqlResult[0].hasOwnProperty(key)) continue;
     if(sparqlResult[0][key].length === 1) {
-      manga[key] = sparqlResult[0][key][0];
+      manga[key] = (<any>sparqlResult[0][key][0]);
     } else if(key === "publicationDate") {
       manga[key] = _.min(sparqlResult[0][key]);
     } else if(key === "snippet") {
