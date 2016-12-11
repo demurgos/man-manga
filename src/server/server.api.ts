@@ -63,110 +63,22 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
  *    :name  The name of the manga (according to dbpedia; beware of the case)
  *
  * Known issues:
- *    The request refuse to send more fields than 6.
- *    This results in the field "publisher" missing.
+ *    The request to dbpedia refuses to send more fields than 6.
  */
 router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
-  let manga = req.params["name"];
-  let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher"
-    + "where {"
-    + "values ?title {dbr:" + manga + "}. "
-    + "?title a dbo:Manga. "
-    + "OPTIONAL { ?title dbo:author ?author }. "
-    + "OPTIONAL { ?title dbo:numberOfVolumes ?volumes }. "
-    + "OPTIONAL { ?title dbo:firstPublicationDate ?publicationDate }. "
-    + "OPTIONAL { ?title dbo:illustrator ?illustrator }. "
-    + "OPTIONAL { ?title dbo:publisher ?publisher }. "
-    + "}";
+  let mangaName = req.params["name"];
   res.setHeader('Content-Type', 'application/json');
-  request({
-    url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
-    json: true
-  })
-  .then((body: any) => {
-    req["manga"] = sparqlToManga(crossArray(body["results"]["bindings"]));
-    next();
-  })
-  .catch((err: any) => {
-    console.log("ERROR with the request from /api/sparql/manga/" + manga);
-    res.status(404).send(err);
-  });
-});
-
-/**
- * Gathers the given manga's abstract.
- */
-router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
-  let mangaParam = req.params["name"];
-  let abstractParam = req.params["abstract"];
-  let manga: Manga;
-  if(!abstractParam) {
-    manga = req["manga"];
-  }
-  let query: string = "select distinct ?abstract "
-    + "where {"
-    + "values ?title {dbr:" + mangaParam + "}. "
-    + "?title a dbo:Manga. "
-    + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'en')) }. "
-    + "}";
-  request({
-    url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
-    json: true
-  })
-  .then((body: any) => {
-    manga.snippet = body["results"]["bindings"][0]["abstract"]["value"];
-    res.status(200).send(JSON.stringify(manga, null, 2));
-  })
-  .catch((err: any) => {
-    console.log("ERROR with the request from /api/sparql/manga/" + mangaParam + "/abstract");
-    console.log(err);
-    res.status(404).send(err);
-  });
+  DBPedia.Manga
+    .retrieve(mangaName)
+    .then((manga: Manga) => {
+      res.status(200).send(JSON.stringify(manga, null, 2));
+    })
+    .catch((err: any) => {
+      console.log("ERROR with the request from /api/sparql/manga/" + mangaName);
+      res.status(404).send(err);
+    });
 });
 
 export const apiRouter = router;
-
-function sparqlToManga(sparqlResult: any): Manga {
-  let manga: any = {};
-  for(let key in sparqlResult[0]) {
-    if (!sparqlResult[0].hasOwnProperty(key)) continue;
-    if(sparqlResult[0][key].length === 1) {
-      manga[key] = (<any>sparqlResult[0][key][0]);
-    } else if(key === "publicationDate") {
-      manga[key] = _.min(sparqlResult[0][key]);
-    } else if(key === "snippet") {
-      manga[key] = sparqlResult[0][key][0];
-    } else if(key === "volumes") {
-      manga[key] = _.max(sparqlResult[0][key]);
-    } else {
-      manga[key] = sparqlResult[0][key];
-    }
-  }
-  return manga;
-}
-
-/**
- * Transform an array of same type objects in a object with arrays as fields,
- * deleting duplicated values in the process.
- * @param sparqlResult the raw result sent by dbpedia.
- */
-function crossArray(sparqlResult: any[]): any[] {
-  let res: any[] = [{}];
-  let first: boolean = true;
-  for(let object of sparqlResult) {
-    for(let key in object) {
-      if (!object.hasOwnProperty(key)) continue;
-      if(first) {
-        res[0][key] = [object[key]["value"]];
-      } else {
-        if(res[0][key].indexOf(object[key]["value"]) !== -1) continue;
-        res[0][key].push(object[key]["value"]);
-      }
-    }
-    first = false;
-  }
-  return res;
-}
-
 
 // wikiPageID => can be interesting!
