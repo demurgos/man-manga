@@ -18,7 +18,7 @@ export interface Manga {
   /**
    * The illustrator's name.
    */
-  illustrator?: string
+  illustrator?: string[];
 
   /**
    * The list of all known characters.
