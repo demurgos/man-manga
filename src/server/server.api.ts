@@ -1,8 +1,11 @@
 import * as request   from 'request-promise';
 
-import {Router}   from 'express';
-import {Manga}    from '../lib/interfaces/manga.interface';
-import {DBPedia}  from './lib/dbpedia';
+import {Router}     from 'express';
+import {Manga}      from '../lib/interfaces/manga.interface';
+import {Anime}      from '../lib/interfaces/anime.interface';
+import {Author}     from '../lib/interfaces/author.interface';
+import {Character}  from '../lib/interfaces/character.interface';
+import {DBPedia}    from './lib/dbpedia';
 
 const router: Router = Router();
 
@@ -74,6 +77,69 @@ router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
     })
     .catch((err: any) => {
       console.log("ERROR with the request from /api/sparql/manga/" + mangaName);
+      res.status(404).send(err);
+    });
+});
+
+/**
+ * GET api/sparql/anime/:name
+ *    :name  The name of the anime (according to dbpedia; beware of the case)
+ * Gather all available information about the anime named ':name'.
+ * Returns an anime as JSON,
+ * or a 404 error if there was a problem with the request.
+ */
+router.get("/api/sparql/anime/:name", (req: any, res: any, next: any) => {
+  let animeName = req.params["name"];
+  res.setHeader('Content-Type', 'application/json');
+  DBPedia.Anime
+    .retrieve(animeName)
+    .then((anime: Anime) => {
+      res.status(200).send(JSON.stringify(anime, null, 2));
+    })
+    .catch((err: any) => {
+      console.log("ERROR with the request from /api/sparql/anime/" + animeName);
+      res.status(404).send(err);
+    });
+});
+
+/**
+ * GET api/sparql/author/:name
+ *    :name  The name of the author (according to dbpedia; beware of the case)
+ * Gather all available information about the author named ':name'.
+ * Returns an anime as JSON,
+ * or a 404 error if there was a problem with the request.
+ */
+router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
+  let authorName = req.params["name"];
+  res.setHeader('Content-Type', 'application/json');
+  DBPedia.Author
+    .retrieve(authorName)
+    .then((author: Author) => {
+      res.status(200).send(JSON.stringify(author, null, 2));
+    })
+    .catch((err: any) => {
+      console.log("ERROR with the request from /api/sparql/author/" + authorName);
+      res.status(404).send(err);
+    });
+});
+
+/**
+ * GET api/sparql/character/:name
+ *    :name  The name of the character (according to dbpedia; beware of the case)
+ * Gather all available information about the character named ':name'.
+ * Returns an anime as JSON,
+ * or a 404 error if there was a problem with the request.
+ */
+router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
+  let characterName = req.params["name"];
+  res.setHeader('Content-Type', 'application/json');
+  DBPedia.Character
+    .retrieve(characterName)
+    .then((character: Character) => {
+      res.status(200).send(JSON.stringify(character, null, 2));
+    })
+    .catch((err: any) => {
+      console.log("ERROR with the request from /api/sparql/character/" + characterName);
       res.status(404).send(err);
     });
 });
