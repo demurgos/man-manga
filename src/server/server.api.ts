@@ -1,5 +1,4 @@
 import * as request   from 'request-promise';
-import * as _         from 'lodash';
 
 import {Router}   from 'express';
 import {Manga}    from '../lib/interfaces/manga.interface';
