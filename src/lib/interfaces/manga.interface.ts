@@ -16,7 +16,7 @@ export interface Manga {
   author: Author;
 
   /**
-   * The illustrator's name.
+   * The list of all known illustrators' names.
    */
   illustrator?: string[];
 
