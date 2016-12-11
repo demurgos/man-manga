@@ -4,7 +4,7 @@ import {Manga} from "../../../lib/interfaces/manga.interface"
 const MANGATEST: Manga = {
   title: 'Death Note',
   author: {name :'Tsugumi Oba'},
-  illustrator : 'Takeshi Obata',
+  illustrator : ['Takeshi Obata'],
   volumes : 12,
   theme: ['Thriller'],
   snippet: 'Kira kill the world with a book from hell'

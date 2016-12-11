@@ -1,6 +1,5 @@
 import Bluebird= require('bluebird');
 import watson = require('watson-developer-cloud');
-import {Result} from "../../../build/server/server/lib/alchemy";
 
 export type LanguageCode = "de" | "it" | "nl" | "ru" | "es" | "pt" | "hu" | "tr" | "fr" | "en";
 
