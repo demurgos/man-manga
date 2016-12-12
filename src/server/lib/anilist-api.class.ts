@@ -65,7 +65,10 @@ export class AnilistApi {
    * Gathers all known information about the given character,
    * or a promise rejection if there was an error with the request.
    * If no information can be found about the given character,
-   * returns
+   * returns a promise rejection.
+   * Meant to research a character with a precise name;
+   * to search a character with a fragment name,
+   * please take a look at searchCharacter().
    * @param name The character's name.
    */
   public getCharacter(name: string): Bluebird<Character> {
@@ -89,9 +92,12 @@ export class AnilistApi {
         json: true
       })
     })
-    .then((something: any) => {
+    .then((result: any) => {
+      if(!result[0]) {
+        return Bluebird.reject(new Error("Unable to find character " + name));
+      }
       return {
-        name: something[0]["name_first"] + " " + something[0]["name_last"]
+        name: result[0]["name_first"] + " " + result[0]["name_last"]
       };
     })
     .catch((err: any) => {
