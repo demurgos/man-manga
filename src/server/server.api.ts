@@ -8,6 +8,7 @@ import {Character}  from '../lib/interfaces/character.interface';
 import {MangaCover} from '../lib/interfaces/manga-cover.interface';
 import {DBPedia}    from './lib/dbpedia';
 import {McdIOSphe}  from './lib/mcd-iosphe';
+import {AnilistApi} from './lib/anilist-api.class';
 
 const router: Router = Router();
 
@@ -159,34 +160,16 @@ router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
 });
 
 /**
- * GET /api/anilist
- * This is just a test to see if we're able to use anilist API.
- * Here we should receive the access token.
+ * GET /api/character/:name
  */
-router.get("/api/anilist", (req: any, res: any, next: any) => {
-  let token: string = "";
-  res.setHeader('Content-Type', 'application/json');
-  request({
-    method: 'POST',
-    url: "https://anilist.co/api/auth/access_token",
-    form: {
-      grant_type: "client_credentials",
-      client_id: "sn0wfox-syfsx",
-      client_secret: "i9fiEWiHzOKxhp0FDy9I3pwY5RX2n"
-    }
-  })
-  .then((body) => {
-    token = JSON.parse(body)["access_token"];
-    console.log(body);
-    console.log(token);
-    return request({
-      url: "https://anilist.co/api/character/31?access_token=" + token,
-      json: true
+const anilistAPI = new AnilistApi();  // TODO: what about multiple queries at the same time with an expired token ?
+router.get("/api/character/:name", (req: any, res: any, next: any) => {
+  let characterName: string = req.params["name"];
+  anilistAPI
+    .getCharacter(characterName)
+    .then((character: Character) => {
+      res.status(200).send(character);
     });
-  })
-  .then((body) => {
-    res.status(200).send(body);
-  });
 });
 
 /**

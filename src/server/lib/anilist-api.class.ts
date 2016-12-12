@@ -31,7 +31,7 @@ export class AnilistApi {
    */
   protected authToken: {
     token: string,
-    expirationDate: number
+    expirationDate: number  // Timestamp in seconds
   };
 
   /**
@@ -49,14 +49,11 @@ export class AnilistApi {
       }
     })
     .then((body: any) => {
-      let time = Date.now();
+      let token = JSON.parse(body);
       this.authToken = {
-        token: body["access_token"],
-        expirationDate: body["expires"]
+        token: token["access_token"],
+        expirationDate: token["expires"]
       };
-      console.log(time);
-      console.log(time / 1000);
-      console.log(body["expires"]);
       return;
     })
     .catch((err: any) => {
@@ -66,22 +63,26 @@ export class AnilistApi {
 
   /**
    * Gathers all known information about the given character,
-   * or a promise rejection if tehre was an error with the request.
+   * or a promise rejection if there was an error with the request.
    * If no information can be found about the given character,
    * returns
-   * @param name
+   * @param name The character's name.
    */
   public getCharacter(name: string): Bluebird<Character> {
     return Bluebird.try(() => {
-      if(Date.now() < this.authToken.expirationDate - 1000) {
+      if(this.authToken && Date.now() < this.authToken.expirationDate - 60) {
+        // If the token has still more than one minutes before expiration,
+        // we don't need to regenerate one
         return;
       }
+      // Otherwise, we should (re)generate one
       return this.getAuthToken();
     })
     .then(() => {
+      console.log("Looking for character " + name + "...");
       return request({
         url: AnilistApi.anilistEntryPoint
-          + "/character/search"
+          + "/character/search/"
           + name
           + "?access_token="
           + this.authToken.token,
@@ -89,9 +90,8 @@ export class AnilistApi {
       })
     })
     .then((something: any) => {
-      console.log(something);
       return {
-        name: something["name_first"] + " " + something["name_last"]
+        name: something[0]["name_first"] + " " + something[0]["name_last"]
       };
     })
     .catch((err: any) => {
