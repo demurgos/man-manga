@@ -64,6 +64,7 @@ app.set('view engine', 'html');
 
 // Configure the server to parse body
 (<IRouterHandler<IRouter>> app.use)(cookieParser('ManManGa awesome app!'));
+(<IRouterHandler<IRouter>> app.use)(bodyParser.urlencoded({ extended: true }));
 (<IRouterHandler<IRouter>> app.use)(bodyParser.json());
 
 // Configure routes

@@ -45,11 +45,10 @@ export namespace DBPedia {
         .then((author: AuthorType) => {
           manga.author = author;
           return manga;
-          // TODO: retrieve coverURL
         })
         .catch((err: any) => {
           return Bluebird.reject(err);
-        })
+        });
     }
 
     /**
