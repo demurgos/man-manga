@@ -121,7 +121,7 @@ router.get("/api/sparql/anime/:name", (req: any, res: any, next: any) => {
  * GET api/sparql/author/:name
  *    :name  The name of the author (according to dbpedia; beware of the case)
  * Gather all available information about the author named ':name'.
- * Returns an anime as JSON,
+ * Returns an author as JSON,
  * or a 404 error if there was a problem with the request.
  */
 router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
@@ -142,10 +142,10 @@ router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
  * GET api/sparql/character/:name
  *    :name  The name of the character (according to dbpedia; beware of the case)
  * Gather all available information about the character named ':name'.
- * Returns an anime as JSON,
+ * Returns a character as JSON,
  * or a 404 error if there was a problem with the request.
  */
-router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
+router.get("/api/sparql/character/:name", (req: any, res: any, next: any) => {
   let characterName = req.params["name"];
   res.setHeader('Content-Type', 'application/json');
   DBPedia.Character
@@ -161,6 +161,10 @@ router.get("/api/sparql/author/:name", (req: any, res: any, next: any) => {
 
 /**
  * GET /api/character/:name
+ *    :name The character's name.
+ * Gather all available information about the character ':name',
+ * according to anilist.
+ * Meant to research a character with a precise name.
  */
 const anilistAPI = new AnilistApi();  // TODO: what about multiple queries at the same time with an expired token ?
 router.get("/api/character/:name", (req: any, res: any, next: any) => {
