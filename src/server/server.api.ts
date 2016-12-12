@@ -5,7 +5,9 @@ import {Manga}      from '../lib/interfaces/manga.interface';
 import {Anime}      from '../lib/interfaces/anime.interface';
 import {Author}     from '../lib/interfaces/author.interface';
 import {Character}  from '../lib/interfaces/character.interface';
+import {MangaCover} from '../lib/interfaces/manga-cover.interface';
 import {DBPedia}    from './lib/dbpedia';
+import {McdIOSphe}  from './lib/mcd-iosphe';
 
 const router: Router = Router();
 
@@ -175,33 +177,28 @@ router.get("/api/anilist", (req: any, res: any, next: any) => {
   });
 });
 
+/**
+ * GET /api/manga/:name/coverUrl
+ *    :name The name of the manga (according to mcd.iosphe; beware, don't use '_').
+ * Gather the manga's first volume front cover.
+ * Returns a JSON with fields:
+ *    title: the manga's name.
+ *    coverUrl : an url to the manga's first volume front cover.
+ * Or 404 if there was an error with the request.
+ */
+// TODO: maybe this endpoint is not needed,
+// since the cover url is supposed to be sent when gathering all manga's information.
 router.get("/api/manga/:name/coverUrl", (req: any, res: any, next: any) => {
   let mangaName = req.params["name"];
   res.setHeader('Content-Type', 'application/json');
-  request({
-    method: 'POST',
-    url: "http://mcd.iosphe.re/api/v1/search/",
-    json: true,
-    body: {
-      Title: mangaName
-    }
-  })
-  .then((body) => {
-    if(body["Results"].length === 0) {
-      res.status(404).send("Not found");
-    } else {
-      // body["Results"][0][0] : the requested manga's ID according to mcd.iosphe.re
-      // http://mcd.iosphe.re/n/{ID}/1/front/a/ : the requested manga's volume 1 cover (in theory)
-      // TODO: confirm that the cover url is always the same
-      res.status(200).send(JSON.stringify({
-        title: mangaName,
-        coverUrl: "http://mcd.iosphe.re/n/" + body["Results"][0][0] + "/1/front/a/"
-      }, null, 2));
-    }
-  })
-  .catch((err) => {
-    res.status(400).send(err);
-  });
+  McdIOSphe
+    .getMangaCoverUrl(mangaName)
+    .then((cover: MangaCover) => {
+      res.status(200).send(JSON.stringify(cover, null, 2));
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
 });
 
 export const apiRouter = router;
