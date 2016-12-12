@@ -70,6 +70,8 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
  * Returns a manga as JSON,
  * or a 404 error if there was a problem with the request.
  */
+//TODO: if the manga is unknown of dbpedia, but known to McdIOSphere,
+//      this will still returns a coverURL => correct this ?
 router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
   let mangaName: string = req.params["name"];
   let result: Manga;

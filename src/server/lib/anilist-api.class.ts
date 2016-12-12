@@ -25,7 +25,7 @@ export class AnilistApi {
   private static readonly clientSecret: string = "i9fiEWiHzOKxhp0FDy9I3pwY5RX2n";
 
   /**
-   * The aapp authentication token.
+   * The app authentication token.
    * Without this, no anilist's API calls can be performed.
    * Undefined until the first API call.
    */
@@ -72,6 +72,69 @@ export class AnilistApi {
    * @param name The character's name.
    */
   public getCharacter(name: string): Bluebird<Character> {
+    return this
+      .ensureAuth()
+      .then(() => {
+        return request({
+          url: AnilistApi.anilistEntryPoint
+            + "/character/search/"
+            + name
+            + "?access_token="
+            + this.authToken.token,
+          json: true
+        });
+      })
+      .then((result: any) => {
+        if(!result[0]) {
+          return Bluebird.reject(new Error("Unable to find character " + name));
+        }
+        return this.getCharacterByID(result[0]["id"]);
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
+  }
+
+  /**
+   * Gathers all known information about the given character,
+   * or a promise rejection if there was an error with the request.
+   * If no information can be found about the given character,
+   * returns a promise rejection.
+   */
+  protected getCharacterByID(id: number | string): Bluebird<Character> {
+    return this
+      .ensureAuth()
+      .then(() => {
+        return request({
+          url: AnilistApi.anilistEntryPoint
+            + "/character/"
+            + id
+            + "/page"
+            + "?access_token="
+            + this.authToken.token,
+          json: true
+        });
+      })
+      .then((character: any) => {
+        if(!character) {
+          return Bluebird.reject(new Error("Unable to find character with id " + id))
+        }
+        return {
+          name: character["name_first"] + " " + character["name_last"],
+          pictureUrl: character["image_url_lge"],
+          from: character["manga"][0]["title_romaji"]
+        };
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
+  }
+
+  /**
+   * Ensure that the authentication token won't expire soon,
+   * so requests can be safely made to the API.
+   */
+  protected ensureAuth(): Bluebird<void> {
     return Bluebird.try(() => {
       if(this.authToken && Date.now() < this.authToken.expirationDate - 60) {
         // If the token has still more than one minutes before expiration,
@@ -80,28 +143,6 @@ export class AnilistApi {
       }
       // Otherwise, we should (re)generate one
       return this.getAuthToken();
-    })
-    .then(() => {
-      console.log("Looking for character " + name + "...");
-      return request({
-        url: AnilistApi.anilistEntryPoint
-          + "/character/search/"
-          + name
-          + "?access_token="
-          + this.authToken.token,
-        json: true
-      })
-    })
-    .then((result: any) => {
-      if(!result[0]) {
-        return Bluebird.reject(new Error("Unable to find character " + name));
-      }
-      return {
-        name: result[0]["name_first"] + " " + result[0]["name_last"]
-      };
-    })
-    .catch((err: any) => {
-      return Bluebird.reject(err);
     });
   }
 }
