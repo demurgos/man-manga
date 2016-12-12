@@ -6,8 +6,6 @@ import {Manga}      from "../../lib/interfaces/manga.interface";
 import {Anime}      from "../../lib/interfaces/anime.interface";
 import {Character}  from "../../lib/interfaces/character.interface";
 import {Author}     from "../../lib/interfaces/author.interface";
-import {MangaCover} from '../../lib/interfaces/manga-cover.interface';
-import {McdIOSphe}  from './mcd-iosphe';
 
 /**
  * Redeclare types to avoid conflict with the following namespace.
@@ -46,15 +44,11 @@ export namespace DBPedia {
         })
         .then((author: AuthorType) => {
           manga.author = author;
-          return McdIOSphe.getMangaCoverUrl(name.replace('_', ' '));
-        })
-        .then((cover: MangaCover) => {
-          manga.coverUrl = cover.coverUrl;
           return manga;
         })
         .catch((err: any) => {
           return Bluebird.reject(err);
-        })
+        });
     }
 
     /**

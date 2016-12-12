@@ -70,16 +70,28 @@ router.get("/api/sparql/isManga/:resource", (req, res, next) => {
  * or a 404 error if there was a problem with the request.
  */
 router.get("/api/sparql/manga/:name", (req: any, res: any, next: any) => {
-  let mangaName = req.params["name"];
+  let mangaName: string = req.params["name"];
+  let result: Manga;
   res.setHeader('Content-Type', 'application/json');
   DBPedia.Manga
     .retrieve(mangaName)
-    .then((manga: Manga) => {
-      res.status(200).send(JSON.stringify(manga, null, 2));
-    })
     .catch((err: any) => {
       console.log("ERROR with the request from /api/sparql/manga/" + mangaName);
       res.status(404).send(err);
+    })
+    .then((manga: Manga) => {
+      result = manga;
+      return McdIOSphe.getMangaCoverUrl(mangaName.replace('_', ' '));
+    })
+    .then((cover: MangaCover) => {
+      result.coverUrl = cover.coverUrl;
+      res.status(200).send(JSON.stringify(result, null, 2));
+    })
+    .catch((err: any) => {
+      // At this point, the error is coming from McdIOSphere;
+      // but we can still return the manga without any coverUrl
+      console.log(err);
+      res.status(200).send(JSON.stringify(result, null, 2));
     });
 });
 
