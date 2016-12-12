@@ -175,6 +175,35 @@ router.get("/api/anilist", (req: any, res: any, next: any) => {
   });
 });
 
+router.get("/api/manga/:name/coverUrl", (req: any, res: any, next: any) => {
+  let mangaName = req.params["name"];
+  res.setHeader('Content-Type', 'application/json');
+  request({
+    method: 'POST',
+    url: "http://mcd.iosphe.re/api/v1/search/",
+    json: true,
+    body: {
+      Title: mangaName
+    }
+  })
+  .then((body) => {
+    if(body["Results"].length === 0) {
+      res.status(404).send("Not found");
+    } else {
+      // body["Results"][0][0] : the requested manga's ID according to mcd.iosphe.re
+      // http://mcd.iosphe.re/n/{ID}/1/front/a/ : the requested manga's volume 1 cover (in theory)
+      // TODO: confirm that the cover url is always the same
+      res.status(200).send(JSON.stringify({
+        title: mangaName,
+        coverUrl: "http://mcd.iosphe.re/n/" + body["Results"][0][0] + "/1/front/a/"
+      }, null, 2));
+    }
+  })
+  .catch((err) => {
+    res.status(400).send(err);
+  });
+});
+
 export const apiRouter = router;
 
 // wikiPageID => can be interesting!
