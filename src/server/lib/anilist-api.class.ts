@@ -119,10 +119,16 @@ export class AnilistApi {
         if(!character) {
           return Bluebird.reject(new Error("Unable to find character with id " + id))
         }
+        let from: string;
+        if(character["manga"].length !== 0) {
+          from = character["manga"][0]["title_romaji"];
+        } else {
+          from = character["anime"][0]["title_romaji"];
+        }
         return {
           name: character["name_first"] + " " + character["name_last"],
           pictureUrl: character["image_url_lge"],
-          from: character["manga"][0]["title_romaji"]
+          from: from
         };
       })
       .catch((err: any) => {
