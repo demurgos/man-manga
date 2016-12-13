@@ -85,7 +85,19 @@ gulp.task("client:build:copy:static", ["client:build:assets"], function() {
     )
     .pipe(gulp.dest(path.join(root, "build/client")));
 });
-gulp.task("client:build:copy", ["client:build:copy:assets", "client:build:copy:static"], function() {});
+
+gulp.task("client:build:copy:materialize", function() {
+    return gulp
+    .src(
+      [
+        path.join(root, "node_modules/materialize-css/bin/materialize.css")
+      ],
+      {base: path.join(root, "node_modules/materialize-css/bin")}
+    )
+    .pipe(gulp.dest(path.join(root, "build/client")));
+});
+
+gulp.task("client:build:copy", ["client:build:copy:assets", "client:build:copy:static", "client:build:copy:materialize"], function() {});
 
 // Override default copy
 gulp.task("server:build:copy", ["client:build:assets"], function() {
