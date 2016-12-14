@@ -7,9 +7,11 @@ import {Manga}              from '../../../lib/interfaces/manga.interface';
   selector: "mmg-search",
   moduleId: "search/search-bar/search-bar.component",
   templateUrl: "search-bar.component.html",
-  styleUrls: ["search-bar.component.css"]
+  styleUrls: ["search-bar.component.css"],
+  providers: [ApiService]
 })
 export class SearchBarComponent implements OnInit {
+  private apiService: ApiService;
 
   /**
    * Properly initialize component.
@@ -33,7 +35,8 @@ export class SearchBarComponent implements OnInit {
    * Instantiates the component,
    * and initializes needed services.
    */
-  constructor(private apiService: ApiService) {
-    // Nothing else to do
+  constructor(apiService: ApiService) {
+    this.apiService = apiService;
+    console.log(this.apiService);
   }
 }

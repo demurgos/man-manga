@@ -7,13 +7,9 @@ import {ResponseModule} from "./response/response.module";
 import {AppRoutingModule} from './app-routing.module';
 
 import {AppComponent} from './app.component';
-import {ApiService} from "./search/services/api.service";
 
 @NgModule({
 	declarations: [AppComponent],
-  providers: [
-    ApiService
-  ],
 	imports: [
 		HomeModule,
 		AboutModule,
