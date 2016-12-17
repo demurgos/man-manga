@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as path from 'path';
-import {ROOT, SERVER_URL} from './server.config';
+import {externalUrl, staticRoot} from './server.config';
 
 const router: any = express.Router();
 // NOTE: the type 'any' fixes a bug between WebStorm and @Types
@@ -16,7 +16,7 @@ function ngApp(req: any, res: any) {
 		preboot: false,
 		baseUrl: '/',
 		requestUrl: req.originalUrl,
-		originUrl: SERVER_URL
+		originUrl: externalUrl
 	});
 }
 
@@ -31,14 +31,13 @@ router.get('/search', ngApp);
 router.get('/search/*', ngApp);
 
 // Serve static files
-router.use(express.static(path.join(ROOT, 'build/client'), {index: false}));
+router.use(express.static(staticRoot, {index: false}));
 
 // Server a custom 404 page in case of an unknown route
 router.get('*', (req: any, res: any) => {
 	res.setHeader('Content-Type', 'application/json');
-	const pojo = {status: 404, message: 'No Content'};
-	const json = JSON.stringify(pojo, null, 2);
-	res.status(404).send(json);
+	const response = {status: 404, message: 'Resource not found'};
+	res.status(404).json(response);
 });
 
-export const globalRouter = router;
+export const mainRouter = router;

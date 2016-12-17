@@ -25,5 +25,4 @@ import {AppComponent} from './app.component';
 		AppRoutingModule
 	]
 })
-export class AppModule {
-}
+export class AppModule {}

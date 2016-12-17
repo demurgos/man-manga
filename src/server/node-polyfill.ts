@@ -5,9 +5,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import {ResourceLoader} from "@angular/compiler";
-
-const ROOT = path.join(path.resolve(__dirname, '../../..'));
-const APP_DIR = path.join(ROOT, "build/client.tmp/app");
+import {appRoot} from "./server.config";
 
 export class FileSystemResourceLoader extends ResourceLoader {
   resolve(url: string, baseUrl: string): string {
@@ -21,7 +19,7 @@ export class FileSystemResourceLoader extends ResourceLoader {
   }
 
   get(url: string): Promise<string> {
-    const templatePath = this.resolve(url, APP_DIR);
+    const templatePath = this.resolve(url, appRoot);
     return new Promise((resolve, reject) => {
       fs.readFile(templatePath, 'utf8', (err: Error, data: string): void => {
         if (err) {

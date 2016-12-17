@@ -1,25 +1,30 @@
-import * as path from 'path';
+import * as path from "path";
+import * as url from "url";
 
 /**
  * The root path of the application.
  * @type {string}
  */
-export const ROOT = path.join(path.resolve(__dirname, '../../..'));
+export const serverRoot = path.join(__dirname, '..');
+export const appRoot = path.join(serverRoot, "app");
+export const staticRoot = path.join(serverRoot, "static");
+export const projectRoot = path.join(serverRoot, '../..');
+export const clientRoot = path.join(projectRoot, 'build/client');
 
 /**
  * The host where the server is running.
  * @type {string}
  */
-export const SERVER_HOST = 'localhost';
+export const serverHost = "localhost";
 
 /**
  * The port where the server is running.
  * @type {number}
  */
-export const SERVER_PORT = 3000;
+export const serverPort = 3000;
 
 /**
- * The URL to access the server locally.
+ * The external URL to the root of the server
  * @type {string}
  */
-export const SERVER_URL = 'http://' + SERVER_HOST + ':' +SERVER_PORT;
+export const externalUrl: string = url.format({protocol: "http", host: serverHost, port: serverPort.toString(10)});
