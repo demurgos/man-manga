@@ -9,13 +9,14 @@
     "url": "https://github.com/if-h4102/man-manga.git"
   },
   "scripts": {
+    "prepare": "typings install",
     "test": "gulp test",
     "prestart": "gulp server:build",
     "start": "node build/server/server/main.js",
     "build-client": "gulp client:build"
   },
   "keywords": [],
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "dependencies": {
     "@angular/common": "2.1.0",
     "@angular/compiler": "2.1.0",
