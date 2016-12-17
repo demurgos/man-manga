@@ -1,130 +1,82 @@
-import * as Bluebird  from 'bluebird';
-import * as request   from 'request-promise';
-import * as _         from 'lodash';
+import * as _ from "lodash";
+import {Anime} from "../../lib/interfaces/anime.interface";
+import {Author} from "../../lib/interfaces/author.interface";
+import {Character} from "../../lib/interfaces/character.interface";
+import * as io from "../../lib/interfaces/io";
+import {Manga} from "../../lib/interfaces/manga.interface";
+import requestIO from "./request-io";
 
-import {Manga}      from "../../lib/interfaces/manga.interface";
-import {Anime}      from "../../lib/interfaces/anime.interface";
-import {Character}  from "../../lib/interfaces/character.interface";
-import {Author}     from "../../lib/interfaces/author.interface";
-
-/**
- * Redeclare types to avoid conflict with the following namespace.
- */
-type MangaType = Manga;
-type AnimeType = Anime;
-type CharacterType = Character;
-type AuthorType = Author;
+// Each exported function retrieves data about an item
+// For more specific work, please refer to other functions.
 
 /**
- * This namespace contains all functions needed by our app.
- * It's divided in sub-namespaces for more accuracy.
- * Each sub-namespace has a function retrieve(name: string)
- * gathering all available information.
- * For more specific work, please refer to other functions.
+ * Returns all available information about the manga 'name'.
+ * @param mangaName The manga's name.
  */
-export namespace DBPedia {
+export async function retrieveManga(mangaName: string): Promise<Manga> {
+  const infos: any = await getMangaInfos(mangaName);
+  const authorName: string = infos.author;
+  delete infos.author;
+  const manga: Manga = infos;
+  manga.author = await retrieveAuthor(authorName);
+  return manga;
+}
 
-  /**
-   * All functions related to mangas.
-   */
-  export namespace Manga {
+/**
+ * Returns basic information about the manga 'mangaName'.
+ * @param mangaName The manga's name.
+ * @param lang The lang in which the abstract is wanted. Default to english.
+ */
+// TODO: type this
+export async function getMangaInfos(mangaName: string, lang: string = "en"): Promise<any> {
+  const query: string = `SELECT DISTINCT ?title ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract
+    WHERE {
+    values ?title {dbr:${mangaName}}.
+    ?title A dbo:Manga.
+    OPTIONAL { ?title dbo:author ?author }.
+    OPTIONAL { ?title dbo:numberOfVolumes ?volumes }.
+    OPTIONAL { ?title dbo:firstPublicationDate ?publicationDate }.
+    OPTIONAL { ?title dbo:illustrator ?illustrator }.
+    OPTIONAL { ?title dbo:publisher ?publisher }.
+    OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'${lang}')) }. 
+    }`;
 
-    /**
-     * Returns all available information about the manga 'name'.
-     * @param name The manga's name.
-     */
-    export function retrieve(name: string): Bluebird<Manga> {
-      let manga: MangaType;
-      return getInfos(name)
-        .then((infos: any) => {
-          let authorName = infos.author;
-          delete infos.author;
-          manga = infos;
-          return Author.retrieve(authorName);
-        })
-        .then((author: AuthorType) => {
-          manga.author = author;
-          return manga;
-        })
-        .catch((err: any) => {
-          return Bluebird.reject(err);
-        });
+  const response: io.Response = await requestIO.get({
+    uri: "https://dbpedia.org/sparql",
+    queryString: {
+      query: query,
+      format: "application/json"
     }
+  });
 
-    /**
-     * Returns basic information about the manga 'mangaName'.
-     * @param mangaName The manga's name.
-     * @param lang The lang in which the abstract is wanted. Default to english.
-     */
-    // TODO: type this
-    export function getInfos(mangaName: string, lang: string = 'en'): Bluebird<any> {
-      let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
-        + "where {"
-        + "values ?title {dbr:" + mangaName + "}. "
-        + "?title a dbo:Manga. "
-        + "OPTIONAL { ?title dbo:author ?author }. "
-        + "OPTIONAL { ?title dbo:numberOfVolumes ?volumes }. "
-        + "OPTIONAL { ?title dbo:firstPublicationDate ?publicationDate }. "
-        + "OPTIONAL { ?title dbo:illustrator ?illustrator }. "
-        + "OPTIONAL { ?title dbo:publisher ?publisher }. "
-        + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
-        + "}";
-      return request({
-        url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
-        json: true
-      })
-      .then((body: any) => {
-        return sparqlToManga(crossArray(body["results"]["bindings"]));
-      })
-      .catch((err: any) => {
-        return Bluebird.reject(err);
-      });
-    }
-  }
+  const data: any = JSON.parse(response.body);
 
-  /**
-   * All functions related to animes.
-   */
-  export namespace Anime {
+  return sparqlToManga(crossArray(data.results.bindings));
+}
 
-    /**
-     * Returns all available information about the anime 'name'.
-     * @param name The anime's name.
-     */
-    export function retrieve(name: string): Bluebird<Anime> {
-      return Bluebird.reject(new Error("This function is not implemented yet"));
-    }
-  }
+/**
+ * Returns all available information about the anime 'name'.
+ * @param animeName The anime's name.
+ */
+export async function retrieveAnime(animeName: string): Promise<Anime> {
+  throw new Error("This function is not implemented yet");
+}
 
-  /**
-   * All functions related to animes' or mangas' characters.
-   */
-  export namespace Character {
+/**
+ * Returns all available information about the character 'name'.
+ * @param name The character's name.
+ */
+export async function retrieveCharacter(name: string): Promise<Character> {
+  throw new Error("This function is not implemented yet");
+}
 
-    /**
-     * Returns all available information about the character 'name'.
-     * @param name The character's name.
-     */
-    export function retrieve(name: string): Bluebird<Character> {
-      return Bluebird.reject(new Error("This function is not implemented yet"));
-    }
-  }
-
-  /**
-   * All functions related to
-   */
-  export namespace Author {
-
-    /**
-     * Returns all available information about the author 'name'.
-     * @param name The author's name.
-     */
-    // TODO: for the moment, only wraps the given name in an object.
-    export function retrieve(name: string): Bluebird<Author> {
-      return Bluebird.resolve({name: name});
-    }
-  }
-
+/**
+ * Returns all available information about the author 'name'.
+ * @param name The author's name.
+ */
+// TODO: for the moment, only wraps the given name in an object.
+export async function retrieveAuthor(name: string): Promise<Author> {
+  return {name: name};
 }
 
 /**
@@ -136,19 +88,24 @@ export namespace DBPedia {
  */
 function sparqlToManga(sparqlResult: any): Manga {
   sparqlResult = sparqlResult.length !== undefined ? sparqlResult[0] : sparqlResult;
-  // TODO: find a way to type the following variable as Manga without throwing a typescript error
-  let manga: any = {};
-  for(let key in sparqlResult) {
-    if (!sparqlResult.hasOwnProperty(key)) continue;
-    if(sparqlResult[key].length === 1) {
-      manga[key] = (<any>sparqlResult[key][0]);
-    } else if(key === "publicationDate") {
+  // TODO: collect properties first and then build manga
+  // Previous comment: find a way to type the following variable as Manga without throwing a typescript error
+  const manga: Manga = <any> {};
+  for (const key in sparqlResult) {
+    if (!sparqlResult.hasOwnProperty(key)) {
+      continue;
+    }
+
+    // TODO: document the expected keys
+    if (sparqlResult[key].length === 1) {
+      manga[key] = (<any> sparqlResult[key][0]);
+    } else if (key === "publicationDate") {
       manga[key] = _.min(sparqlResult[key]);
-    } else if(key === "author") {
+    } else if (key === "author") {
       manga[key] = sparqlResult[key][0];
-    } else if(key === "snippet") {
+    } else if (key === "snippet") {
       manga[key] = sparqlResult[key][0];
-    } else if(key === "volumes") {
+    } else if (key === "volumes") {
       manga[key] = _.max(sparqlResult[key]);
     } else {
       manga[key] = sparqlResult[key];
@@ -163,19 +120,27 @@ function sparqlToManga(sparqlResult: any): Manga {
  * @param sparqlResult The raw result sent by dbpedia.
  */
 function crossArray(sparqlResult: any[]): any {
-  let res: any = {};
+  const result: any = {};
   let first: boolean = true;
-  for(let object of sparqlResult) {
-    for(let key in object) {
-      if (!object.hasOwnProperty(key)) continue;
-      if(first) {
-        res[key] = [object[key]["value"]];
+  for (const object of sparqlResult) {
+    for (const key in object) {
+      if (!object.hasOwnProperty(key)) {
+        continue;
+      }
+
+      // TODO: simplify
+      if (first) {
+        result[key] = [object[key].value];
       } else {
-        if(res[key].indexOf(object[key]["value"]) !== -1) continue;
-        res[key].push(object[key]["value"]);
+        if (result[key].indexOf(object[key].value) !== -1) {
+          continue;
+        }
+        result[key].push(object[key].value);
       }
     }
+
     first = false;
   }
-  return res;
+
+  return result;
 }

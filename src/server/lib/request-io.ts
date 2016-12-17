@@ -10,8 +10,7 @@ import * as io from "../../lib/interfaces/io";
  * @returns {request.Options} Corresponding `request` options
  */
 function asRequestOptions (ioOptions: io.GetOptions | io.PostOptions | io.PutOptions): request.Options {
-  const result = {} as request.Options;
-  Object.assign(result, ioOptions);
+  const result: request.Options = Object.assign({}, ioOptions);
   if (ioOptions.queryString) {
     result.qs = ioOptions.queryString;
   }

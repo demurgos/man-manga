@@ -1,9 +1,10 @@
-import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {UniversalModule, isBrowser, isNode} from 'angular2-universal/browser'; // for AoT we need to manually split universal packages
+import {NgModule} from "@angular/core";
+import {FormsModule} from "@angular/forms";
+// for AoT we need to manually split universal packages
+import {isBrowser, isNode, UniversalModule} from "angular2-universal/browser";
 
-import {AppComponent} from '../app/app.component';
-import {AppRoutingModule} from '../app/app-routing.module';
+import {AppRoutingModule} from "../app/app-routing.module";
+import {AppComponent} from "../app/app.component";
 import {AppModule} from "../app/app.module";
 
 @NgModule({
@@ -12,16 +13,16 @@ import {AppModule} from "../app/app.module";
     UniversalModule, // BrowserModule, HttpModule, and JsonpModule are included
     FormsModule,
 
-	  AppModule,
+    AppModule,
     AppRoutingModule
   ],
   providers: [
-    {provide: 'isBrowser', useValue: isBrowser},
-    {provide: 'isNode', useValue: isNode}
+    {provide: "isBrowser", useValue: isBrowser},
+    {provide: "isNode", useValue: isNode}
   ]
 })
 export class AppClientModule {
   constructor() {
-    console.log("Generating AppClientModule")
+    console.log("Generating AppClientModule");
   }
 }

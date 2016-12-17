@@ -1,16 +1,12 @@
-import * as Bluebird  from 'bluebird';
+import {Injectable} from "@angular/core";
+import {Http} from "@angular/http";
+import * as Bluebird  from "bluebird";
+import {Manga} from "../../../lib/interfaces/manga.interface";
 
-import {Http}       from '@angular/http';
-import {Injectable} from '@angular/core';
-
-// TODO: Use injectable config
-// import {SERVER_URL} from '../../../server/server.config';
-const SERVER_URL = "http://localhost:3000";
-import {Manga}      from '../../../lib/interfaces/manga.interface';
+const serverUrl: string = "http://localhost:3000";
 
 @Injectable()
-export class ApiService /*extends Http*/ {
-
+export class ApiService { // TODO: use Http service and inject app config
   /**
    * GET /api/sparql/manga/:name
    * Returns the wanted manga,
@@ -21,7 +17,7 @@ export class ApiService /*extends Http*/ {
   public getManga(name: string): Bluebird<void> {
     return Bluebird
       .try(() => {
-        //return this.get(SERVER_URL + "/api/sparql/manga/" + name);
+        // return this.get(SERVER_URL + "/api/sparql/manga/" + name);
       })
       .then((response: any) => {
         console.log(response);

@@ -1,7 +1,6 @@
-import {Manga} from './manga.interface'
+import {Manga} from "./manga.interface";
 
 export interface Anime {
-
   /**
    * The title of the anime.
    * Expected to be found for each anime.

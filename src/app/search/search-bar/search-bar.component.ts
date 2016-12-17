@@ -1,7 +1,6 @@
-import {Component, OnInit}  from '@angular/core';
-
-import {ApiService}         from '../services/api.service';
-import {Manga}              from '../../../lib/interfaces/manga.interface';
+import {Component, OnInit} from "@angular/core";
+import {Manga} from "../../../lib/interfaces/manga.interface";
+import {ApiService} from "../services/api.service";
 
 @Component({
   selector: "mmg-search",

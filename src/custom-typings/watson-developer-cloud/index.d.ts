@@ -1,5 +1,7 @@
+/* tslint:disable:no-namespace no-mergeable-namespace */
+
 declare module "watson-developer-cloud" {
-  declare namespace watson {
+  namespace watson {
     export interface AlchemyLanguageOptions {
       api_key: string;
     }
@@ -17,7 +19,7 @@ declare module "watson-developer-cloud" {
 
     export class AlchemyLanguage {
       text(params: TextOptions, callback?: (err: Error) => any);
-      text(params: TextOptions, callback?: (err: Error | null, res: string) => any);
+      text(params: TextOptions, callback?: (err: Error | null, res: string) => any);
     }
 
     export function alchemy_language(options: AlchemyLanguageOptions): AlchemyLanguage;

@@ -1,18 +1,17 @@
 // the polyfills must be the first thing imported
-import 'angular2-universal-polyfills';
+import "angular2-universal-polyfills";
 
 // Angular 2
-import {enableProdMode} from '@angular/core';
-import {platformUniversalDynamic} from 'angular2-universal';
+import {enableProdMode, PlatformRef} from "@angular/core";
+import {platformUniversalDynamic} from "angular2-universal";
+import {AppClientModule} from "./app.client.module";
 
 // enable prod for faster renders
 enableProdMode();
 
-import {AppClientModule} from './app.client.module';
-
-const platformRef = platformUniversalDynamic();
+const platformRef: PlatformRef = platformUniversalDynamic();
 
 // on document ready bootstrap Angular 2
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   platformRef.bootstrapModule(AppClientModule);
 });

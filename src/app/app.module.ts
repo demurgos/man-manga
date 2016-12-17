@@ -1,28 +1,29 @@
-import {NgModule} from '@angular/core';
+import {NgModule} from "@angular/core";
 
-import {HomeModule} from './home/home.module';
-import {AboutModule} from './about/about.module';
-import {SearchModule} from './search/search.module';
+import {AboutModule} from "./about/about.module";
+import {AppRoutingModule} from "./app-routing.module";
+import {HomeModule} from "./home/home.module";
 import {ResponseModule} from "./response/response.module";
-import {AppRoutingModule} from './app-routing.module';
+import {SearchModule} from "./search/search.module";
 
-import {AppComponent} from './app.component';
+import {AppComponent} from "./app.component";
 
 @NgModule({
-	declarations: [AppComponent],
-	imports: [
-		HomeModule,
-		AboutModule,
+  declarations: [AppComponent],
+  imports: [
+    HomeModule,
+    AboutModule,
     SearchModule,
     ResponseModule,
-		AppRoutingModule
-	],
-	exports: [
-		HomeModule,
-		AboutModule,
-		SearchModule,
+    AppRoutingModule
+  ],
+  exports: [
+    HomeModule,
+    AboutModule,
+    SearchModule,
     ResponseModule,
-		AppRoutingModule
-	]
+    AppRoutingModule
+  ]
 })
-export class AppModule {}
+export class AppModule {
+}

@@ -7,10 +7,11 @@ import {Component, OnInit} from "@angular/core";
   styleUrls: ["author-response.component.css"]
 })
 export class AuthorComponent implements OnInit {
+  name: string;
+  lastname: string;
+  works: string[];
+
   ngOnInit(): void {
     console.log("Author !");
   }
-  name: string;
-  lastname: string;
-  works:string[];
 }

@@ -1,8 +1,7 @@
-import {NgModule} from '@angular/core';
-
-import {SearchBarComponent}   from './search-bar/search-bar.component';
-import {SearchRoutingModule}  from './search-routing.module';
-import {ApiService}           from './services/api.service';
+import {NgModule} from "@angular/core";
+import {SearchBarComponent} from "./search-bar/search-bar.component";
+import {SearchRoutingModule} from "./search-routing.module";
+import {ApiService} from "./services/api.service";
 
 @NgModule({
   imports: [
@@ -18,4 +17,5 @@ import {ApiService}           from './services/api.service';
     SearchBarComponent
   ]
 })
-export class SearchModule {}
+export class SearchModule {
+}

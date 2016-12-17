@@ -1,8 +1,8 @@
 import {Component, OnInit} from "@angular/core";
-import {Anime} from "../../../lib/interfaces/anime.interface"
+import {Anime} from "../../../lib/interfaces/anime.interface";
 
 const ANIMETEST: Anime = {
-  title:'One piece'
+  title: "One piece"
 };
 
 @Component({
@@ -13,7 +13,8 @@ const ANIMETEST: Anime = {
 })
 export class AnimeComponent implements OnInit {
   anime: Anime = ANIMETEST;
-  test = 10;
+  test: number = 10;
+
   ngOnInit(): void {
     console.log("Anime !");
   }

@@ -1,8 +1,8 @@
-declare module "google" {
-  declare namespace google {
-    export interface Options {
+/* tslint:disable:no-namespace no-mergeable-namespace */
 
-    }
+declare module "google" {
+  namespace google {
+    export interface Options {}
 
     export interface Item {
       title: string;
@@ -49,13 +49,13 @@ declare module "google" {
     }
   }
 
-  declare interface Google {
+  interface Google {
     (query: string, callback?: () => any);
     (query: string, callback?: (err: Error) => any);
-    (query: string, callback?: (err: Error | null, res: google.Result) => any);
+    (query: string, callback?: (err: Error | null, res: google.Result) => any);
   }
 
-  declare const google: Google;
+  const google: Google;
 
   export = google;
 }

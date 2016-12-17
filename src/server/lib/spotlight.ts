@@ -1,8 +1,8 @@
-import * as url from "url";
+import * as cheerio from "cheerio";
 import {posix as path} from "path";
+import * as url from "url";
 import * as io from "../../lib/interfaces/io";
 import requestIO from "./request-io";
-import * as cheerio from "cheerio";
 
 const API_PROTOCOL: string = "http";
 const API_HOST: string = "dbpedia-spotlight.com";
@@ -15,7 +15,7 @@ const API_HOST: string = "dbpedia-spotlight.com";
  */
 export async function query(text: string, language: string): Promise<string[]> {
   const apiPath: string = path.join("/", language, "annotate");
-  const apiUri = url.format({protocol: API_PROTOCOL, host: API_HOST, pathname: apiPath});
+  const apiUri: string = url.format({protocol: API_PROTOCOL, host: API_HOST, pathname: apiPath});
 
   const ioOptions: io.GetOptions = {
     uri: apiUri,
@@ -27,7 +27,7 @@ export async function query(text: string, language: string): Promise<string[]> {
       disambiguator: "Default", // ???
       policy: "whiteliste", // ???
       types: "", // DBpedia type.
-      sparql: "", // Potential sparql request to eliminate some returns URI
+      sparql: "" // Potential sparql request to eliminate some returns URI
     }
   };
 
@@ -39,7 +39,7 @@ export async function query(text: string, language: string): Promise<string[]> {
 function scrapResult(html: string): string[] {
   const links: string[] = [];
 
-  const $ = cheerio.load(html);
+  const $: CheerioSelector = cheerio.load(html);
 
   $("a").each((index: number, element: CheerioElement) => {
     const href: string = $(element).attr("href");

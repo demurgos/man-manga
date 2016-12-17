@@ -1,7 +1,7 @@
-import Bluebird= require('bluebird');
-import watson = require('watson-developer-cloud');
+import Bluebird = require("bluebird");
+import watson = require("watson-developer-cloud");
 
-export type LanguageCode = "de" | "it" | "nl" | "ru" | "es" | "pt" | "hu" | "tr" | "fr" | "en";
+export type LanguageCode = "de" | "it" | "nl" | "ru" | "es" | "pt" | "hu" | "tr" | "fr" | "en";
 
 export interface Result {
   url: string;
@@ -9,51 +9,45 @@ export interface Result {
   text: string;
 }
 
-const LANGUAGE_TO_CODE: {[lang: string]: LanguageCode} = {
-  "french": "fr",
-  "english": "en",
-  "german":"de",
-  "dutch":"nl",
-  "italian":"it",
-  "russian":"ru",
-  "spanish":"es",
-  "portuguese":"pt",
-  "turkish":"tr",
-  "hungarian":"hu"
+const languageNameToLanguageCode: {[lang: string]: LanguageCode} = {
+  french: "fr",
+  english: "en",
+  german: "de",
+  dutch: "nl",
+  italian: "it",
+  russian: "ru",
+  spanish: "es",
+  portuguese: "pt",
+  turkish: "tr",
+  hungarian: "hu"
 };
 
-export function getTextFromURL(url: string): Bluebird<Result> {
-  const alchemy_language = watson.alchemy_language({
-    api_key: 'd1318ceb349318b5ab6b35ced1640cd8a76aa56e' // nicolas'key available for up to 1000 request a day
+function getLanguageCode(languageName: string): LanguageCode {
+  return languageName in languageNameToLanguageCode ? languageNameToLanguageCode[languageName] : "en";
+}
+
+export async function getTextFromURL(url: string): Promise<Result> {
+  const alchemyLanguage: watson.AlchemyLanguage = watson.alchemy_language({
+    // Nicolas'key available for up to 1000 request a day
+    api_key: "d1318ceb349318b5ab6b35ced1640cd8a76aa56e"
   });
 
   const parameters: watson.TextOptions = {
     url: url
   };
 
-  return Bluebird
+  const result: any = await Bluebird
     .fromCallback<watson.TextResult>((cb) => {
-      alchemy_language.text(parameters, cb);
-    })
-    .then(result => {
-      if(result.status === "ERROR") {
-        throw new Error("Error status");
-      }
-      let lang:LanguageCode;
-      if (result.language in LANGUAGE_TO_CODE) {
-        lang = LANGUAGE_TO_CODE[result.language];
-      } else {
-        lang = "en";
-      }
-
-      let ret:Result = {
-        url: result.url,
-        text: result.text,
-        language: lang
-      };
-
-      return ret;
+      alchemyLanguage.text(parameters, cb);
     });
 
-}
+  if (result.status === "ERROR") {
+    throw new Error("`ERROR` status");
+  }
 
+  return {
+    url: result.url,
+    text: result.text,
+    language: getLanguageCode(result.language)
+  };
+}

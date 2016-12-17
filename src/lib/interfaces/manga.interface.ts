@@ -1,8 +1,7 @@
-import {Author} from './author.interface';
-import {Character} from './character.interface';
+import {Author} from "./author.interface";
+import {Character} from "./character.interface";
 
 export interface Manga {
-
   /**
    * The title of the manga.
    * Expected to be found for each manga.
@@ -48,7 +47,7 @@ export interface Manga {
   /**
    * The first publication date.
    */
-  publicationDate?: string; // TODO: datify
+  publicationDate?: string; // TODO: use Date object
 
   /**
    * The manga's list of known publishers.

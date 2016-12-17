@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component} from "@angular/core";
 
 @Component({
-  selector: 'home',
+  selector: "home",
   moduleId: "home/home.component",
-  template: 'Accueil, News, toussa'
+  template: "Accueil, News, toussa"
 })
 export class HomeComponent {}

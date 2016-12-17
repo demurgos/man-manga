@@ -8,7 +8,7 @@ export interface Item {
 }
 
 export async function query(query: string): Promise<Item[]> {
-  const googleResult: google.Result = await Bluebird.fromCallback(cb => google(query, cb));
+  const googleResult: google.Result = await Bluebird.fromCallback((cb) => google(query, cb));
 
   const items: Item[] = [];
 

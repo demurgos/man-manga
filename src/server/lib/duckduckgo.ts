@@ -30,7 +30,7 @@ export interface RelatedTopic {
      * Width: width of icon (px)
      */
     Width: string;
-  }
+  };
 
   /**
    *   Text: text from first URL
@@ -67,7 +67,7 @@ export interface Result {
      * Width: width of icon (px)
      */
     Width: string;
-  }
+  };
 
   /**
    *   Text: text from first URL
@@ -150,7 +150,7 @@ export interface QueryResult {
   Infobox?: {
     content: any[];
     meta: any[];
-  }
+  };
 
   /**
    * Redirect: !bang redirect URL
@@ -176,9 +176,9 @@ export interface QueryResult {
   meta: any;
 }
 
-const API_PROTOCOL: string = "http";
-const API_HOST: string = "api.duckduckgo.com";
-const API_URI = url.format({protocol: API_PROTOCOL, host: API_HOST});
+const apiProtocol: string = "http";
+const apiHost: string = "api.duckduckgo.com";
+const apiUri: string = url.format({protocol: apiProtocol, host: apiHost});
 const DEFAULT_OPTIONS: DuckDuckGoOptions = {
   noHtml: true
 };
@@ -195,7 +195,7 @@ export async function query(query: string, options: DuckDuckGoOptions | null): P
   options = normalizeOptions(options);
 
   const ioOptions: io.GetOptions = {
-    uri: API_URI,
+    uri: apiUri,
     queryString: {
       q: query,
       no_html: options.noHtml ? 1 : 0,
@@ -209,7 +209,8 @@ export async function query(query: string, options: DuckDuckGoOptions | null): P
   return JSON.parse(response.body) as QueryResult;
 }
 
-const runExample = false;
+// TODO: move this code away
+const runExample: boolean = false;
 
 if (runExample) {
   query("Goku", null)
