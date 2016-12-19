@@ -25,6 +25,16 @@ type AuthorType = Author;
 export namespace DBPedia {
 
   /**
+   * The base URL to access dbpedia.
+   */
+  export const BASE_URL: string = "http://dbpedia.org";
+
+  /**
+   * The base URL to access any dbpedia resource.
+   */
+  export const BASE_RESOURCE_URL: string = BASE_URL + "/resource";
+
+  /**
    * All functions related to mangas.
    */
   export namespace Manga {
@@ -60,7 +70,7 @@ export namespace DBPedia {
     export function getInfos(mangaName: string, lang: string = 'en'): Bluebird<any> {
       let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
         + "where {"
-        + "values ?title {dbr:" + mangaName + "}. "
+        + "values ?title {<" + Utils.stringToResourceUrl(mangaName) + ">}. "
         + "?title a dbo:Manga. "
         + "OPTIONAL { ?title dbo:author ?author }. "
         + "OPTIONAL { ?title dbo:numberOfVolumes ?volumes }. "
@@ -125,6 +135,45 @@ export namespace DBPedia {
     }
   }
 
+  /**
+   * All functions needed to performs treatments
+   * on resources, results... and so on.
+   */
+  export namespace Utils {
+
+    /**
+     * Transforms a given string into a string following DBPedia
+     * resources naming conventions.
+     * BEWARE: Some resource can be a name which doesn't follow these
+     * conventions. See Planetarian:_The_Reverie_of_a_Little_Planet.
+     * @param name The string to transform into a DBPedia resource string.
+     */
+    export function stringToResourceName(name: string): string {
+      return name
+        .toLowerCase()
+        .replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string) => {
+          return letter.toUpperCase();
+        })
+        .replace(/^\s+/g, '')
+        .replace(/\s+/g, '_');
+    }
+
+    /**
+     * Transforms a given string into an URL string following DBPedia
+     * resources naming conventions.
+     * If the string is already an URL, this function returns
+     * the given string without any modification.
+     * BEWARE: Some resource can be a name which doesn't follow these
+     * conventions. See Planetarian:_The_Reverie_of_a_Little_Planet.
+     * @param name The string to transform into a DBPedia resource string.
+     */
+    export function stringToResourceUrl(name: string): string {
+      let regex = new RegExp("^http://(.*)");
+      return name.match(regex) == null ?
+      BASE_RESOURCE_URL + "/" + stringToResourceName(name) :
+        name;
+    }
+  }
 }
 
 /**
