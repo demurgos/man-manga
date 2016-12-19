@@ -2,6 +2,7 @@ import * as Bluebird  from 'bluebird';
 
 import {Http}       from '@angular/http';
 import {Injectable} from '@angular/core';
+import 'rxjs/add/operator/toPromise';
 
 // TODO: Use injectable config
 // import {SERVER_URL} from '../../../server/server.config';
@@ -18,13 +19,22 @@ export class ApiService /*extends Http*/ {
    * (or if no manga could be found).
    * @param name The manga's name.
    */
-  public getManga(name: string): Bluebird<void> {
+  public getManga(name: string): Bluebird<Manga> {
     return Bluebird
       .try(() => {
-        //return this.get(SERVER_URL + "/api/sparql/manga/" + name);
+        return this.http
+          .get(SERVER_URL + "/api/sparql/manga/" + name)
+          .toPromise();
       })
       .then((response: any) => {
-        console.log(response);
+        return response.json();
       });
+  }
+
+  /**
+   * Instantiates the service and inject sub-services.
+   */
+  public constructor(private http: Http) {
+    // Nothing else to do
   }
 }
