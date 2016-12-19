@@ -10,7 +10,6 @@ import {Manga}              from '../../../lib/interfaces/manga.interface';
   styleUrls: ["search-bar.component.css"]
 })
 export class SearchBarComponent implements OnInit {
-  private apiService: ApiService;
 
   /**
    * Properly initialize component.
@@ -20,13 +19,17 @@ export class SearchBarComponent implements OnInit {
     this.search();
   }
 
+  /**
+   * An experimental search.
+   */
   protected search(): void {
     // TODO: gather input text
     let query: string = "Doraemon";
     this.apiService
       .getManga(query)
-      .then((/*manga: Manga*/) => {
-        // Do something with the manga
+      .then((manga: Manga) => {
+        console.log("MANGA RECEIVED:");
+        console.log(manga);
       });
   }
 
@@ -34,8 +37,6 @@ export class SearchBarComponent implements OnInit {
    * Instantiates the component,
    * and initializes needed services.
    */
-  constructor(apiService: ApiService) {
-    this.apiService = apiService;
-    console.log(this.apiService);
+  constructor(private apiService: ApiService) {
   }
 }
