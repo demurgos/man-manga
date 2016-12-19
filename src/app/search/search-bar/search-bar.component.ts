@@ -7,8 +7,7 @@ import {Manga}              from '../../../lib/interfaces/manga.interface';
   selector: "mmg-search",
   moduleId: "search/search-bar/search-bar.component",
   templateUrl: "search-bar.component.html",
-  styleUrls: ["search-bar.component.css"],
-  providers: [ApiService]
+  styleUrls: ["search-bar.component.css"]
 })
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
