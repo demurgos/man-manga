@@ -3,7 +3,6 @@ import Bluebird = require("bluebird");
 import Scraper = require("google-scraper");
 
 export function query(query: string): Bluebird<Scraper.Links> {
-  console.log("QUERYING......");
   let scrape = new Scraper.GoogleScraper({
     keyword: query,
     language: "en",
