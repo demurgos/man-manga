@@ -68,6 +68,7 @@ export namespace DBPedia {
      */
     // TODO: type this
     export function getInfos(mangaName: string, lang: string = 'en'): Bluebird<any> {
+      console.log(Utils.stringToResourceUrl(mangaName));
       let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
         + "where {"
         + "values ?title {<" + Utils.stringToResourceUrl(mangaName) + ">}. "
@@ -81,7 +82,8 @@ export namespace DBPedia {
         + "}";
       return request({
         url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
-        json: true
+        json: true,
+        encoding: null
       })
       .then((body: any) => {
         return sparqlToManga(crossArray(body["results"]["bindings"]));
@@ -146,9 +148,16 @@ export namespace DBPedia {
      * resources naming conventions.
      * BEWARE: Some resource can be a name which doesn't follow these
      * conventions. See Planetarian:_The_Reverie_of_a_Little_Planet.
+     * To take account of such resources, string given with an underscore
+     * and no space will already be considered as valid resources.
      * @param name The string to transform into a DBPedia resource string.
      */
     export function stringToResourceName(name: string): string {
+      if(name.match(/_/g)) {
+        return name
+          .replace(/^\s+/g, '')
+          .replace(/\s+/g, '_');
+      }
       return name
         .toLowerCase()
         .replace(/(?:^\w|[A-Z]|\b\w)/g, (letter: string) => {
@@ -163,15 +172,16 @@ export namespace DBPedia {
      * resources naming conventions.
      * If the string is already an URL, this function returns
      * the given string without any modification.
-     * BEWARE: Some resource can be a name which doesn't follow these
+     * BEWARE: Some resources can have a name which doesn't follow these
      * conventions. See Planetarian:_The_Reverie_of_a_Little_Planet.
+     * To take account of such resources, string given with an underscore
+     * and no space will already be considered as valid resources.
      * @param name The string to transform into a DBPedia resource string.
      */
     export function stringToResourceUrl(name: string): string {
-      let regex = new RegExp("^http://(.*)");
-      return name.match(regex) == null ?
-      BASE_RESOURCE_URL + "/" + stringToResourceName(name) :
-        name;
+      return name.match(new RegExp("^http://(.*)")) == null ?
+      encodeURI(BASE_RESOURCE_URL + "/" + stringToResourceName(name)) :
+      encodeURI(name);
     }
   }
 }
