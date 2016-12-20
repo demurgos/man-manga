@@ -163,7 +163,7 @@ export class AnilistApi {
   protected search(toSearch: string, keywords: string): Bluebird<any> {
     toSearch = toSearch.toLowerCase();
     const allowedToSearch = ["anime", "character", "manga", "staff", "studio"];
-    if(!(toSearch in allowedToSearch)) {
+    if(allowedToSearch.indexOf(toSearch) === -1) {
       return Bluebird.reject(new Error(
         toSearch + " is not a known searchable object. Must be one of " + allowedToSearch + "."
       ));
@@ -173,14 +173,15 @@ export class AnilistApi {
       .then(() => {
         return request({
           url: encodeURI(AnilistApi.anilistEntryPoint
-          + toSearch
-          + "/search/"
-          + keywords),
+            + "/" + toSearch
+            + "/search/"
+            + keywords
+            + "?access_token="
+            + this.authToken.token),
           json: true
         });
       })
       .then((res: any) => {
-        console.log(res);
         return res;
       })
       .catch((err: any) => {
