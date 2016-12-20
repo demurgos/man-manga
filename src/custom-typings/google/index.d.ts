@@ -1,5 +1,5 @@
 declare module "google" {
-  declare namespace google {
+  namespace google {
     export interface Options {
 
     }
@@ -49,13 +49,13 @@ declare module "google" {
     }
   }
 
-  declare interface Google {
+  export interface Google {
     (query: string, callback?: () => any);
     (query: string, callback?: (err: Error) => any);
     (query: string, callback?: (err: Error | null, res: google.Result) => any);
   }
 
-  declare const google: Google;
+  export const google: Google;
 
   export = google;
 }
