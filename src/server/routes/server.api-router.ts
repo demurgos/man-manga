@@ -6,6 +6,8 @@ import {
 import {anilistApiRouter} from './server.api.anilist';
 import {apiRouter}  from './server.api.manmanga';
 
+import * as Google from '../lib/googlesearch';
+
 const router: Router = Router();
 
 /**
@@ -16,6 +18,22 @@ const router: Router = Router();
 router.get("/api/test", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   res.status(200).send(JSON.stringify({"api-call": "You got it!"}, null, 2));
+});
+
+/**
+ * A test pipeline
+ */
+router.get("/api/pipeline/:query", (req: any, res: any) => {
+  let query: string = req.params["query"];
+  Google
+    .query(query)
+    .then((result: any) => {
+      console.log(result);
+      res.status(200).send(JSON.stringify(result, null, 2));
+    })
+    .catch((err: any) => {
+      res.status(500).send(err);
+    });
 });
 
 /**
