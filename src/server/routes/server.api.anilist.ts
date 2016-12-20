@@ -1,6 +1,7 @@
 import {Router}     from 'express';
 import {AnilistApi} from '../lib/anilist-api.class';
 import {Character}  from '../../lib/interfaces/character.interface';
+import {Anilist}    from "../lib/anilist-api.interfaces";
 
 const router: Router = Router();
 
@@ -36,7 +37,7 @@ router.get("/search/manga/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchManga(req.params["keywords"])
-    .then((result: any) => {
+    .then((result: Anilist.Manga) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {
@@ -54,7 +55,7 @@ router.get("/search/anime/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchAnime(req.params["keywords"])
-    .then((result: any) => {
+    .then((result: Anilist.Anime) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {
@@ -73,7 +74,7 @@ router.get("/search/character/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchCharacter(req.params["keywords"])
-    .then((result: any) => {
+    .then((result: Anilist.Character) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {
@@ -92,7 +93,7 @@ router.get("/search/staff/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchStaff(req.params["keywords"])
-    .then((result: any) => {
+    .then((result: Anilist.Staff) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {
@@ -111,7 +112,7 @@ router.get("/search/studio/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchStudio(req.params["keywords"])
-    .then((result: any) => {
+    .then((result: Anilist.Studio) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {

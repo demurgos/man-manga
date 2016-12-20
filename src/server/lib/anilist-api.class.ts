@@ -1,6 +1,8 @@
 import * as Bluebird  from 'bluebird';
 import * as request   from 'request-promise';
-import {Character} from "../../lib/interfaces/character.interface";
+
+import {Character}    from "../../lib/interfaces/character.interface";
+import {Anilist}      from "./anilist-api.interfaces";
 
 export class AnilistApi {
 
@@ -114,7 +116,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchManga(keywords: string): Bluebird<any> {
+  public searchManga(keywords: string): Bluebird<Anilist.Manga> {
     return this.search("manga", keywords);
   }
 
@@ -123,7 +125,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchAnime(keywords: string): Bluebird<any> {
+  public searchAnime(keywords: string): Bluebird<Anilist.Anime> {
     return this.search("anime", keywords);
   }
 
@@ -132,7 +134,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchCharacter(keywords: string): Bluebird<any> {
+  public searchCharacter(keywords: string): Bluebird<Anilist.Character> {
     return this.search("character", keywords);
   }
 
@@ -141,7 +143,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchStaff(keywords: string): Bluebird<any> {
+  public searchStaff(keywords: string): Bluebird<Anilist.Staff> {
     return this.search("staff", keywords);
   }
 
@@ -150,7 +152,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchStudio(keywords: string): Bluebird<any> {
+  public searchStudio(keywords: string): Bluebird<Anilist.Studio> {
     return this.search("studio", keywords);
   }
 
