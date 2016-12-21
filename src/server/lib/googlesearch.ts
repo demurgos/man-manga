@@ -2,7 +2,10 @@ import google = require("google");
 import Bluebird = require("bluebird");
 import Scraper = require("google-scraper");
 
-export function query(query: string): Bluebird<Scraper.Links> {
+export function query(query: string, site?: string): Bluebird<Scraper.Links> {
+  if(site) {
+    query += " site:" + site;
+  }
   let scrape = new Scraper.GoogleScraper({
     keyword: query,
     language: "en",
