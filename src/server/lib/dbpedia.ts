@@ -35,6 +35,49 @@ export namespace DBPedia {
   export const BASE_RESOURCE_URL: string = BASE_URL + "/resource";
 
   /**
+   * All functions needed when we don't know the resource's type.
+   */
+  export namespace Search {
+
+    /**
+     * Returns basic information about the resource 'name'.
+     * TODO: atm, only search for manga or author.
+     * @param name The resource's name.
+     * @param lang The lang in which information are wanted. Default to english.
+     */
+    export function search(name: string, lang: string = 'en'): Bluebird<any> {
+      let query: string = "SELECT ?title ?x ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
+        + "where {"
+        + "{"
+          + "values ?title {<" + Utils.stringToResourceUrl(name) + ">}. "
+          + "bind(exists { ?title a dbo:Manga. } as ?is)."
+          + "bind(IF(?is=1, 'manga', 0) as ?x)."
+          + "OPTIONAL { ?title dbo:author ?author }."
+          + "OPTIONAL { ?title dbo:numberOfVolumes ?volumes }."
+          + "OPTIONAL { ?title dbo:firstPublicationDate ?publicationDate }."
+          + "OPTIONAL { ?title dbo:illustrator ?illustrator }."
+          + "OPTIONAL { ?title dbo:publisher ?publisher }."
+          + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }."
+        + "} UNION {"
+          + "values ?title {<" + Utils.stringToResourceUrl(name) + ">}. "
+          + "bind(exists { ?title a dbo:Author. } as ?is)." // TODO: correct this
+          + "bind(IF(?is=1, 'author', 0) as ?x)."
+        + "} filter(?is != 0). } ";
+      return request({
+        url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
+        json: true
+      })
+      .then((body: any) => {
+        console.log(body["results"]["bindings"]);
+        return sparqlToObjects(body["results"]["bindings"]);
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
+    }
+  }
+
+  /**
    * All functions related to mangas.
    */
   export namespace Manga {
@@ -82,8 +125,7 @@ export namespace DBPedia {
         + "}";
       return request({
         url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
-        json: true,
-        encoding: null
+        json: true
       })
       .then((body: any) => {
         return sparqlToManga(crossArray(body["results"]["bindings"]));
@@ -186,6 +228,45 @@ export namespace DBPedia {
   }
 }
 
+function sparqlToObjects(sparqlResult: any): any {
+  console.log("CROSS ARRAY:");
+  console.log(sparqlResult);
+  let res: any = {
+    manga: null,
+    anime: null,
+    author: null,
+    character: null
+  };
+  let tabRes: any[] = [[], [], [], []];
+  for(let result of sparqlResult) {
+    console.log(result);
+    if (result["x"]["value"] == 'manga') {
+      delete result["x"];
+      tabRes[0].push(result);
+    } else if (result["x"]["value"] == 'anime') {
+      tabRes[1].push(result);
+    } else if (result["x"]["value"] == 'author') {
+      tabRes[2].push(result);
+    } else if (result["x"]["value"] == 'character') {
+      tabRes[3].push(result);
+    }
+  }
+  console.log(tabRes);
+  if(tabRes[0].length !== 0) {
+    res.manga = sparqlToManga(crossArray(tabRes[0]));
+  }
+  if(tabRes[1].length !== 0) {
+    res.anime = sparqlToAnime(crossArray(tabRes[1]));
+  }
+  if(tabRes[2].length !== 0) {
+    res.author = sparqlToAuthor(crossArray(tabRes[2]));
+  }
+  if(tabRes[3].length !== 0) {
+    res.character = sparqlToCharacter(crossArray(tabRes[3]));
+  }
+  return res;
+}
+
 /**
  * Transforms an object coming from a sparql request's response
  * into a manga.
@@ -214,6 +295,49 @@ function sparqlToManga(sparqlResult: any): Manga {
     }
   }
   return manga;
+}
+
+function sparqlToAnime(sparqlResult: any): Anime {
+  sparqlResult = sparqlResult.length !== undefined ? sparqlResult[0] : sparqlResult;
+  // TODO: find a way to type the following variable as Manga without throwing a typescript error
+  let anime: any = {};
+  for(let key in sparqlResult) {
+    if (!sparqlResult.hasOwnProperty(key)) continue;
+    if(sparqlResult[key].length === 1) {
+      anime[key] = (<any>sparqlResult[key][0]);
+    }
+  }
+  return anime;
+}
+
+function sparqlToAuthor(sparqlResult: any): Author {
+  sparqlResult = sparqlResult.length !== undefined ? sparqlResult[0] : sparqlResult;
+  // TODO: find a way to type the following variable as Manga without throwing a typescript error
+  let author: any = {};
+  for(let key in sparqlResult) {
+    if (!sparqlResult.hasOwnProperty(key)) continue;
+    if(sparqlResult[key].length === 1 && key === "title") {
+      author["name"] = (<any>sparqlResult[key][0]);
+    } else if(sparqlResult[key].length === 1) {
+      author[key] = (<any>sparqlResult[key][0]);
+    }
+  }
+  return author;
+}
+
+function sparqlToCharacter(sparqlResult: any): Author {
+  sparqlResult = sparqlResult.length !== undefined ? sparqlResult[0] : sparqlResult;
+  // TODO: find a way to type the following variable as Manga without throwing a typescript error
+  let author: any = {};
+  for(let key in sparqlResult) {
+    if (!sparqlResult.hasOwnProperty(key)) continue;
+    if(sparqlResult[key].length === 1 && key === "title") {
+      author["name"] = (<any>sparqlResult[key][0]);
+    } else if(sparqlResult[key].length === 1) {
+      author[key] = (<any>sparqlResult[key][0]);
+    }
+  }
+  return author;
 }
 
 /**
