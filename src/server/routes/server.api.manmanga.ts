@@ -52,6 +52,20 @@ router.get("/isManga/:resource", (req, res, next) => {
   });
 });
 
+router.get("/resource/:name", (req: any, res: any) => {
+  let name: string = req.params["name"];
+  res.setHeader('Content-Type', 'application/json');
+  DBPedia.Search
+    .search(name)
+    .then((resource: any) => {
+      res.status(200).send(JSON.stringify(resource, null, 2));
+    })
+    .catch((err: any) => {
+      console.log("ERROR with the request from " + req.originalUrl);
+      res.status(404).send(err);
+    });
+});
+
 /**
  * GET /manga/:name
  *    :name  The name of the manga (according to dbpedia; beware of the case)
