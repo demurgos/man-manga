@@ -23,7 +23,7 @@ router.get("/api/test", (req: any, res: any) => {
 });
 
 /**
- * A test pipeline
+ * A test pipeline using Alchemy + Spotlight.
  */
 router.get("/api/pipeline/:query", (req: any, res: any) => {
   let query: string = req.params["query"];
@@ -42,6 +42,24 @@ router.get("/api/pipeline/:query", (req: any, res: any) => {
       return Spotlight.query(result.text, result.language);
     })
     .then((result: string[]) => {
+      console.log(result);
+      res.status(200).send(result);
+    })
+    .catch((err: any) => {
+      res.status(500).send(err);
+    });
+});
+
+/**
+ * A test pipeline using specific search.
+ */
+router.get("/api/pipeline2/:query", (req: any, res: any) => {
+  let query: string = req.params["query"];
+  res.setHeader('Content-Type', 'application/json');
+  console.log("QUERYING...");
+  Google
+    .query(query, "en.wikipedia.org")
+    .then((result: any) => {
       console.log(result);
       res.status(200).send(result);
     })
