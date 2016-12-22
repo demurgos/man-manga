@@ -222,12 +222,12 @@ export namespace DBPedia {
         url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
         json: true
       })
-        .then((body: any) => {
-          return DBPediaTransform.sparqlToAnime(DBPediaTransform.crossArray(body["results"]["bindings"]));
-        })
-        .catch((err: any) => {
-          return Bluebird.reject(err);
-        });
+      .then((body: any) => {
+        return DBPediaTransform.sparqlToAnime(DBPediaTransform.crossArray(body["results"]["bindings"]));
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
     }
   }
 
@@ -254,9 +254,40 @@ export namespace DBPedia {
      * Returns all available information about the author 'name'.
      * @param name The author's name.
      */
-    // TODO: for the moment, only wraps the given name in an object.
     export function retrieve(name: string): Bluebird<AuthorType> {
-      return Bluebird.resolve({name: name});
+      return getInfos(name)
+        .catch((err: any) => {
+          return Bluebird.reject(err);
+        });
+    }
+
+    /**
+     * Returns basic information about the anime 'animeName'.
+     * @param authorName The manga's name.
+     * @param lang The lang in which the abstract is wanted. Default to english.
+     */
+    export function getInfos(authorName: string, lang: string = 'en'): Bluebird<AuthorType> {
+      let query: string = "select distinct ?title ?abstract ?employer ?birthDate "
+        + "where { "
+        + "values ?title {<" + Utils.resourceToResourceUrl(authorName) + ">}. "
+        + "{ ?m a dbo:Manga. ?m dbo:author ?title. } "
+        + "UNION "
+        + "{ ?m a dbo:Anime. ?m dbo:writer ?title. } "
+        // TODO: add author's work into interfaces and query
+        + "OPTIONAL { ?title dbo:employer ?employer }. "
+        + "OPTIONAL { ?title dbo:birthDate ?birthDate }. "
+        + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "}";
+      return request({
+        url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
+        json: true
+      })
+      .then((body: any) => {
+        return DBPediaTransform.sparqlToAuthor(DBPediaTransform.crossArray(body["results"]["bindings"]));
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
     }
   }
 
@@ -453,6 +484,10 @@ namespace DBPediaTransform {
         author["name"] = (<any>sparqlResult[key][0]);
       } else if(sparqlResult[key].length === 1) {
         author[key] = (<any>sparqlResult[key][0]);
+      } else if(key === "abstract") {
+        author[key] = sparqlResult[key][0];
+      } else if(key === "employer") {
+        author[key] = sparqlResult[key][0];
       }
     }
     return author;
