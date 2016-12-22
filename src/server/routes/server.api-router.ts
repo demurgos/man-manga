@@ -10,6 +10,7 @@ import * as Google        from '../lib/googlesearch';
 import * as Alchemy       from '../lib/alchemy';
 import * as Spotlight     from '../lib/spotlight';
 import {DBPedia} from "../lib/dbpedia";
+import Bluebird = require("bluebird");
 
 const router: Router = Router();
 
@@ -57,12 +58,12 @@ router.get("/api/pipeline/:query", (req: any, res: any) => {
 router.get("/api/pipeline2/:query", (req: any, res: any) => {
   let query: string = req.params["query"];
   res.setHeader('Content-Type', 'application/json');
-  console.log("QUERYING...");
   Google
     .query(query + " manga OR anime", "en.wikipedia.org")
     .then((result: string[]) => {
-      console.log(result);
-      return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(result[0]));
+      return Bluebird.all(result.slice(0, 3).map((url: string) => {
+        return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(url));
+      }));
     })
     .then((result: any) => {
       res.status(200).send(JSON.stringify(result, null, 2));

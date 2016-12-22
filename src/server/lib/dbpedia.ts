@@ -504,8 +504,6 @@ namespace DBPediaTransform {
    */
   // TODO: refactor this
   export function sparqlToObjects(sparqlResult: any): DBPedia.Search.Result {
-    console.log("CROSS ARRAY:");
-    console.log(sparqlResult);
     let res: DBPedia.Search.Result = {
       manga: undefined,
       anime: undefined,
@@ -514,7 +512,6 @@ namespace DBPediaTransform {
     };
     let tabRes: any[] = [[], [], [], []];
     for(let result of sparqlResult) {
-      console.log(result);
       if (result["x"]["value"] == 'manga') {
         tabRes[0].push(result);
       } else if (result["x"]["value"] == 'anime') {
@@ -526,7 +523,6 @@ namespace DBPediaTransform {
       }
       delete result["x"];
     }
-    console.log(tabRes);
     if(tabRes[0].length !== 0) {
       res.manga = sparqlToManga(crossArray(tabRes[0]));
     }
