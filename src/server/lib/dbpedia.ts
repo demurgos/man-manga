@@ -69,7 +69,7 @@ export namespace DBPedia {
       let query: string = "SELECT ?title ?x ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
         + "where {"
         + "{"
-          + "values ?title {<" + Utils.stringToResourceUrl(name) + ">}. "
+          + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
           + "bind(exists { ?title a dbo:Manga. } as ?is)."
           + "bind(IF(?is=1, 'manga', 0) as ?x)."
           + "OPTIONAL { ?title dbo:author ?author }."
@@ -79,7 +79,7 @@ export namespace DBPedia {
           + "OPTIONAL { ?title dbo:publisher ?publisher }."
           + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }."
         + "} UNION {"
-          + "values ?title {<" + Utils.stringToResourceUrl(name) + ">}. "
+          + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
           + "bind(exists { ?m a dbo:Manga. ?m dbo:author ?title. } as ?is)."
           + "bind(IF(?is=1, 'author', 0) as ?x)."
         + "} filter(?is != 0). } ";
@@ -145,10 +145,9 @@ export namespace DBPedia {
      * @param lang The lang in which the abstract is wanted. Default to english.
      */
     export function getInfos(mangaName: string, lang: string = 'en'): Bluebird<MangaType> {
-      console.log(Utils.stringToResourceUrl(mangaName));
       let query: string = "select distinct ?title ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
         + "where {"
-        + "values ?title {<" + Utils.stringToResourceUrl(mangaName) + ">}. "
+        + "values ?title {<" + Utils.resourceToResourceUrl(mangaName) + ">}. "
         + "?title a dbo:Manga. "
         + "OPTIONAL { ?title dbo:author ?author }. "
         + "OPTIONAL { ?title dbo:numberOfVolumes ?volumes }. "
@@ -264,10 +263,14 @@ export namespace DBPedia {
      * Transforms a given string into an URL string.
      * To be a valid DBPedia resource's URL, the resource's name
      * must be a valid one.
+     * If the resource is already an URL,
+     * this function just encodes it.
      * @param name The valid name of the resource.
      */
     export function resourceToResourceUrl(name: string): string {
-      return encodeURI(BASE_RESOURCE_URL + "/" + name);
+      let regex = new RegExp("^" + BASE_RESOURCE_URL + "(.*)");
+      return name.match(regex) ?
+        encodeURI(name): encodeURI(BASE_RESOURCE_URL + "/" + name);
     }
 
     /**
@@ -278,6 +281,14 @@ export namespace DBPedia {
      */
     export function resourceUrlToResource(url: string): string {
       return url.replace(new RegExp(BASE_RESOURCE_URL + "(.*)"), "$1");
+    }
+
+    /**
+     * Transforms a given URL into a name string.
+     * @param url The valid resource's URL.
+     */
+    export function resourceUrlToName(url: string): string {
+      return resourceUrlToResource(url).replace('_', ' ');
     }
   }
 }
