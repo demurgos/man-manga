@@ -6,8 +6,8 @@ const MANGATEST: Manga = {
   author: {name :'Tsugumi Oba'},
   illustrator : ['Takeshi Obata'],
   volumes : 12,
-  theme: ['Thriller'],
-  snippet: 'Kira kill the world with a book from hell'
+  genres: ['Thriller'],
+  abstract: 'Kira kill the world with a book from hell'
 };
 
 @Component({
