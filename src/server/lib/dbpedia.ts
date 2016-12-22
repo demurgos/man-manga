@@ -66,9 +66,12 @@ export namespace DBPedia {
      * @param lang The lang in which information are wanted. Default to english.
      */
     export function search(name: string, lang: string = 'en'): Bluebird<Result> {
-      let query: string = "SELECT ?title ?x ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
+      let query: string = "SELECT ?title ?x "
+        + "?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
+        + "?employer ?birthDate "
         + "where {"
         + "{"
+          // MANGA
           + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
           + "bind(exists { ?title a dbo:Manga. } as ?is)."
           + "bind(IF(?is=1, 'manga', 0) as ?x)."
@@ -79,9 +82,37 @@ export namespace DBPedia {
           + "OPTIONAL { ?title dbo:publisher ?publisher }."
           + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }."
         + "} UNION {"
+          // ANIME
           + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
-          + "bind(exists { ?m a dbo:Manga. ?m dbo:author ?title. } as ?is)."
+          + "bind(exists {?title a dbo:Anime.} as ?is). "
+          + "bind(IF(?is=1, 'anime', 0) as ?x)."
+          + "OPTIONAL { ?title dbo:writer ?author }. "
+          // TODO: dbo:numberOfEpisodes via dbr:List_of_<resource>_episodes
+          + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "} UNION {"
+          // CHARACTER
+          + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
+          + "bind(exists {?title a dbo:FictionalCharacter.} as ?is). "
+          + "bind(IF(?is=1, 'character', 0) as ?x)."
+          + "OPTIONAL { ?title dbo:creator ?author }. "
+          // TODO: dbo:voiceActor
+          + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "} UNION {"
+          // AUTHOR (manga)
+          + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
+          + "bind(exists {?m a dbo:Manga. ?m dbo:author ?title.} as ?is). "
           + "bind(IF(?is=1, 'author', 0) as ?x)."
+          + "OPTIONAL { ?title dbo:employer ?employer }. "
+          + "OPTIONAL { ?title dbo:birthDate ?birthDate }. "
+          + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "} UNION {"
+          // AUTHOR (anime)
+          + "values ?title {<" + Utils.resourceToResourceUrl(name) + ">}. "
+          + "bind(exists {?m a dbo:Anime. ?m dbo:writer ?title.} as ?is). "
+          + "bind(IF(?is=1, 'author', 0) as ?x)."
+          + "OPTIONAL { ?title dbo:employer ?employer }. "
+          + "OPTIONAL { ?title dbo:birthDate ?birthDate }. "
+          + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
         + "} filter(?is != 0). } ";
       return request({
         url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
@@ -91,7 +122,14 @@ export namespace DBPedia {
         console.log(body["results"]["bindings"]);
         let res = DBPediaTransform.sparqlToObjects(body["results"]["bindings"]);
         const mres = res.manga;
+        const ares = res.anime;
+        const atres = res.author;
+        const cres = res.character;
         // NB: need a const variable (!= immutable) to be sure that condition will still be OK after promise - typescript
+        // NOTE: for the moment, we assume that the resource can't be two things at once
+        // (it's already true for mangas and animes)
+        // TODO: character with the same name and other possible collisions
+        // TODO: refactor the following code
         if(mres && mres.author) {
           let authorName: any = mres.author;
           return Author
@@ -102,7 +140,27 @@ export namespace DBPedia {
               return res;
             });
         }
-        // TODO: do the same for other potential results
+        if(ares && ares.author) {
+          let authorName: any = ares.author;
+          return Author
+            .retrieve(authorName)
+            .then((author: AuthorType) => {
+              ares.author = author;
+              res.anime = ares;
+              return res;
+            });
+        }
+        // Nothing to retrieve atm for authors
+        if(cres && cres.creator) {
+          let authorName: any = cres.creator;
+          return Author
+            .retrieve(authorName)
+            .then((author: AuthorType) => {
+              cres.creator = author;
+              res.character = cres;
+              return res;
+            });
+        }
         return res;
       })
       .catch((err: any) => {
