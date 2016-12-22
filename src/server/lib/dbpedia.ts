@@ -20,6 +20,11 @@ import {Author as AuthorType}       from "../../lib/interfaces/author.interface"
 export namespace DBPedia {
 
   /**
+   * The base URL to access wikipedia (english).
+   */
+  export const BASE_WIKI_URL = "https://en.wikipedia.org/wiki/";
+
+  /**
    * The base URL to access dbpedia.
    */
   export const BASE_URL: string = "http://dbpedia.org";
@@ -119,7 +124,6 @@ export namespace DBPedia {
         json: true
       })
       .then((body: any) => {
-        console.log(body["results"]["bindings"]);
         let res = DBPediaTransform.sparqlToObjects(body["results"]["bindings"]);
         const mres = res.manga;
         const ares = res.anime;
@@ -463,6 +467,19 @@ export namespace DBPedia {
      */
     export function resourceUrlToResource(url: string): string {
       return url.replace(new RegExp(BASE_RESOURCE_URL + "(.*)"), "$1");
+    }
+
+    export function wikiResourceUrlToResource(url: string): string {
+      return url.replace(new RegExp(BASE_WIKI_URL), "");
+    }
+
+    /**
+     *
+     * @param url
+     * @returns {string}
+     */
+    export function wikiUrlToResourceUrl(url: string): string {
+      return BASE_RESOURCE_URL + "/" + wikiResourceUrlToResource(url);
     }
 
     /**

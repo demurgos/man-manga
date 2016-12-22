@@ -9,6 +9,7 @@ import {apiRouter}        from './server.api.manmanga';
 import * as Google        from '../lib/googlesearch';
 import * as Alchemy       from '../lib/alchemy';
 import * as Spotlight     from '../lib/spotlight';
+import {DBPedia} from "../lib/dbpedia";
 
 const router: Router = Router();
 
@@ -58,10 +59,13 @@ router.get("/api/pipeline2/:query", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   console.log("QUERYING...");
   Google
-    .query(query, "en.wikipedia.org")
-    .then((result: any) => {
+    .query(query + " manga OR anime", "en.wikipedia.org")
+    .then((result: string[]) => {
       console.log(result);
-      res.status(200).send(result);
+      return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(result[0]));
+    })
+    .then((result: any) => {
+      res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: any) => {
       res.status(500).send(err);
