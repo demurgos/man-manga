@@ -125,13 +125,17 @@ export namespace DBPedia {
       let manga: MangaType;
       return getInfos(name)
         .then((infos: any) => {
-          let authorName = infos.author;
-          delete infos.author;
-          manga = infos;
-          return Author.retrieve(authorName);
-        })
-        .then((author: AuthorType) => {
-          manga.author = author;
+          if(infos.author) {
+            let authorName = infos.author;
+            delete infos.author;
+            manga = infos;
+            return Author
+              .retrieve(authorName)
+              .then((author: AuthorType) => {
+                manga.author = author;
+                return manga;
+              });
+          }
           return manga;
         })
         .catch((err: any) => {
@@ -179,7 +183,51 @@ export namespace DBPedia {
      * @param name The anime's name.
      */
     export function retrieve(name: string): Bluebird<AnimeType> {
-      return Bluebird.reject(new Error("This function is not implemented yet"));
+      let anime: AnimeType;
+      return getInfos(name)
+        .then((infos: any) => {
+          if(infos.author) {
+            let authorName = infos.author;
+            delete infos.author;
+            anime = infos;
+            return Author
+              .retrieve(authorName)
+              .then((author: AuthorType) => {
+                anime.author = author;
+                return anime;
+              });
+          }
+          return anime;
+        })
+        .catch((err: any) => {
+          return Bluebird.reject(err);
+        });
+    }
+
+    /**
+     * Returns basic information about the anime 'animeName'.
+     * @param animeName The manga's name.
+     * @param lang The lang in which the abstract is wanted. Default to english.
+     */
+    export function getInfos(animeName: string, lang: string = 'en'): Bluebird<AnimeType> {
+      let query: string = "select distinct ?title ?author ?abstract "
+        + "where {"
+        + "values ?title {<" + Utils.resourceToResourceUrl(animeName) + ">}. "
+        + "?title a dbo:Anime. "
+        + "OPTIONAL { ?title dbo:writer ?author }. "
+        // TODO: dbo:numberOfEpisodes via dbr:List_of_<resource>_episodes
+        + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "}";
+      return request({
+        url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
+        json: true
+      })
+        .then((body: any) => {
+          return DBPediaTransform.sparqlToAnime(DBPediaTransform.crossArray(body["results"]["bindings"]));
+        })
+        .catch((err: any) => {
+          return Bluebird.reject(err);
+        });
     }
   }
 
@@ -382,6 +430,10 @@ namespace DBPediaTransform {
       if (!sparqlResult.hasOwnProperty(key)) continue;
       if(sparqlResult[key].length === 1) {
         anime[key] = (<any>sparqlResult[key][0]);
+      } else if(key === "author") {
+        anime[key] = sparqlResult[key][0];
+      } else if(key === "abstract") {
+        anime[key] = sparqlResult[key][0];
       }
     }
     return anime;
