@@ -206,7 +206,7 @@ export namespace DBPedia {
 
     /**
      * Returns basic information about the anime 'animeName'.
-     * @param animeName The manga's name.
+     * @param animeName The anime's name.
      * @param lang The lang in which the abstract is wanted. Default to english.
      */
     export function getInfos(animeName: string, lang: string = 'en'): Bluebird<AnimeType> {
@@ -241,9 +241,54 @@ export namespace DBPedia {
      * @param name The character's name.
      */
     export function retrieve(name: string): Bluebird<CharacterType> {
-      return Bluebird.reject(new Error("This function is not implemented yet"));
+      let character: CharacterType;
+      return getInfos(name)
+        .then((infos: any) => {
+          if(infos.creator) {
+            let authorName = infos.creator;
+            delete infos.creator;
+            character = infos;
+            return Author
+              .retrieve(authorName)
+              .then((author: AuthorType) => {
+                character.creator = author;
+                return character;
+              });
+          }
+          return character;
+        })
+        .catch((err: any) => {
+          return Bluebird.reject(err);
+        });
+    }
+
+    /**
+     * Returns basic information about the character 'characterName'.
+     * @param characterName The character's name.
+     * @param lang The lang in which the abstract is wanted. Default to english.
+     */
+    export function getInfos(characterName: string, lang: string = 'en'): Bluebird<CharacterType> {
+      let query: string = "select distinct ?title ?author ?abstract "
+        + "where {"
+        + "values ?title {<" + Utils.resourceToResourceUrl(characterName) + ">}. "
+        + "?title a dbo:FictionalCharacter. "
+        + "OPTIONAL { ?title dbo:creator ?author }. "
+        // TODO: dbo:voiceActor
+        + "OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract),'" + lang +"')) }. "
+        + "}";
+      return request({
+        url: "https://dbpedia.org/sparql?query=" + query + "&format=application/json",
+        json: true
+      })
+      .then((body: any) => {
+        return DBPediaTransform.sparqlToCharacter(DBPediaTransform.crossArray(body["results"]["bindings"]));
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
     }
   }
+
 
   /**
    * All functions related to
@@ -262,8 +307,8 @@ export namespace DBPedia {
     }
 
     /**
-     * Returns basic information about the anime 'animeName'.
-     * @param authorName The manga's name.
+     * Returns basic information about the author 'authorName'.
+     * @param authorName The author's name.
      * @param lang The lang in which the abstract is wanted. Default to english.
      */
     export function getInfos(authorName: string, lang: string = 'en'): Bluebird<AuthorType> {
@@ -500,16 +545,22 @@ namespace DBPediaTransform {
    */
   export function sparqlToCharacter(sparqlResult: RawResultArray): AuthorType {
     // TODO: find a way to type the following variable as Character without throwing a typescript error
-    let author: any = {};
+    let character: any = {};
     for(let key in sparqlResult) {
       if (!sparqlResult.hasOwnProperty(key)) continue;
       if(sparqlResult[key].length === 1 && key === "title") {
-        author["name"] = (<any>sparqlResult[key][0]);
-      } else if(sparqlResult[key].length === 1) {
-        author[key] = (<any>sparqlResult[key][0]);
+        character["name"] = (<any>sparqlResult[key][0]);
+      } else if(sparqlResult[key].length === 1 && key == "author") {
+        character["creator"] = (<any>sparqlResult[key][0]);
+      } else if (sparqlResult[key].length === 1) {
+        character[key] = (<any>sparqlResult[key][0]);
+      } else if(key === "abstract") {
+        character[key] = sparqlResult[key][0];
+      } else if(key === "author") {
+        character["creator"] = sparqlResult[key][0];
       }
     }
-    return author;
+    return character;
   }
 
   /**
