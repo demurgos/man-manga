@@ -40,12 +40,22 @@ export namespace DBPedia {
   export namespace Search {
 
     /**
+     * A result from a dbpedia search request.
+     */
+    export interface Result {
+      manga?: Manga;
+      anime?: Anime;
+      author?: Author;
+      character?: Character;
+    }
+
+    /**
      * Returns basic information about the resource 'name'.
      * TODO: atm, only search for manga or author.
      * @param name The resource's name.
      * @param lang The lang in which information are wanted. Default to english.
      */
-    export function search(name: string, lang: string = 'en'): Bluebird<any> {
+    export function search(name: string, lang: string = 'en'): Bluebird<Result> {
       let query: string = "SELECT ?title ?x ?author ?volumes ?publicationDate ?illustrator ?publisher ?abstract "
         + "where {"
         + "{"
@@ -228,10 +238,14 @@ export namespace DBPedia {
   }
 }
 
-function sparqlToObjects(sparqlResult: any): any {
+/**
+ * Transform a sparql raw search result into a usable search result.
+ * @param sparqlResult The raw sparql result.
+ */
+function sparqlToObjects(sparqlResult: any): DBPedia.Search.Result {
   console.log("CROSS ARRAY:");
   console.log(sparqlResult);
-  let res: any = {
+  let res: DBPedia.Search.Result = {
     manga: null,
     anime: null,
     author: null,
@@ -286,7 +300,7 @@ function sparqlToManga(sparqlResult: any): Manga {
       manga[key] = _.min(sparqlResult[key]);
     } else if(key === "author") {
       manga[key] = sparqlResult[key][0];
-    } else if(key === "snippet") {
+    } else if(key === "abstract") {
       manga[key] = sparqlResult[key][0];
     } else if(key === "volumes") {
       manga[key] = _.max(sparqlResult[key]);
