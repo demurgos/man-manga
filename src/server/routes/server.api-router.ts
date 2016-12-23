@@ -1,3 +1,5 @@
+import * as Bluebird      from 'bluebird';
+
 import {Router}           from 'express';
 import {
   IRouterMatcher,
@@ -5,12 +7,13 @@ import {
 
 import {anilistApiRouter} from './server.api.anilist';
 import {apiRouter}        from './server.api.manmanga';
+import {DBPedia}          from '../lib/dbpedia';
+import {McdIOSphe}        from '../lib/mcd-iosphe';
+import {MangaCover}       from '../../lib/interfaces/manga-cover.interface';
 
 import * as Google        from '../lib/googlesearch';
 import * as Alchemy       from '../lib/alchemy';
 import * as Spotlight     from '../lib/spotlight';
-import {DBPedia} from "../lib/dbpedia";
-import Bluebird = require("bluebird");
 
 const router: Router = Router();
 
@@ -63,6 +66,27 @@ router.get("/api/pipeline2/:query", (req: any, res: any) => {
     .then((result: string[]) => {
       return Bluebird.all(result.slice(0, 3).map((url: string) => {
         return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(url));
+      }));
+    })
+    .then((results: DBPedia.Search.Result[]) => {
+      return Bluebird.all(results.map((result: DBPedia.Search.Result) => {
+        const manga = result.manga;   // Need a const because of the promise
+        if(result && manga) {
+          return McdIOSphe
+            .getMangaCoverUrl(DBPedia.Utils.resourceUrlToName(manga.title))
+            .then((cover: MangaCover) => {
+              manga.coverUrl = cover.coverUrl;
+              result.manga = manga;
+              return result;
+            })
+            .catch((err: Error) => {
+              // At this point, it's not a problem if we don't find any cover
+              // Just return the result
+              // TODO: try to get something with anilist ?
+              return result;
+            });
+        }
+        return result;
       }));
     })
     .then((result: any) => {
