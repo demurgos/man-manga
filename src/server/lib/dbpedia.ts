@@ -557,7 +557,7 @@ namespace DBPediaTransform {
       } else if(key === "abstract") {
         manga[key] = sparqlResult[key][0];
       } else if(key === "volumes") {
-        manga[key] = _.max(sparqlResult[key]);
+        manga[key] = _.max(sparqlResult[key].map(volume => parseInt(volume)));
       } else {
         manga[key] = sparqlResult[key];
       }
