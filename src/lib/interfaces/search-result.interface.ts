@@ -6,22 +6,24 @@ import {Character}  from './character.interface';
 export interface SearchResult {
   
   /**
-   * The list of possible mangas matching the search criteria.
+   * A possible manga matching the search criteria.
    */
-  manga: Manga[];
+  manga?: Manga;
 
   /**
-   * The list of possible animes matching the search criteria.
+   * A possible anime matching the search criteria.
    */
-  anime: Anime[];
+  anime?: Anime;
 
   /**
-   * The list of possible authors matching the search criteria.
+   * A possible author matching the search criteria.
    */
-  author: Author[];
+  author?: Author;
 
   /**
-   * The list of possible characters matching the search criteria.
+   * A possible character matching the search criteria.
    */
-  character: Character[];
+  character?: Character;
 }
+
+export type SearchResults = SearchResult[];

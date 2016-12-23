@@ -1,20 +1,47 @@
-import * as Bluebird  from 'bluebird';
 import 'rxjs/add/operator/toPromise';
+import * as Bluebird    from 'bluebird';
 
-import {Http}       from '@angular/http';
-import {Injectable} from '@angular/core';
+import {Http}           from '@angular/http';
+import {Injectable}     from '@angular/core';
 
-import {Manga}      from '../../../lib/interfaces/manga.interface';
-import {Anime}      from "../../../lib/interfaces/anime.interface";
-import {Author}     from "../../../lib/interfaces/author.interface";
-import {Character}  from "../../../lib/interfaces/character.interface";
+import {Manga}          from '../../../lib/interfaces/manga.interface';
+import {Anime}          from "../../../lib/interfaces/anime.interface";
+import {Author}         from "../../../lib/interfaces/author.interface";
+import {Character}      from "../../../lib/interfaces/character.interface";
+import {SearchResults}  from "../../../lib/interfaces/search-result.interface";
 
 // TODO: Use injectable config
 // import {SERVER_URL} from '../../../server/server.config';
 const SERVER_URL = "http://localhost:3000";
 
+const API_BASE_URL = SERVER_URL + "/api";
+
 @Injectable()
 export class ApiService {
+
+  /**
+   * GET /api/pipeline2/:query
+   * Search anything related to the keywords and manga/anime,
+   * and returns them in an array wrapped in a promise.
+   * Returns a promise rejection if there was a problem
+   * with the request.
+   * The result can be an array full of empty objects.
+   * @param query Keywords of the query.
+   */
+  public search(query: string): Bluebird<SearchResults> {
+    return Bluebird
+      .try(() => {
+        return this.http
+          .get(encodeURI(API_BASE_URL + "/pipeline2/" + query))
+          .toPromise();
+      })
+      .then((response: any) => {
+        return response.json();
+      })
+      .catch((err: Error) => {
+        return Bluebird.reject(err);
+      });
+  }
 
   /**
    * GET /api/sparql/manga/:name
@@ -27,11 +54,14 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(SERVER_URL + "/api/sparql/manga/" + name)
+          .get(API_BASE_URL + "/manga/" + name)
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
+      })
+      .catch((err: Error) => {
+        return Bluebird.reject(err);
       });
   }
 
@@ -46,11 +76,14 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(SERVER_URL + "/api/sparql/anime/" + name)
+          .get(API_BASE_URL + "/anime/" + name)
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
+      })
+      .catch((err: Error) => {
+        return Bluebird.reject(err);
       });
   }
 
@@ -65,11 +98,14 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(SERVER_URL + "/api/sparql/author/" + name)
+          .get(API_BASE_URL + "/author/" + name)
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
+      })
+      .catch((err: Error) => {
+        return Bluebird.reject(err);
       });
   }
 
@@ -84,11 +120,14 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(SERVER_URL + "/api/sparql/character/" + name)
+          .get(API_BASE_URL + "/character/" + name)
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
+      })
+      .catch((err: Error) => {
+        return Bluebird.reject(err);
       });
   }
 
