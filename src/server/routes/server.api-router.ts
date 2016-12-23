@@ -61,14 +61,17 @@ router.get("/api/pipeline/:query", (req: any, res: any) => {
 router.get("/api/pipeline2/:query", (req: any, res: any) => {
   let query: string = req.params["query"];
   res.setHeader('Content-Type', 'application/json');
+  // STEP 1: query google on wikipedia
   Google
     .query(query + " manga OR anime", "en.wikipedia.org")
     .then((result: string[]) => {
+      // STEP 2: query information thanks to DBPedia
       return Bluebird.all(result.slice(0, 3).map((url: string) => {
         return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(url));
       }));
     })
     .then((results: DBPedia.Search.Result[]) => {
+      // STEP 3: gather additional information from some APIs
       return Bluebird.all(results.map((result: DBPedia.Search.Result) => {
         const manga = result.manga;   // Need a const because of the promise
         if(result && manga) {

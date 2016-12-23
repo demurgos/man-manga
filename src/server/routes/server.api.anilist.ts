@@ -74,7 +74,7 @@ router.get("/search/character/:keywords", (req: any, res: any) => {
   res.setHeader('Content-Type', 'application/json');
   anilistAPI
     .searchCharacter(req.params["keywords"])
-    .then((result: Anilist.Character) => {
+    .then((result: Character[]) => {
       res.status(200).send(JSON.stringify(result, null, 2));
     })
     .catch((err: Error) => {
