@@ -8,7 +8,7 @@ import {
 import {anilistApiRouter} from './server.api.anilist';
 import {apiRouter}        from './server.api.manmanga';
 import {DBPedia}          from '../lib/dbpedia';
-import {McdIOSphe}        from '../lib/mcd-iosphe';
+import {McdIOSphere}      from '../lib/mcd-iosphere';
 import {MangaCover}       from '../../lib/interfaces/manga-cover.interface';
 
 import * as Google        from '../lib/googlesearch';
@@ -72,7 +72,7 @@ router.get("/api/pipeline2/:query", (req: any, res: any) => {
       return Bluebird.all(results.map((result: DBPedia.Search.Result) => {
         const manga = result.manga;   // Need a const because of the promise
         if(result && manga) {
-          return McdIOSphe
+          return McdIOSphere
             .getMangaCoverUrl(DBPedia.Utils.resourceUrlToName(manga.title))
             .then((cover: MangaCover) => {
               manga.coverUrl = cover.coverUrl;

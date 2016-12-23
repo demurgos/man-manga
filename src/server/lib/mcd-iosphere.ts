@@ -1,12 +1,24 @@
 import * as Bluebird  from 'bluebird';
 import * as request   from 'request-promise';
 
-import {MangaCover} from '../../lib/interfaces/manga-cover.interface';
+import {MangaCover}   from '../../lib/interfaces/manga-cover.interface';
 
-const MCD_COVER_ROOT        = "http://mcd.iosphe.re/n/";
-const MCD_FRONT_COVER_TAIL  = "/1/front/a/";
+export namespace McdIOSphere {
 
-export namespace McdIOSphe {
+  /**
+   * Root URL of a cover URL.
+   */
+  const MCD_COVER_ROOT        = "http://mcd.iosphe.re/n/";
+
+  /**
+   * Tail URL of the first volume's front cover.
+   */
+  const MCD_FRONT_COVER_TAIL  = "/1/front/a/";
+
+  /**
+   * Root URL of mcd API.
+   */
+  const MCD_API_ROOT_URL      = "http://mcd.iosphe.re/api/v1/";
 
   /**
    * Returns a JSON object with the requested manga's title
@@ -19,7 +31,7 @@ export namespace McdIOSphe {
   export function getMangaCoverUrl(name: string): Bluebird<MangaCover> {
     return request({
       method: 'POST',
-      url: "http://mcd.iosphe.re/api/v1/search/",
+      url: MCD_API_ROOT_URL + "search/",
       json: true,
       body: {
         Title: name

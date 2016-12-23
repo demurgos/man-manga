@@ -1,13 +1,13 @@
 import * as request   from 'request-promise';
 
-import {Router}     from 'express';
-import {Manga}      from '../../lib/interfaces/manga.interface';
-import {Anime}      from '../../lib/interfaces/anime.interface';
-import {Author}     from '../../lib/interfaces/author.interface';
-import {Character}  from '../../lib/interfaces/character.interface';
-import {MangaCover} from '../../lib/interfaces/manga-cover.interface';
-import {DBPedia}    from '../lib/dbpedia';
-import {McdIOSphe}  from '../lib/mcd-iosphe';
+import {Router}       from 'express';
+import {Manga}        from '../../lib/interfaces/manga.interface';
+import {Anime}        from '../../lib/interfaces/anime.interface';
+import {Author}       from '../../lib/interfaces/author.interface';
+import {Character}    from '../../lib/interfaces/character.interface';
+import {MangaCover}   from '../../lib/interfaces/manga-cover.interface';
+import {DBPedia}      from '../lib/dbpedia';
+import {McdIOSphere}  from '../lib/mcd-iosphere';
 
 const router: Router = Router();
 
@@ -87,7 +87,7 @@ router.get("/manga/:name", (req: any, res: any, next: any) => {
     })
     .then((manga: Manga) => {
       result = manga;
-      return McdIOSphe.getMangaCoverUrl(mangaName.replace('_', ' '));
+      return McdIOSphere.getMangaCoverUrl(mangaName.replace('_', ' '));
     })
     .then((cover: MangaCover) => {
       result.coverUrl = cover.coverUrl;
@@ -179,7 +179,7 @@ router.get("/character/:name", (req: any, res: any, next: any) => {
 router.get("/manga/:name/coverUrl", (req: any, res: any, next: any) => {
   let mangaName = req.params["name"];
   res.setHeader('Content-Type', 'application/json');
-  McdIOSphe
+  McdIOSphere
     .getMangaCoverUrl(mangaName)
     .then((cover: MangaCover) => {
       res.status(200).send(JSON.stringify(cover, null, 2));
