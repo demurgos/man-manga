@@ -1,3 +1,5 @@
+import {Author} from "./author.interface";
+
 export interface Character {
 
   /**
@@ -15,4 +17,14 @@ export interface Character {
    * The name of the manga/anime from which the character is coming.
    */
   from?: string;
+
+  /**
+   * The character's creator.
+   */
+  creator?: Author;
+
+  /**
+   * A snippet about the character.
+   */
+  abstract?: string;
 }

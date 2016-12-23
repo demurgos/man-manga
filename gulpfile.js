@@ -29,7 +29,8 @@ buildTools.targetGenerators.node.generateTarget(
     tsOptions: {
       skipLibCheck: true,
       typescript: typescript,
-      lib: ["es6", "dom"]
+      lib: ["es6", "dom"],
+      emitDecoratorMetadata: true
     }
   }
 );
@@ -53,7 +54,8 @@ buildTools.targetGenerators.angular.generateTarget(
     tsOptions: {
       skipLibCheck: true,
       typescript: typescript,
-      lib: ["es6", "dom"]
+      lib: ["es6", "dom"],
+      emitDecoratorMetadata: true
     },
     webpack: webpack,
     webpackConfig: {}

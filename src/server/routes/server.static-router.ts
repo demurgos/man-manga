@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as path from 'path';
-import {ROOT, SERVER_URL} from './server.config';
+import {ROOT, SERVER_URL} from '../server.config';
 
 const router: any = express.Router();
 // NOTE: the type 'any' fixes a bug between WebStorm and @Types

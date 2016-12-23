@@ -1,6 +1,16 @@
 import * as Bluebird  from 'bluebird';
 import * as request   from 'request-promise';
-import {Character} from "../../lib/interfaces/character.interface";
+
+import {Character}    from "../../lib/interfaces/character.interface";
+import {Anilist}      from "./anilist-api.interfaces";
+
+/**
+ * Private interface for manipulating authentication token.
+ */
+interface AuthToken {
+  token: string;            // The actual token
+  expirationDate: number;   // Timestamp in seconds
+}
 
 export class AnilistApi {
 
@@ -8,7 +18,7 @@ export class AnilistApi {
    * Anilist's API entry point.
    * @type {string}
    */
-  public static readonly anilistEntryPoint: string = "https://anilist.co/api";
+  protected static readonly anilistEntryPoint: string = "https://anilist.co/api";
 
   /**
    * The app client's ID.
@@ -29,37 +39,7 @@ export class AnilistApi {
    * Without this, no anilist's API calls can be performed.
    * Undefined until the first API call.
    */
-  protected authToken: {
-    token: string,
-    expirationDate: number  // Timestamp in seconds
-  };
-
-  /**
-   * Updates the field authToken with a new token,
-   * or returns a promise rejection if there was an error with the request.
-   */
-  protected getAuthToken(): Bluebird<void> {
-    return request({
-      method: 'POST',
-      url: AnilistApi.anilistEntryPoint + "/auth/access_token",
-      form: {
-        grant_type: "client_credentials",
-        client_id: AnilistApi.clientID,
-        client_secret: AnilistApi.clientSecret
-      }
-    })
-    .then((body: any) => {
-      let token = JSON.parse(body);
-      this.authToken = {
-        token: token["access_token"],
-        expirationDate: token["expires"]
-      };
-      return;
-    })
-    .catch((err: any) => {
-      return Bluebird.reject(new Error("Can't gather new Anilist auth token\n" + err));
-    });
-  }
+  private authToken: AuthToken;
 
   /**
    * Gathers all known information about the given character,
@@ -76,11 +56,7 @@ export class AnilistApi {
       .ensureAuth()
       .then(() => {
         return request({
-          url: AnilistApi.anilistEntryPoint
-            + "/character/search/"
-            + name
-            + "?access_token="
-            + this.authToken.token,
+          url: this.constructUrl("/character/search/", name),
           json: true
         });
       })
@@ -106,28 +82,129 @@ export class AnilistApi {
       .ensureAuth()
       .then(() => {
         return request({
-          url: AnilistApi.anilistEntryPoint
-            + "/character/"
-            + id
-            + "/page"
-            + "?access_token="
-            + this.authToken.token,
+          url: this.constructUrl("/character/" + id + "/page"),
           json: true
         });
       })
-      .then((character: any) => {
+      .then((c: any) => {
+        let character: Anilist.Character = <Anilist.Character>c;  // This fixes a bug with webstorm
         if(!character) {
           return Bluebird.reject(new Error("Unable to find character with id " + id))
         }
+        let from: string = "";
+        if(character.manga && character.manga.length !== 0) {
+          from = character.manga[0].title_romaji;
+        } else if(character.anime && character.anime.length !== 0) {
+          from = character.anime[0].title_romaji;
+        }
         return {
-          name: character["name_first"] + " " + character["name_last"],
-          pictureUrl: character["image_url_lge"],
-          from: character["manga"][0]["title_romaji"]
+          name: character.name_first + " " + character.name_last,
+          pictureUrl: character.image_url_lge,
+          from: from,
+          abstract: character.info
         };
       })
       .catch((err: any) => {
         return Bluebird.reject(err);
       });
+  }
+
+  /**
+   * Searches all mangas matching the given keywords.
+   * @param keywords A string containing all keywords to search,
+   * separated by spaces.
+   */
+  public searchManga(keywords: string): Bluebird<Anilist.Manga> {
+    return this.search("manga", keywords);
+  }
+
+  /**
+   * Searches all animes matching the given keywords.
+   * @param keywords A string containing all keywords to search,
+   * separated by spaces.
+   */
+  public searchAnime(keywords: string): Bluebird<Anilist.Anime> {
+    return this.search("anime", keywords);
+  }
+
+  /**
+   * Searches all characters matching the given keywords.
+   * @param keywords A string containing all keywords to search,
+   * separated by spaces.
+   * @param max The maximum number of results wanted.
+   */
+  public searchCharacter(keywords: string, max?: number): Bluebird<Character[]> {
+    return this
+      .search("character", keywords)
+      .then((results: Anilist.Character[]) => {
+        // This actually sends only small models; we need the wide ones.
+        if(!results || results.length === 0) {
+          return Bluebird.reject(new Error("Unable to find character " + name));
+        }
+        max = max ? (max > results.length ? results.length : max) : results.length;
+        return Bluebird.all(results.slice(0, max).map((res: any) => {
+            return this.getCharacterByID(res["id"]);
+        }));
+      });
+  }
+
+  /**
+   * Searches all staff (actor, writer, ...) matching the given keywords.
+   * @param keywords A string containing all keywords to search,
+   * separated by spaces.
+   */
+  public searchStaff(keywords: string): Bluebird<Anilist.Staff> {
+    return this.search("staff", keywords);
+  }
+
+  /**
+   * Searches all studios matching the given keywords.
+   * @param keywords A string containing all keywords to search,
+   * separated by spaces.
+   */
+  public searchStudio(keywords: string): Bluebird<Anilist.Studio> {
+    return this.search("studio", keywords);
+  }
+
+  /**
+   * Searches the given keywords thanks to the anilist API.
+   * Results' types will vary with the parameter toSearch.
+   * @param toSearch The object to search. Must be in ["anime", "character", "manga", "staff", "studio"].
+   * @param keywords The keywords that must be searched.
+   */
+  protected search(toSearch: string, keywords: string): Bluebird<any> {
+    toSearch = toSearch.toLowerCase();
+    const allowedToSearch = ["anime", "character", "manga", "staff", "studio"];
+    if(allowedToSearch.indexOf(toSearch) === -1) {
+      return Bluebird.reject(new Error(
+        toSearch + " is not a known searchable object. Must be one of " + allowedToSearch + "."
+      ));
+    }
+    return this
+      .ensureAuth()
+      .then(() => {
+        return request({
+          url: this.constructUrl(toSearch + "/search/", keywords),
+          json: true
+        });
+      })
+      .catch((err: any) => {
+        return Bluebird.reject(err);
+      });
+  }
+
+  /**
+   * Constructs the API URL to request.
+   * BEWARE, requires that the auth token is still valid.
+   * Therefore you need to call this.ensureAuth() before calling this method.
+   * @param endpoint Anilist endpoint to call. Example: anime/search.
+   * @param params Eventual parameters to add after the endpoint.
+   */
+  protected constructUrl(endpoint: string, params?: string): string {
+    return encodeURI(AnilistApi.anilistEntryPoint
+      + "/" + endpoint.replace(/^\//, '').replace(/\/$/, '')
+      + (params ? "/" + params : "")
+      + "?access_token=" + this.authToken.token);
   }
 
   /**
@@ -137,12 +214,39 @@ export class AnilistApi {
   protected ensureAuth(): Bluebird<void> {
     return Bluebird.try(() => {
       if(this.authToken && Date.now() < this.authToken.expirationDate - 60) {
-        // If the token has still more than one minutes before expiration,
+        // If the token has still more than one minute before expiration,
         // we don't need to regenerate one
         return;
       }
       // Otherwise, we should (re)generate one
       return this.getAuthToken();
+    });
+  }
+
+  /**
+   * Updates the field authToken with a new token,
+   * or returns a promise rejection if there was an error with the request.
+   */
+  protected getAuthToken(): Bluebird<void> {
+    return request({
+      method: 'POST',
+      url: AnilistApi.anilistEntryPoint + "/auth/access_token",
+      form: {
+        grant_type: "client_credentials",
+        client_id: AnilistApi.clientID,
+        client_secret: AnilistApi.clientSecret
+      }
+    })
+    .then((body: string) => {
+      let token: Anilist.AuthToken = JSON.parse(body);
+      this.authToken = {
+        token: token.access_token,
+        expirationDate: token.expires
+      };
+      return;
+    })
+    .catch((err: any) => {
+      return Bluebird.reject(new Error("Can't gather new Anilist auth token\n" + err));
     });
   }
 }

@@ -1,4 +1,5 @@
-import {Manga} from './manga.interface'
+import {Manga}  from './manga.interface'
+import {Author} from './author.interface'
 
 export interface Anime {
 
@@ -12,5 +13,31 @@ export interface Anime {
    * The associated manga,
    * if the anime is based on a manga.
    */
+  // TODO: not used at the moment
   manga?: Manga;
+
+  /**
+   * The anime's author.
+   */
+  author?: Author;
+
+  /**
+   * An abstract of this anime.
+   */
+  abstract?: string;
+
+  /**
+   * The number of episodes.
+   */
+  episodes?: number;
+
+  /**
+   * An URL to the poster.
+   */
+  posterUrl?: string;
+
+  /**
+   * The list of all known genres for this anime.
+   */
+  genres?: string[];
 }

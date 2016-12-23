@@ -1,5 +1,5 @@
-import {Author} from './author.interface';
-import {Character} from './character.interface';
+import {Author}     from './author.interface';
+import {Character}  from './character.interface';
 
 export interface Manga {
 
@@ -23,12 +23,13 @@ export interface Manga {
   /**
    * The list of all known characters.
    */
+  // TODO: not used for the moment
   characters?: Character[];
 
   /**
-   * A snippet from this manga.
+   * An abstract of this manga.
    */
-  snippet?: string;
+  abstract?: string;
 
   /**
    * An URL to one cover.
@@ -36,9 +37,9 @@ export interface Manga {
   coverUrl?: string;
 
   /**
-   * The list of all known themes in this manga.
+   * The list of all known genres for this manga.
    */
-  theme?: string[];
+  genres?: string[];
 
   /**
    * The number of edited volumes.
