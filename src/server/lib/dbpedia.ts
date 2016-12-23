@@ -27,12 +27,12 @@ export namespace DBPedia {
   /**
    * The base URL to access dbpedia.
    */
-  export const BASE_URL: string = "http://dbpedia.org";
+  export const BASE_URL: string = "http://dbpedia.org/";
 
   /**
    * The base URL to access any dbpedia resource.
    */
-  export const BASE_RESOURCE_URL: string = BASE_URL + "/resource";
+  export const BASE_RESOURCE_URL: string = BASE_URL + "resource/";
 
   /**
    * All functions needed when we don't know the resource's type.
@@ -441,7 +441,7 @@ export namespace DBPedia {
      */
     export function stringToResourceUrl(name: string): string {
       return name.match(new RegExp("^http://(.*)")) == null ?
-      encodeURI(BASE_RESOURCE_URL + "/" + stringToResourceName(name)) :
+      encodeURI(BASE_RESOURCE_URL + stringToResourceName(name)) :
       encodeURI(name);
     }
 
@@ -456,7 +456,7 @@ export namespace DBPedia {
     export function resourceToResourceUrl(name: string): string {
       let regex = new RegExp("^" + BASE_RESOURCE_URL + "(.*)");
       return name.match(regex) ?
-        encodeURI(name): encodeURI(BASE_RESOURCE_URL + "/" + name);
+        encodeURI(name): encodeURI(BASE_RESOURCE_URL + name);
     }
 
     /**
@@ -466,11 +466,11 @@ export namespace DBPedia {
      * @param url The valid resource's URL.
      */
     export function resourceUrlToResource(url: string): string {
-      return url.replace(new RegExp(BASE_RESOURCE_URL + "(.*)"), "$1");
+      return url.replace(BASE_RESOURCE_URL, "");
     }
 
     export function wikiResourceUrlToResource(url: string): string {
-      return url.replace(new RegExp(BASE_WIKI_URL), "");
+      return url.replace(BASE_WIKI_URL, "");
     }
 
     /**
@@ -479,7 +479,7 @@ export namespace DBPedia {
      * @returns {string}
      */
     export function wikiUrlToResourceUrl(url: string): string {
-      return BASE_RESOURCE_URL + "/" + wikiResourceUrlToResource(url);
+      return BASE_RESOURCE_URL + wikiResourceUrlToResource(url);
     }
 
     /**
@@ -487,14 +487,14 @@ export namespace DBPedia {
      * @param url The valid resource's URL.
      */
     export function resourceUrlToName(url: string): string {
-      return resourceUrlToResource(url).replace('_', ' ');
+      return resourceUrlToResource(url).replace(/_+/g, ' ');
     }
   }
 }
 
 /**
  * Private namespace for this file,
- * containing all needed function to process results.
+ * containing all needed functions to process results.
  */
 namespace DBPediaTransform {
 
