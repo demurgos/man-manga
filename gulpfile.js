@@ -92,9 +92,11 @@ gulp.task("client:build:copy:materialize", function() {
     return gulp
     .src(
       [
-        path.join(root, "node_modules/materialize-css/bin/materialize.css")
+        path.join(root, "node_modules/materialize-css/dist/css/materialize.min.css"),
+        path.join(root, "node_modules/materialize-css/dist/js/materialize.min.js"),
+        path.join(root, "node_modules/materialize-css/dist/fonts/**")
       ],
-      {base: path.join(root, "node_modules/materialize-css/bin")}
+      {base: path.join(root, "node_modules/materialize-css/dist")}
     )
     .pipe(gulp.dest(path.join(root, "build/client")));
 });
