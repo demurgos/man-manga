@@ -1,0 +1,11 @@
+// Image in the card
+.card.horizontal .card-image img {
+  // Make sure it's always the full height of the card
+  height: 100%;
+}
+
+// Abstract
+.abstract {
+  // Make it italic
+  font-style: italic;
+}
