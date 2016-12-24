@@ -1,7 +1,9 @@
 import {Component, OnInit}  from '@angular/core';
 
 import {ApiService}         from '../services/api.service';
-import {Manga}              from '../../../lib/interfaces/manga.interface';
+import {SearchResults}      from '../../../lib/interfaces/search-result.interface';
+
+// TODO: does this component really performs any request ?
 
 @Component({
   selector: "mmg-search",
@@ -15,21 +17,18 @@ export class SearchBarComponent implements OnInit {
    * Properly initialize component.
    */
   ngOnInit(): void {
-    console.log("Initialized search page");
-    this.search();
+    // Nothing to do for the moment
   }
 
   /**
    * An experimental search.
    */
-  protected search(): void {
-    // TODO: gather input text
-    let query: string = "Doraemon";
+  protected search(query: string): void {
     this.apiService
-      .getManga(query)
-      .then((manga: Manga) => {
-        console.log("MANGA RECEIVED:");
-        console.log(manga);
+      .search(query)
+      .then((results: SearchResults) => {
+        console.log("RESULTS RECEIVED:");
+        console.log(results);
       });
   }
 
@@ -38,5 +37,6 @@ export class SearchBarComponent implements OnInit {
    * and initializes needed services.
    */
   constructor(private apiService: ApiService) {
+    // Nothing else to do
   }
 }
