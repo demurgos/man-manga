@@ -1,10 +1,12 @@
 div.wrapper
-  div.header
-    h1 Web sémantique
   div.content
     nav
-      a(routerLink="/home") Accueil
-      a(routerLink="/about") Infos
+      .nav-wrapper
+        ul#nav-mobile.left.hide-on-med-and-down
+          li
+            a(routerLink="/home") Home
+          li
+            a(routerLink="/about") About
     router-outlet
     mmg-search
     mmg-anime-response

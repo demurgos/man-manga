@@ -1,26 +1,25 @@
 import google = require("google");
 import Bluebird = require("bluebird");
+import Scraper = require("google-scraper");
 
-export interface Item {
-  title: string;
-  snippet: string;
-  link: string;
-}
-
-export async function query(query: string): Promise<Item[]> {
-  const googleResult: google.Result = await Bluebird.fromCallback((cb) => google(query, cb));
-
-  const items: Item[] = [];
-
-  for (const link of googleResult.links) {
-    if (link.href !== null) {
-      items.push({
-        title: link.title,
-        snippet: link.description,
-        link: link.href
-      });
-    }
+export function query(query: string, site?: string): Bluebird<Scraper.Links> {
+  if(site) {
+    query += " site:" + site;
   }
-
-  return items;
+  let scrape = new Scraper.GoogleScraper({
+    keyword: query,
+    language: "en",
+    tld: "com",
+    results: 10
+  });
+  return Bluebird.resolve(
+    scrape
+      .getGoogleLinks
+      .then((results: Scraper.Links) => {
+        return results;
+      }))
+    .catch((err: any) => {
+      console.log("ERROR");
+      console.log(err);
+    });
 }

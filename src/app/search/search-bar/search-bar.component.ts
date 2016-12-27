@@ -1,13 +1,13 @@
 import {Component, OnInit} from "@angular/core";
-import {Manga} from "../../../lib/interfaces/manga.interface";
 import {ApiService} from "../services/api.service";
+import {SearchResults}      from '../../../lib/interfaces/search-result.interface';
 
+// TODO: does this component really perform any request ?
 @Component({
   selector: "mmg-search",
   moduleId: "search/search-bar/search-bar.component",
   templateUrl: "search-bar.component.html",
-  styleUrls: ["search-bar.component.css"],
-  providers: [ApiService]
+  styleUrls: ["search-bar.component.css"]
 })
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
@@ -16,17 +16,18 @@ export class SearchBarComponent implements OnInit {
    * Properly initialize component.
    */
   ngOnInit(): void {
-    console.log("Initialized search page");
-    this.search();
+    // Nothing to do for the moment
   }
 
-  protected search(): void {
-    // TODO: gather input text
-    const query: string = "Doraemon";
+  /**
+   * An experimental search.
+   */
+  protected search(query: string): void {
     this.apiService
-      .getManga(query)
-      .then((/*manga: Manga*/) => {
-        // Do something with the manga
+      .search(query)
+      .then((results: SearchResults) => {
+        console.log("RESULTS RECEIVED:");
+        console.log(results);
       });
   }
 
@@ -36,6 +37,5 @@ export class SearchBarComponent implements OnInit {
    */
   constructor(apiService: ApiService) {
     this.apiService = apiService;
-    console.log(this.apiService);
   }
 }

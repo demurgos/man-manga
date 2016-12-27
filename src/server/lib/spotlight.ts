@@ -17,10 +17,10 @@ export async function query(text: string, language: string): Promise<string[]> {
   const apiPath: string = path.join("/", language, "annotate");
   const apiUri: string = url.format({protocol: API_PROTOCOL, host: API_HOST, pathname: apiPath});
 
-  const ioOptions: io.GetOptions = {
+  const ioOptions: io.PostOptions = {
     uri: apiUri,
-    queryString: {
-      text: text, // Text to analyze
+    form: {
+      text: text.substr(0, 500), // Text to analyze
       confidence: "0.8", // Confidence of the return URI (btw 0 and 1)
       support: "0", // Min number of incoming links require
       spotter: "Default", // ???
@@ -28,15 +28,19 @@ export async function query(text: string, language: string): Promise<string[]> {
       policy: "whiteliste", // ???
       types: "", // DBpedia type.
       sparql: "" // Potential sparql request to eliminate some returns URI
+    },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
     }
   };
 
-  const response: io.Response = await requestIO.get(ioOptions);
+  const response: io.Response = await requestIO.post(ioOptions);
 
-  return scrapResult(response.body);
+  return scrapJsonResult(JSON.parse(response.body)["Resources"]);
 }
 
-function scrapResult(html: string): string[] {
+function scrapHtmlResult(html: string): string[] {
   const links: string[] = [];
 
   const $: CheerioSelector = cheerio.load(html);
@@ -47,4 +51,12 @@ function scrapResult(html: string): string[] {
   });
 
   return links;
+}
+
+function scrapJsonResult(result: any[]): string[] {
+  let res: any[] = [];
+  for(let object of result) {
+    res.push(object["@URI"]);
+  }
+  return res;
 }

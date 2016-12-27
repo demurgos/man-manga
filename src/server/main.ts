@@ -15,7 +15,7 @@ import {IRouter, IRouterHandler} from "express-serve-static-core";
 import {AppServerModule} from "./app.server.module";
 import {FileSystemResourceLoader} from "./node-polyfill";
 import apiRouter from "./server.api";
-import {staticRoot} from "./server.config";
+import {staticRoot, SERVER_PORT} from "./server.config";
 import mainRouter from "./server.routes";
 
 // Enable Angular's prod for faster renders
@@ -63,6 +63,6 @@ app.use(apiRouter);
 app.use(mainRouter);
 
 // Instantiate the server
-const server: any = app.listen(process.env.PORT || 3000, () => {
+const server: any = app.listen(process.env.PORT || SERVER_PORT, () => {
   console.log(`Listening on: http://localhost:${server.address().port}`);
 });

@@ -2,8 +2,21 @@ import * as io from "../../lib/interfaces/io";
 import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
 import requestIO from "./request-io";
 
+/**
+ * Root URL of a cover URL.
+ */
 const mcdCoverRoot: string = "http://mcd.iosphe.re/n/";
+
+/**
+ * Tail URL of the first volume's front cover.
+ */
 const mcdFontCoverTail: string = "/1/front/a/";
+
+/**
+ * Root URL of mcd API.
+ */
+const MCD_API_ROOT_URL      = "http://mcd.iosphe.re/api/v1/";
+
 
 /**
  * Returns a JSON object with the requested manga's title
@@ -15,7 +28,7 @@ const mcdFontCoverTail: string = "/1/front/a/";
  */
 export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
   const requestOptions: io.PostOptions = {
-    uri: "http://mcd.iosphe.re/api/v1/search/",
+    uri: MCD_API_ROOT_URL + "search/",
     body: {
       Title: name
     }
@@ -24,7 +37,7 @@ export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
   const response: io.Response = await requestIO.post(requestOptions);
   const data: any = JSON.parse(response.body);
   if (data.Results.length === 0) {
-    throw new Error(`Mange ${name} not found`);
+    throw new Error(`Manga ${name} not found`);
   }
   // body["Results"][0][0] : the requested manga's ID according to mcd.iosphe.re
   // http://mcd.iosphe.re/n/{ID}/1/front/a/ : the requested manga's volume 1 cover (in theory)
