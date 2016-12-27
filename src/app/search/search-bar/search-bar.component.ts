@@ -22,7 +22,7 @@ export class SearchBarComponent implements OnInit {
 
   protected search(): void {
     // TODO: gather input text
-    let query: string = "Doraemon";
+    const query: string = "Doraemon";
     this.apiService
       .getManga(query)
       .then((/*manga: Manga*/) => {

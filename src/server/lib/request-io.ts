@@ -33,7 +33,7 @@ export function get (options: io.GetOptions): Bluebird<io.Response> {
         return cb(new Error("Missing status code"));
       }
 
-      let ioResponse: io.Response = {
+      const ioResponse: io.Response = {
         statusCode: response.statusCode,
         body: body,
         headers: response.headers
@@ -60,7 +60,7 @@ export function post (options: io.PostOptions): Bluebird<io.Response> {
         return cb(new Error("Missing status code"));
       }
 
-      let ioResponse: io.Response = {
+      const ioResponse: io.Response = {
         statusCode: response.statusCode,
         body: body,
         headers: response.headers
@@ -87,7 +87,7 @@ export function put (options: io.PutOptions): Bluebird<io.Response> {
         return cb(new Error("Missing status code"));
       }
 
-      let ioResponse: io.Response = {
+      const ioResponse: io.Response = {
         statusCode: response.statusCode,
         body: body,
         headers: response.headers

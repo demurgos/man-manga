@@ -91,6 +91,7 @@ function sparqlToManga(sparqlResult: any): Manga {
   // TODO: collect properties first and then build manga
   // Previous comment: find a way to type the following variable as Manga without throwing a typescript error
   const manga: Manga = <any> {};
+
   for (const key in sparqlResult) {
     if (!sparqlResult.hasOwnProperty(key)) {
       continue;
@@ -98,17 +99,17 @@ function sparqlToManga(sparqlResult: any): Manga {
 
     // TODO: document the expected keys
     if (sparqlResult[key].length === 1) {
-      manga[key] = (<any> sparqlResult[key][0]);
+      (<any> manga)[key] = (<any> sparqlResult[key][0]);
     } else if (key === "publicationDate") {
-      manga[key] = _.min(sparqlResult[key]);
+      (<any> manga)[key] = _.min(sparqlResult[key]);
     } else if (key === "author") {
-      manga[key] = sparqlResult[key][0];
+      (<any> manga)[key] = sparqlResult[key][0];
     } else if (key === "snippet") {
-      manga[key] = sparqlResult[key][0];
+      (<any> manga)[key] = sparqlResult[key][0];
     } else if (key === "volumes") {
-      manga[key] = _.max(sparqlResult[key]);
+      (<any> manga)[key] = _.max(sparqlResult[key]);
     } else {
-      manga[key] = sparqlResult[key];
+      (<any> manga)[key] = sparqlResult[key];
     }
   }
   return manga;

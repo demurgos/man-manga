@@ -53,14 +53,14 @@ app.set("views", staticRoot);
 app.set("view engine", "html");
 
 // Configure the server to parse body
-(<IRouterHandler<IRouter>> app.use)(cookieParser("ManManGa awesome app!"));
-(<IRouterHandler<IRouter>> app.use)(bodyParser.urlencoded({extended: true}));
-(<IRouterHandler<IRouter>> app.use)(bodyParser.json());
+app.use(cookieParser("ManManGa awesome app!"));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // Configure routes
 // NOTE: globalRouter must be the last used, since it defines defaults routes
-(<IRouterHandler<IRouter>> app.use)(apiRouter);
-(<IRouterHandler<IRouter>> app.use)(mainRouter);
+app.use(apiRouter);
+app.use(mainRouter);
 
 // Instantiate the server
 const server: any = app.listen(process.env.PORT || 3000, () => {

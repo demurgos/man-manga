@@ -1,6 +1,5 @@
 $bgColor: #c9f8ff;
 
-
 .searchbar {
   padding-top: 250px;
   margin: auto;
@@ -10,7 +9,7 @@ $bgColor: #c9f8ff;
 .title {
   text-align: center;
   font-size: 50px;
-  font-family: "Verdana Pro Light";
+  font-family: "Verdana Pro Light", sans-serif;
   padding-bottom: 5px;
 }
 
@@ -25,6 +24,7 @@ $bgColor: #c9f8ff;
   font-family: Calibri;
   text-align: center;
 }
+
 .input {
   background-color: $bgColor;
   width: 80%;
@@ -35,7 +35,7 @@ $bgColor: #c9f8ff;
 }
 
 .button {
-  margin-top:10px;
+  margin-top: 10px;
   height: 2em;
   padding: 0.3em;
   background-color: #f9f6f9;

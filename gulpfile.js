@@ -13,43 +13,66 @@ const projectOptions = Object.assign(
   }
 );
 
-// Angular universal server target
+// `server` target: Angular universal server
 // This will look better with ES7 object spread:
 // const serverTarget = {...buildTools.config.ANGULAR_SERVER_TARGET, name: "foo", scripts: ["bar/*.ts"]}
 const serverTarget = Object.assign(
   {},
   buildTools.config.ANGULAR_SERVER_TARGET,
   {
-    typescriptOptions: {
-      skipLibCheck: true,
+    typescript: {
+      compilerOptions: {
+        skipLibCheck: true,
+        lib: ["es6", "dom"]
+      },
       typescript: typescript,
-      lib: ["es6", "dom"]
+      tsconfigJson: ["server/tsconfig.json", "app/tsconfig.json", "lib/tsconfig.json"]
     }
   }
 );
 
-// Angular universal client target
+// `client` target: Angular universal client
 const clientTarget = Object.assign(
   {},
   buildTools.config.ANGULAR_CLIENT_TARGET,
   {
-    typescriptOptions: {
-      skipLibCheck: true,
+    typescript: {
+      compilerOptions: {
+        skipLibCheck: true,
+        lib: ["es6", "dom"]
+      },
       typescript: typescript,
-      lib: ["es6", "dom"]
+      tsconfigJson: ["client/tsconfig.json"]
     }
   }
 );
 
+// `test` target
+const testTarget = {
+  name: "test",
+  targetDir: "test",
+  scripts: ["test/**/*.ts", "lib/**/*.ts", "server/**/*.ts", "app/**/*.ts"],
+  typeRoots: ["custom-typings", "../typings/globals", "../typings/modules", "../node_modules/@types"],
+  typescript: {
+    strict: true,
+    compilerOptions: {
+      skipLibCheck: true,
+      target: "es2015"
+    },
+    typescript: typescript,
+    tsconfigJson: ["test/tsconfig.json"]
+  }
+};
+
+
 buildTools.projectTasks.registerAll(gulp, projectOptions);
 buildTools.targetGenerators.node.generateTarget(gulp, projectOptions, serverTarget);
-buildTools.targetGenerators.angular.generateTarget(gulp, projectOptions, clientTarget);
+buildTools.targetGenerators.webpack.generateTarget(gulp, projectOptions, clientTarget);
+buildTools.targetGenerators.test.generateTarget(gulp, projectOptions, testTarget);
 
-// complete:build
-const moveClientToServerStatic = buildTools.taskGenerators.copy.generateTask(gulp, {
-  from: "build/client",
-  files: ["main.js"],
-  to: "build/server/static"
-});
-moveClientToServerStatic.displayName = "_clientToServerStatic";
-gulp.task("complete:build", gulp.series(gulp.parallel("client:build", "server:build"), moveClientToServerStatic));
+gulp.task("all:build", gulp.parallel("client:build", "server:build"));
+gulp.task("all:watch", gulp.series("all:build", gulp.parallel("client:watch", "server:watch")));
+gulp.task("all:clean", gulp.parallel("client:clean", "server:clean"));
+gulp.task("client:clean-build", gulp.series("client:clean", "client:build"));
+gulp.task("server:clean-build", gulp.series("server:clean", "server:build"));
+gulp.task("all:clean-build", gulp.series("all:clean", "all:build"));

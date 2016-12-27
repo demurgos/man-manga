@@ -1,7 +1,18 @@
 {
   "name": "man-manga",
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "bluebird": "registry:npm/bluebird#3.4.1+20160909132857",
+    "express": "registry:npm/express#4.14.0+20160925001530",
+    "lodash": "registry:npm/lodash#4.0.0+20161015015725",
+    "request": "registry:npm/request#2.69.0+20160428223725",
+    "serve-static": "registry:npm/serve-static#1.11.1+20161113104247"
+  },
   "globalDependencies": {},
-  "globalDevDependencies": {}
+  "devDependencies": {
+    "chai": "registry:npm/chai#3.5.0+20160723033700",
+    "chai-as-promised": "registry:npm/chai-as-promised#5.1.0+20160310030142"
+  },
+  "globalDevDependencies": {
+    "mocha": "registry:env/mocha#2.2.5+20160926180742"
+  }
 }

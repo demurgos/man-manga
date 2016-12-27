@@ -1,4 +1,4 @@
-import {Router} from "express";
+import {NextFunction, Request, Response, Router} from "express";
 import {Anime} from "../lib/interfaces/anime.interface";
 import {Author} from "../lib/interfaces/author.interface";
 import {Character} from "../lib/interfaces/character.interface";
@@ -20,7 +20,7 @@ const anilistAPI: AnilistApi = new AnilistApi();
  * Just a test endpoint to see if the API is available.
  * Returns a JSON object.
  */
-apiRouter.get("/api/test", (req, res, next) => {
+apiRouter.get("/api/test", (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/json");
   res.status(200).json({"api-call": "You got it!"});
 });
@@ -36,10 +36,10 @@ apiRouter.get("/api/test", (req, res, next) => {
  *    isManga : whether the given resource is a manga or not.
  * Or 500 if there was an error with the request.
  */
-apiRouter.get("/api/sparql/isManga/:resource", async function (req, res, next) {
+apiRouter.get("/api/sparql/isManga/:resource", async function (req: Request, res: Response, next: NextFunction) {
   // TODO: move the logic to lib/dbpedia
   try {
-    const resource: string = req.params.resource;
+    const resource: string = req.params["resource"];
     const query: string = `select distinct ?p ?o where {
     values ?title {dbr:${resource}}.
     ?title rdf:type dbo:Manga."
@@ -82,8 +82,8 @@ apiRouter.get("/api/sparql/isManga/:resource", async function (req, res, next) {
  */
 // TODO: if the manga is unknown of dbpedia, but known to McdIOSphere,
 //       this will still returns a coverURL => correct this ?
-apiRouter.get("/api/sparql/manga/:name", async function (req: any, res: any, next: any) {
-  const mangaName: string = req.params.name;
+apiRouter.get("/api/sparql/manga/:name", async function (req: Request, res: Response, next: NextFunction) {
+  const mangaName: string = req.params["name"];
   let manga: Manga;
 
   try {
@@ -114,11 +114,11 @@ apiRouter.get("/api/sparql/manga/:name", async function (req: any, res: any, nex
  * Returns an anime as JSON,
  * or a 500 error if there was a problem with the request.
  */
-apiRouter.get("/api/sparql/anime/:name", async function (req: any, res: any, next: any) {
-  const animeName: string = req.params.name;
+apiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Response, next: NextFunction) {
+  const animeName: string = req.params["name"];
   try {
     const anime: Anime = await dbpedia.retrieveAnime(animeName);
-    res.send(200).json(anime);
+    res.status(200).json(anime);
   } catch (err) {
     console.error(`ERROR with the request from /api/sparql/anime/${animeName}`);
     console.error(err);
@@ -133,11 +133,11 @@ apiRouter.get("/api/sparql/anime/:name", async function (req: any, res: any, nex
  * Returns an author as JSON,
  * or a 500 error if there was a problem with the request.
  */
-apiRouter.get("/api/sparql/author/:name", async function (req: any, res: any, next: any) {
-  const authorName: string = req.params.name;
+apiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Response, next: NextFunction) {
+  const authorName: string = req.params["name"];
   try {
     const author: Author = await dbpedia.retrieveAuthor(authorName);
-    res.send(200).json(author);
+    res.status(200).json(author);
   } catch (err) {
     console.error(`ERROR with the request from /api/sparql/author/${authorName}`);
     console.error(err);
@@ -152,11 +152,11 @@ apiRouter.get("/api/sparql/author/:name", async function (req: any, res: any, ne
  * Returns a character as JSON,
  * or a 500 error if there was a problem with the request.
  */
-apiRouter.get("/api/sparql/character/:name", async function (req: any, res: any, next: any) {
-  const characterName: string = req.params.name;
+apiRouter.get("/api/sparql/character/:name", async function (req: Request, res: Response, next: NextFunction) {
+  const characterName: string = req.params["name"];
   try {
     const character: Character = await dbpedia.retrieveCharacter(characterName);
-    res.send(200).json(character);
+    res.status(200).json(character);
   } catch (err) {
     console.error(`ERROR with the request from /api/sparql/character/${characterName}`);
     console.error(err);
@@ -172,9 +172,9 @@ apiRouter.get("/api/sparql/character/:name", async function (req: any, res: any,
  * Meant to research a character with a precise name.
  */
 
-apiRouter.get("/api/character/:name", async function (req: any, res: any, next: any) {
+apiRouter.get("/api/character/:name", async function (req: Request, res: Response, next: NextFunction) {
   // TODO: try/catch
-  const characterName: string = req.params.name;
+  const characterName: string = req.params["name"];
   const character: Character = await anilistAPI.getCharacter(characterName);
   res.status(200).json(character);
 });
@@ -190,9 +190,9 @@ apiRouter.get("/api/character/:name", async function (req: any, res: any, next: 
  */
 // TODO: maybe this endpoint is not needed,
 // since the cover url is supposed to be sent when gathering all manga's information.
-apiRouter.get("/api/manga/:name/coverUrl", async function (req: any, res: any, next: any) {
+apiRouter.get("/api/manga/:name/coverUrl", async function (req: Request, res: Response, next: NextFunction) {
   try {
-    const mangaName: string = req.params.name;
+    const mangaName: string = req.params["name"];
     const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(mangaName);
     res.status(200).json(cover);
   } catch (err) {
