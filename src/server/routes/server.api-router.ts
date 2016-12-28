@@ -7,8 +7,8 @@ import * as DBPedia from "../lib/dbpedia";
 import * as googlesearch from "../lib/googlesearch";
 import * as McdIOSphere from "../lib/mcd-iosphere";
 import * as spotlight from "../lib/spotlight";
-import {anilistApiRouter} from "./server.api.anilist";
-import {manmangaApiRouter} from "./server.api.manmanga";
+import {anilistApiRouter} from "./api/anilist";
+import {manmangaApiRouter} from "./api/manmanga";
 
 export const apiRouter: Router = Router();
 

@@ -1,14 +1,14 @@
 import {NextFunction, Request, Response, Router} from "express";
-import {Anime} from "../../lib/interfaces/anime.interface";
-import {Author} from "../../lib/interfaces/author.interface";
-import {Character} from "../../lib/interfaces/character.interface";
-import * as io from "../../lib/interfaces/io";
-import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
-import {Manga} from "../../lib/interfaces/manga.interface";
-import {AnilistApi} from "../lib/anilist-api.class";
-import * as dbpedia from "../lib/dbpedia";
-import * as mcdIOSphe from "../lib/mcd-iosphere";
-import requestIO from "../lib/request-io";
+import {Anime} from "../../../lib/interfaces/anime.interface";
+import {Author} from "../../../lib/interfaces/author.interface";
+import {Character} from "../../../lib/interfaces/character.interface";
+import * as io from "../../../lib/interfaces/io";
+import {MangaCover} from "../../../lib/interfaces/manga-cover.interface";
+import {Manga} from "../../../lib/interfaces/manga.interface";
+import {AnilistApi} from "../../lib/anilist-api.class";
+import * as dbpedia from "../../lib/dbpedia";
+import * as mcdIOSphe from "../../lib/mcd-iosphere";
+import requestIO from "../../lib/request-io";
 
 export const manmangaApiRouter: Router = Router();
 
