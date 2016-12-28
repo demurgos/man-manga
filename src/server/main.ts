@@ -11,12 +11,11 @@ import {platformNodeDynamic} from "angular2-universal/node";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
-import {IRouter, IRouterHandler} from "express-serve-static-core";
 import {AppServerModule} from "./app.server.module";
 import {FileSystemResourceLoader} from "./node-polyfill";
-import apiRouter from "./server.api";
-import {staticRoot, SERVER_PORT} from "./server.config";
-import mainRouter from "./server.routes";
+import apiRouter from "./routes/server.api-router";
+import mainRouter from "./routes/server.main-router";
+import {serverPort, staticRoot} from "./server.config";
 
 // Enable Angular's prod for faster renders
 enableProdMode();
@@ -63,6 +62,6 @@ app.use(apiRouter);
 app.use(mainRouter);
 
 // Instantiate the server
-const server: any = app.listen(process.env.PORT || SERVER_PORT, () => {
+const server: any = app.listen(process.env.PORT || serverPort, () => {
   console.log(`Listening on: http://localhost:${server.address().port}`);
 });

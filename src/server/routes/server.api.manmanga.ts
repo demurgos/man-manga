@@ -1,16 +1,16 @@
 import {NextFunction, Request, Response, Router} from "express";
-import {Anime} from "../lib/interfaces/anime.interface";
-import {Author} from "../lib/interfaces/author.interface";
-import {Character} from "../lib/interfaces/character.interface";
-import * as io from "../lib/interfaces/io";
-import {MangaCover} from "../lib/interfaces/manga-cover.interface";
-import {Manga} from "../lib/interfaces/manga.interface";
-import {AnilistApi} from "./lib/anilist-api.class";
-import * as dbpedia from "./lib/dbpedia";
-import * as mcdIOSphe from "./lib/mcd-iosphe";
-import requestIO from "./lib/request-io";
+import {Anime} from "../../lib/interfaces/anime.interface";
+import {Author} from "../../lib/interfaces/author.interface";
+import {Character} from "../../lib/interfaces/character.interface";
+import * as io from "../../lib/interfaces/io";
+import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
+import {Manga} from "../../lib/interfaces/manga.interface";
+import {AnilistApi} from "../lib/anilist-api.class";
+import * as dbpedia from "../lib/dbpedia";
+import * as mcdIOSphe from "../lib/mcd-iosphere";
+import requestIO from "../lib/request-io";
 
-export const apiRouter: Router = Router();
+export const manmangaApiRouter: Router = Router();
 
 // TODO: what about multiple queries at the same time with an expired token ?
 const anilistAPI: AnilistApi = new AnilistApi();
@@ -26,7 +26,7 @@ const anilistAPI: AnilistApi = new AnilistApi();
  *    isManga : whether the given resource is a manga or not.
  * Or 500 if there was an error with the request.
  */
-apiRouter.get("/isManga/:resource", async function (req: Request, res: Response, next: NextFunction) {
+manmangaApiRouter.get("/isManga/:resource", async function (req: Request, res: Response, next: NextFunction) {
   // TODO: move the logic to lib/dbpedia
   try {
     const resource: string = req.params["resource"];
@@ -63,18 +63,16 @@ apiRouter.get("/isManga/:resource", async function (req: Request, res: Response,
   }
 });
 
-router.get("/resource/:name", (req: any, res: any) => {
-  let name: string = req.params["name"];
-  res.setHeader('Content-Type', 'application/json');
-  DBPedia.Search
-    .search(name)
-    .then((resource: any) => {
-      res.status(200).send(JSON.stringify(resource, null, 2));
-    })
-    .catch((err: any) => {
-      console.log("ERROR with the request from " + req.originalUrl);
-      res.status(404).send(err);
-    });
+manmangaApiRouter.get("/resource/:name", async function (req: Request, res: Response) {
+  try {
+    const resourceName: string = req.params["name"];
+    const resource: dbpedia.SearchResult = await dbpedia.search(resourceName);
+    res.status(200).json(resource);
+  } catch (err) {
+    console.error(`ERROR with the request to ${req.originalUrl}`);
+    console.error(err);
+    res.status(500).send(err);
+  }
 });
 
 /**
@@ -86,7 +84,7 @@ router.get("/resource/:name", (req: any, res: any) => {
  */
 // TODO: if the manga is unknown of dbpedia, but known to McdIOSphere,
 //       this will still returns a coverURL => correct this ?
-apiRouter.get("/manga/:name", async function (req: Request, res: Response, next: NextFunction) {
+manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Response) {
   const mangaName: string = req.params["name"];
   let manga: Manga;
 
@@ -118,13 +116,13 @@ apiRouter.get("/manga/:name", async function (req: Request, res: Response, next:
  * Returns an anime as JSON,
  * or a 404 error if there was a problem with the request.
  */
-apiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Response, next: NextFunction) {
-  const animeName: string = req.params["name"];
+manmangaApiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Response) {
   try {
+    const animeName: string = req.params["name"];
     const anime: Anime = await dbpedia.retrieveAnime(animeName);
     res.status(200).json(anime);
   } catch (err) {
-    console.error(`ERROR with the request from /api/sparql/anime/${animeName}`);
+    console.error(`ERROR with the request to ${req.originalUrl}`);
     console.error(err);
     res.status(500).send(err);
   }
@@ -137,13 +135,13 @@ apiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Resp
  * Returns an author as JSON,
  * or a 500 error if there was a problem with the request.
  */
-apiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Response, next: NextFunction) {
-  const authorName: string = req.params["name"];
+manmangaApiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Response) {
   try {
+    const authorName: string = req.params["name"];
     const author: Author = await dbpedia.retrieveAuthor(authorName);
     res.status(200).json(author);
   } catch (err) {
-    console.error(`ERROR with the request from /api/sparql/author/${authorName}`);
+    console.error(`ERROR with the request to ${req.originalUrl}`);
     console.error(err);
     res.status(404).send(err);
   }
@@ -156,13 +154,13 @@ apiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Res
  * Returns a character as JSON,
  * or a 404 error if there was a problem with the request.
  */
-apiRouter.get("/character/:name", async function (req: Request, res: Response, next: NextFunction) {
-  const characterName: string = req.params["name"];
+manmangaApiRouter.get("/character/:name", async function (req: Request, res: Response) {
   try {
+    const characterName: string = req.params["name"];
     const character: Character = await dbpedia.retrieveCharacter(characterName);
     res.status(200).json(character);
   } catch (err) {
-    console.error(`ERROR with the request from /api/sparql/character/${characterName}`);
+    console.error(`ERROR with the request to ${req.originalUrl}`);
     console.error(err);
     res.status(500).send(err);
   }
@@ -179,17 +177,18 @@ apiRouter.get("/character/:name", async function (req: Request, res: Response, n
  */
 // TODO: maybe this endpoint is not needed,
 // since the cover url is supposed to be sent when gathering all manga's information.
-apiRouter.get("/manga/:name/coverUrl", async function (req: Request, res: Response, next: NextFunction) {
+manmangaApiRouter.get("/manga/:name/coverUrl", async function (req: Request, res: Response) {
   try {
     const mangaName: string = req.params["name"];
     const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(mangaName);
     res.status(200).json(cover);
   } catch (err) {
+    console.error(`ERROR with the request to ${req.originalUrl}`);
     console.error(err);
     res.status(500).send(err);
   }
 });
 
-export default apiRouter;
+export default manmangaApiRouter;
 
 // wikiPageID => can be interesting!

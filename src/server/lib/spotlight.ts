@@ -8,7 +8,6 @@ const API_PROTOCOL: string = "http";
 const API_HOST: string = "dbpedia-spotlight.com";
 
 /**
- *
  * @param text
  * @param language
  * @returns {string []}
@@ -54,8 +53,8 @@ function scrapHtmlResult(html: string): string[] {
 }
 
 function scrapJsonResult(result: any[]): string[] {
-  let res: any[] = [];
-  for(let object of result) {
+  const res: any[] = [];
+  for (const object of result) {
     res.push(object["@URI"]);
   }
   return res;

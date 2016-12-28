@@ -1,109 +1,84 @@
-import * as Bluebird      from 'bluebird';
+import Bluebird = require("bluebird");
+import {Request, Response, Router} from "express";
+import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
+import {Manga} from "../../lib/interfaces/manga.interface";
+import * as alchemy from "../lib/alchemy";
+import * as DBPedia from "../lib/dbpedia";
+import * as googlesearch from "../lib/googlesearch";
+import * as McdIOSphere from "../lib/mcd-iosphere";
+import * as spotlight from "../lib/spotlight";
+import {anilistApiRouter} from "./server.api.anilist";
+import {manmangaApiRouter} from "./server.api.manmanga";
 
-import {Router}           from 'express';
-import {
-  IRouterMatcher,
-  IRouter}                from "express-serve-static-core";
-
-import {anilistApiRouter} from './server.api.anilist';
-import {apiRouter}        from './server.api.manmanga';
-import {DBPedia}          from '../lib/dbpedia';
-import {McdIOSphere}      from '../lib/mcd-iosphere';
-import {MangaCover}       from '../../lib/interfaces/manga-cover.interface';
-
-import * as Google        from '../lib/googlesearch';
-import * as Alchemy       from '../lib/alchemy';
-import * as Spotlight     from '../lib/spotlight';
-
-const router: Router = Router();
+export const apiRouter: Router = Router();
 
 /**
  * GET /api/test
  * Just a test endpoint to see if the API is available.
  * Returns a JSON object.
  */
-router.get("/api/test", (req: any, res: any) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.status(200).send(JSON.stringify({"api-call": "You got it!"}, null, 2));
+apiRouter.get("/api/test", async function (req: Request, res: Response) {
+  res.status(200).json({"api-call": "You got it!"});
 });
 
 /**
- * A test pipeline using Alchemy + Spotlight.
+ * A test pipeline using alchemy + spotlight.
  */
-router.get("/api/pipeline/:query", (req: any, res: any) => {
-  let query: string = req.params["query"];
-  res.setHeader('Content-Type', 'application/json');
-  console.log("QUERYING...");
-  Google
-    .query(query)
-    .then((result: any) => {
-      console.log(result);
-      console.log("ALCHEMYING...");
-      return Alchemy.getTextFromURL(result[0]);
-    })
-    .then((result: Alchemy.Result) => {
-      console.log(result);
-      console.log("SPOTLIGHTING...");
-      return Spotlight.query(result.text, result.language);
-    })
-    .then((result: string[]) => {
-      console.log(result);
-      res.status(200).send(result);
-    })
-    .catch((err: any) => {
-      res.status(500).send(err);
-    });
+apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Response) {
+  try {
+    const query: string = req.params["query"];
+    console.log("QUERYING...");
+    const searchResult: string[] = await googlesearch.query(query);
+    console.log(searchResult);
+    console.log("ALCHEMYING...");
+    // TODO: handle empty array
+    const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(searchResult[0]);
+    console.log(alchemyResult);
+    console.log("SPOTLIGHTING...");
+    const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
+    console.log(spotlightResult);
+    res.status(200).json(spotlightResult);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 /**
  * A test pipeline using specific search.
  */
-router.get("/api/pipeline2/:query", (req: any, res: any) => {
-  let query: string = req.params["query"];
-  res.setHeader('Content-Type', 'application/json');
-  // STEP 1: query google on wikipedia
-  Google
-    .query(query + " manga OR anime", "en.wikipedia.org")
-    .then((result: string[]) => {
-      // STEP 2: query information thanks to DBPedia
-      return Bluebird.all(result.slice(0, 3).map((url: string) => {
-        return DBPedia.Search.search(DBPedia.Utils.wikiUrlToResourceUrl(url));
-      }));
-    })
-    .then((results: DBPedia.Search.Result[]) => {
-      // STEP 3: gather additional information from some APIs
-      return Bluebird.all(results.map((result: DBPedia.Search.Result) => {
-        const manga = result.manga;   // Need a const because of the promise
-        if(result && manga) {
-          return McdIOSphere
-            .getMangaCoverUrl(DBPedia.Utils.resourceUrlToName(manga.title))
-            .then((cover: MangaCover) => {
-              manga.coverUrl = cover.coverUrl;
-              result.manga = manga;
-              return result;
-            })
-            .catch((err: Error) => {
-              // At this point, it's not a problem if we don't find any cover
-              // Just return the result
-              // TODO: try to get something with anilist ?
-              return result;
-            });
+apiRouter.get("/api/pipeline2/:query", async function (req: Request, res: Response) {
+  try {
+    const query: string = req.params["query"];
+    const searchResult: string[] = await googlesearch.query(`${query} manga OR anime`, "en.wikipedia.org");
+    const dbpediaResultPromises: Promise<DBPedia.SearchResult>[] = searchResult
+      .slice(0, 3)
+      .map(async function (url: string) {
+        const dbpediaResult: DBPedia.SearchResult = await DBPedia.search(DBPedia.wikiUrlToResourceUrl(url));
+        if (dbpediaResult && dbpediaResult.manga !== undefined) {
+          const manga: Manga = dbpediaResult.manga;
+          try {
+            const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(DBPedia.resourceUrlToName(manga.title));
+            manga.coverUrl = cover.coverUrl;
+          } catch (err) {
+            // At this point, it's not a problem if we don't find any cover
+            // Just return the result
+            // TODO: try to get something with anilist ?
+          }
         }
-        return result;
-      }));
-    })
-    .then((result: any) => {
-      res.status(200).send(JSON.stringify(result, null, 2));
-    })
-    .catch((err: any) => {
-      res.status(500).send(err);
-    });
+        return dbpediaResult;
+      });
+
+    const dbpediaResults: DBPedia.SearchResult[] = await Promise.all(dbpediaResultPromises);
+    res.status(200).json(dbpediaResults);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 /**
- * Mount sub-routers.
+ * Register sub-routers.
  */
-(<IRouterMatcher<IRouter>> router.use)('/api', apiRouter);
-(<IRouterMatcher<IRouter>> router.use)('/api/anilist', anilistApiRouter);
+apiRouter.use("/api", manmangaApiRouter);
+apiRouter.use("/api/anilist", anilistApiRouter);
 
-export const globalApiRouter = router;
+export default apiRouter;

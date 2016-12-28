@@ -1,14 +1,14 @@
 import * as express from "express";
-import {externalUrl, staticRoot} from "./server.config";
+import {externalUrl, staticRoot} from "../server.config";
 
 export const mainRouter: any = express.Router();
 // NOTE: the type 'any' fixes a bug between WebStorm and @Types
 
 /**
  * The function to apply when someone queries an Angular's route.
- * Parameters are the basic ones given to an express apiRouter.
+ * Parameters are the basic ones given to an express manmangaApiRouter.
  */
-function ngApp(req: any, res: any) {
+function ngApp(req: express.Request, res: express.Response): void {
   res.render("index", {
     req,
     res,

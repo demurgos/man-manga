@@ -6,9 +6,9 @@ const MANGATEST: Manga = {
   author: {name: "Tsugumi Oba"},
   illustrator: ["Takeshi Obata"],
   volumes: 12,
-  genres: ['Thriller', 'Drama'],
-  abstract: 'Kira kill the world with a book from hell',
-  coverUrl: 'http://mcd.iosphe.re/n/41/1/front/a/'
+  genres: ["Thriller", "Drama"],
+  abstract: "Kira kill the world with a book from hell",
+  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
 };
 
 @Component({
@@ -20,9 +20,7 @@ const MANGATEST: Manga = {
 export class MangaComponent implements OnInit {
   protected manga: Manga;
 
-  constructor() {
-    // this.manga = MANGATEST; // 1/2 won't work
-  }
+  constructor() {}
 
   ngOnInit(): void {
     console.log("Manga !");

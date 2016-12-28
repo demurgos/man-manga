@@ -15,8 +15,7 @@ const mcdFontCoverTail: string = "/1/front/a/";
 /**
  * Root URL of mcd API.
  */
-const MCD_API_ROOT_URL      = "http://mcd.iosphe.re/api/v1/";
-
+const MCD_API_ROOT_URL: string = "http://mcd.iosphe.re/api/v1/";
 
 /**
  * Returns a JSON object with the requested manga's title

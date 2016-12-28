@@ -1,10 +1,9 @@
-import {Manga}      from './manga.interface';
-import {Anime}      from './anime.interface';
-import {Author}     from './author.interface';
-import {Character}  from './character.interface';
+import {Anime} from "./anime.interface";
+import {Author} from "./author.interface";
+import {Character} from "./character.interface";
+import {Manga} from "./manga.interface";
 
 export interface SearchResult {
-  
   /**
    * A possible manga matching the search criteria.
    */

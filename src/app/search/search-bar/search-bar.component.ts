@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
+import {SearchResults} from "../../../lib/interfaces/search-result.interface";
 import {ApiService} from "../services/api.service";
-import {SearchResults}      from '../../../lib/interfaces/search-result.interface';
 
 // TODO: does this component really perform any request ?
 @Component({
