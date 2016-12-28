@@ -62,15 +62,21 @@ const testTarget = {
     },
     typescript: typescript,
     tsconfigJson: ["test/tsconfig.json"]
-  }
+  },
+  copy: [
+    {
+      name: "test-resources",
+      files: ["test/*/**/*.html", "test/*/**/*.json"]
+    }
+  ]
 };
-
 
 buildTools.projectTasks.registerAll(gulp, projectOptions);
 buildTools.targetGenerators.node.generateTarget(gulp, projectOptions, serverTarget);
 buildTools.targetGenerators.webpack.generateTarget(gulp, projectOptions, clientTarget);
 buildTools.targetGenerators.test.generateTarget(gulp, projectOptions, testTarget);
 
+gulp.task("all:tsconfig.json", gulp.parallel("client:tsconfig.json", "server:tsconfig.json", "test:tsconfig.json"));
 gulp.task("all:build", gulp.parallel("client:build", "server:build"));
 gulp.task("all:watch", gulp.series("all:build", gulp.parallel("client:watch", "server:watch")));
 gulp.task("all:clean", gulp.parallel("client:clean", "server:clean"));

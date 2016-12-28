@@ -4,7 +4,7 @@ import * as io from "../../lib/interfaces/io";
 
 /**
  * Converts implementation-independant IO options to the concrete
- * options used by `request`.
+ * options used by the `request` library.
  *
  * @param ioOptions Implementation independent IO options
  * @returns {request.Options} Corresponding `request` options

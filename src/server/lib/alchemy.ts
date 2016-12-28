@@ -28,7 +28,7 @@ function getLanguageCode(languageName: string): LanguageCode {
 
 export async function getTextFromURL(url: string): Promise<Result> {
   const alchemyLanguage: watson.AlchemyLanguage = watson.alchemy_language({
-    // Nicolas'key available for up to 1000 request a day
+    // Nicolas'key available for up to 1000 requests a day
     api_key: "d1318ceb349318b5ab6b35ced1640cd8a76aa56e"
   });
 

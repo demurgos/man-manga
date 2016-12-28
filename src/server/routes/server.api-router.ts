@@ -28,11 +28,11 @@ apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Respons
   try {
     const query: string = req.params["query"];
     console.log("QUERYING...");
-    const searchResult: string[] = await googlesearch.query(query);
+    const searchResult: googlesearch.SearchResult[] = await googlesearch.search({query: query});
     console.log(searchResult);
     console.log("ALCHEMYING...");
     // TODO: handle empty array
-    const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(searchResult[0]);
+    const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(searchResult[0].link);
     console.log(alchemyResult);
     console.log("SPOTLIGHTING...");
     const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
@@ -49,10 +49,12 @@ apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Respons
 apiRouter.get("/api/pipeline2/:query", async function (req: Request, res: Response) {
   try {
     const query: string = req.params["query"];
-    const searchResult: string[] = await googlesearch.query(`${query} manga OR anime`, "en.wikipedia.org");
+    const googlesearchQuery: string = `${query} manga OR anime site:en.wikipedia.org`;
+    const searchResult: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
     const dbpediaResultPromises: Promise<DBPedia.SearchResult>[] = searchResult
       .slice(0, 3)
-      .map(async function (url: string) {
+      .map(async function (searchResult: googlesearch.SearchResult) {
+        const url: string = searchResult.link;
         const dbpediaResult: DBPedia.SearchResult = await DBPedia.search(DBPedia.wikiUrlToResourceUrl(url));
         if (dbpediaResult && dbpediaResult.manga !== undefined) {
           const manga: Manga = dbpediaResult.manga;

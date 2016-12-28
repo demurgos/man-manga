@@ -42,9 +42,9 @@ export async function query(text: string, language: string): Promise<string[]> {
 function scrapHtmlResult(html: string): string[] {
   const links: string[] = [];
 
-  const $: CheerioSelector = cheerio.load(html);
+  const $: cheerio.Static = cheerio.load(html);
 
-  $("a").each((index: number, element: CheerioElement) => {
+  $("a").each((index: number, element: cheerio.Element) => {
     const href: string = $(element).attr("href");
     links.push(href);
   });
