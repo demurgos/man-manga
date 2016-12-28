@@ -27,10 +27,21 @@ const serverTarget = Object.assign(
       },
       typescript: typescript,
       tsconfigJson: ["server/tsconfig.json", "app/tsconfig.json", "lib/tsconfig.json"]
-    }
+    },
+    copy: [
+      {
+        name: "materialize-css",
+        src: "../node_modules/materialize-css/dist",
+        files: [
+          "css/materialize.css",
+          "js/materialize.js",
+          "fonts/**/*"
+        ],
+        dest: "static/"
+      }
+    ]
   }
 );
-// TODO: materialize
 
 // `client` target: Angular universal client
 const clientTarget = Object.assign(
