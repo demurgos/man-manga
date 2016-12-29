@@ -12,9 +12,6 @@ import requestIO from "../../lib/request-io";
 
 export const manmangaApiRouter: Router = Router();
 
-// TODO: what about multiple queries at the same time with an expired token ?
-const anilistAPI: AnilistApi = new AnilistApi();
-
 /**
  * GET /isManga/:resource
  *    :resource  The resource to analyze

@@ -1,12 +1,7 @@
 import Bluebird = require("bluebird");
 import {Request, Response, Router} from "express";
-import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
-import {Manga} from "../../lib/interfaces/manga.interface";
-import * as alchemy from "../lib/alchemy";
+import * as manmangaApi from "../api/index";
 import * as DBPedia from "../lib/dbpedia";
-import * as googlesearch from "../lib/googlesearch";
-import * as McdIOSphere from "../lib/mcd-iosphere";
-import * as spotlight from "../lib/spotlight";
 import {anilistApiRouter} from "./api/anilist";
 import {manmangaApiRouter} from "./api/manmanga";
 
@@ -27,19 +22,10 @@ apiRouter.get("/api/test", async function (req: Request, res: Response) {
 apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Response) {
   try {
     const query: string = req.params["query"];
-    console.log("QUERYING...");
-    const searchResult: googlesearch.SearchResult[] = await googlesearch.search({query: query});
-    console.log(searchResult);
-    console.log("ALCHEMYING...");
-    // TODO: handle empty array
-    const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(searchResult[0].link);
-    console.log(alchemyResult);
-    console.log("SPOTLIGHTING...");
-    const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
-    console.log(spotlightResult);
-    res.status(200).json(spotlightResult);
+    const result: string[] = await manmangaApi.search(query);
+    res.status(200).json(result);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 
@@ -49,31 +35,10 @@ apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Respons
 apiRouter.get("/api/pipeline2/:query", async function (req: Request, res: Response) {
   try {
     const query: string = req.params["query"];
-    const googlesearchQuery: string = `${query} manga OR anime site:en.wikipedia.org`;
-    const searchResult: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
-    const dbpediaResultPromises: Promise<DBPedia.SearchResult>[] = searchResult
-      .slice(0, 3)
-      .map(async function (searchResult: googlesearch.SearchResult) {
-        const url: string = searchResult.link;
-        const dbpediaResult: DBPedia.SearchResult = await DBPedia.search(DBPedia.wikiUrlToResourceUrl(url));
-        if (dbpediaResult && dbpediaResult.manga !== undefined) {
-          const manga: Manga = dbpediaResult.manga;
-          try {
-            const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(DBPedia.resourceUrlToName(manga.title));
-            manga.coverUrl = cover.coverUrl;
-          } catch (err) {
-            // At this point, it's not a problem if we don't find any cover
-            // Just return the result
-            // TODO: try to get something with anilist ?
-          }
-        }
-        return dbpediaResult;
-      });
-
-    const dbpediaResults: DBPedia.SearchResult[] = await Promise.all(dbpediaResultPromises);
-    res.status(200).json(dbpediaResults);
+    const result: DBPedia.SearchResult[] = await manmangaApi.search2(query);
+    res.status(200).json(result);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 

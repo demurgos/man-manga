@@ -9,6 +9,11 @@ export interface Manga {
   title: string;
 
   /**
+   * A short description of the manga
+   */
+  snippet?: string;
+
+  /**
    * The main author's name.
    * Expected to be found for each manga.
    */

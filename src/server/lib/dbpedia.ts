@@ -217,7 +217,7 @@ export async function getMangaInfos(mangaName: string, lang: string = "en"): Pro
 
   const data: any = JSON.parse(response.body);
 
-  return sparqlToManga(crossArray(data.results.bindings));
+  return sparqlToManga(sparqlCrossArray(data.results.bindings));
 }
 
 /**
@@ -261,7 +261,7 @@ export async function getAnimeInfos(animeName: string, lang: string = "en"): Pro
     }
   });
   const data: any = JSON.parse(response.body);
-  return sparqlToAnime(crossArray(data.results.bindings));
+  return sparqlToAnime(sparqlCrossArray(data.results.bindings));
 }
 
 /**
@@ -307,7 +307,7 @@ export async function getCharacterInfos(characterName: string, lang: string = "e
     }
   });
   const data: any = JSON.parse(response.body);
-  return sparqlToCharacter(crossArray(data.results.bindings));
+  return sparqlToCharacter(sparqlCrossArray(data.results.bindings));
 }
 
 /**
@@ -331,13 +331,12 @@ export async function getAuthorInfos(authorName: string, lang: string = "en"): P
       ?title ?abstract ?employer ?birthDate
     WHERE {
       values ?title {<${resourceToResourceUrl(authorName)}>}.
-      {
-        ?m a dbo:Manga. ?m dbo:author ?title.
-      } UNION {
-       ?m a dbo:Anime. ?m dbo:writer ?title.
+      {?m a dbo:Manga. ?m dbo:author ?title.}
+      UNION
+      {?m a dbo:Anime. ?m dbo:writer ?title.}
       OPTIONAL { ?title dbo:employer ?employer }.
       OPTIONAL { ?title dbo:birthDate ?birthDate }.
-      OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract), '${lang}'))) }.
+      OPTIONAL { ?title dbo:abstract ?abstract. filter(langMatches(lang(?abstract), '${lang}')) }.
     }
   `;
 
@@ -348,8 +347,9 @@ export async function getAuthorInfos(authorName: string, lang: string = "en"): P
       format: "application/json"
     }
   });
+
   const data: any = JSON.parse(response.body);
-  return sparqlToAuthor(crossArray(data.results.bindings));
+  return sparqlToAuthor(sparqlCrossArray(data.results.bindings));
 }
 
 /**
@@ -420,7 +420,7 @@ export function resourceUrlToResource(url: string): string {
   return url.replace(dbpediaResourceBaseUrl, "");
 }
 
-export function wikiResourceUrlToResource(url: string): string {
+export function wikipediaArticleUrlToResource(url: string): string {
   return url.replace(wikipediaBaseUrl, "");
 }
 
@@ -429,8 +429,8 @@ export function wikiResourceUrlToResource(url: string): string {
  * @param url
  * @returns {string}
  */
-export function wikiUrlToResourceUrl(url: string): string {
-  return dbpediaResourceBaseUrl + wikiResourceUrlToResource(url);
+export function wikipediaArticleUrlToResourceUrl(url: string): string {
+  return dbpediaResourceBaseUrl + wikipediaArticleUrlToResource(url);
 }
 
 /**
@@ -446,36 +446,51 @@ export function resourceUrlToName(url: string): string {
  *
  * @param sparqlResult The raw sparql result.
  */
-// TODO: refactor this
 export function sparqlToObjects(sparqlResult: any): SearchResult {
-  const res: SearchResult = {};
+  const result: SearchResult = {};
 
-  const tabRes: any[] = [[], [], [], []];
+  // tslint:disable-next-line:typedef
+  const typeToItems = {
+    manga: <any[]> [],
+    anime: <any[]> [],
+    author: <any[]> [],
+    character: <any[]> []
+  };
+
   for (const result of sparqlResult) {
-    if (result["x"]["value"] === "manga") {
-      tabRes[0].push(result);
-    } else if (result["x"]["value"] === "anime") {
-      tabRes[1].push(result);
-    } else if (result["x"]["value"] === "author") {
-      tabRes[2].push(result);
-    } else if (result["x"]["value"] === "character") {
-      tabRes[3].push(result);
+    switch (result["x"].value) {
+      case "manga":
+        typeToItems["manga"].push(result);
+        break;
+      case "anime":
+        typeToItems["anime"].push(result);
+        break;
+      case "author":
+        typeToItems["author"].push(result);
+        break;
+      case "character":
+        typeToItems["character"].push(result);
+        break;
+      default:
+        console.warn(`Got unexpected value for "x": ${result["x"].value}`);
     }
     delete result["x"];
   }
-  if (tabRes[0].length !== 0) {
-    res.manga = sparqlToManga(crossArray(tabRes[0]));
+
+  if (typeToItems["manga"].length > 0) {
+    result.manga = sparqlToManga(sparqlCrossArray(typeToItems["manga"]));
   }
-  if (tabRes[1].length !== 0) {
-    res.anime = sparqlToAnime(crossArray(tabRes[1]));
+  if (typeToItems["anime"].length > 0) {
+    result.anime = sparqlToAnime(sparqlCrossArray(typeToItems["anime"]));
   }
-  if (tabRes[2].length !== 0) {
-    res.author = sparqlToAuthor(crossArray(tabRes[2]));
+  if (typeToItems["author"].length > 0) {
+    result.author = sparqlToAuthor(sparqlCrossArray(typeToItems["author"]));
   }
-  if (tabRes[3].length !== 0) {
-    res.character = sparqlToCharacter(crossArray(tabRes[3]));
+  if (typeToItems["character"].length > 0) {
+    result.character = sparqlToCharacter(sparqlCrossArray(typeToItems["character"]));
   }
-  return res;
+
+  return result;
 }
 
 /**
@@ -487,31 +502,44 @@ export function sparqlToObjects(sparqlResult: any): SearchResult {
  * @param sparqlResult The result coming from a response to a sparql request.
  */
 function sparqlToManga(sparqlResult: any): Manga {
-  sparqlResult = sparqlResult.length !== undefined ? sparqlResult[0] : sparqlResult;
-  // TODO: collect properties first and then build manga
-  // Previous comment: find a way to type the following variable as Manga without throwing a typescript error
-  const manga: Manga = <any> {};
+  let title: string = "";
+  if (sparqlResult.title.length > 0) {
+    title = sparqlResult.title[0];
+  }
+  // TODO: fix this: parse date, proper comparison, etc.
+  // let publicationDate: Date | undefined;
+  // if (sparqlResult.publicationDate.length > 0) {
+  //   publicationDate = _.min(sparqlResult.publicationDate);
+  // }
+  let author: Author = {name: ""};
+  if (sparqlResult.author.length > 0) {
+    author = {name: resourceUrlToResource(sparqlResult.author[0])};
+  }
+  let snippet: string = "";
+  if (sparqlResult.snippet.length > 0) {
+    snippet = sparqlResult.snippet[0];
+  }
+  let volumes: number | undefined;
+  if (sparqlResult.volumes.length > 0) {
+    volumes = Math.max(...(sparqlResult.volumes.map((volume: string) => parseInt(volume, 10))));
+  }
 
+  const manga: Manga = {
+    title,
+    author,
+    snippet,
+    volumes
+  };
+
+  // Collect remaining keys
   for (const key in sparqlResult) {
-    if (!sparqlResult.hasOwnProperty(key)) {
+    if (!sparqlResult.hasOwnProperty(key) || key in manga || sparqlResult[key].length === 0) {
       continue;
     }
-
-    // TODO: document the expected keys
-    if (sparqlResult[key].length === 1) {
-      (<any> manga)[key] = (<any> sparqlResult[key][0]);
-    } else if (key === "publicationDate") {
-      (<any> manga)[key] = _.min(sparqlResult[key]);
-    } else if (key === "author") {
-      (<any> manga)[key] = sparqlResult[key][0];
-    } else if (key === "snippet") {
-      (<any> manga)[key] = sparqlResult[key][0];
-    } else if (key === "volumes") {
-      (<any> manga)[key] = _.max(sparqlResult[key].map((volume: string) => parseInt(volume, 10)));
-    } else {
-      (<any> manga)[key] = sparqlResult[key];
-    }
+    // TODO: always use an array for unknown keys
+    manga[<keyof Manga> key] = sparqlResult[key].length === 1 ? sparqlResult[key][0] : sparqlResult[key];
   }
+
   return manga;
 }
 
@@ -522,20 +550,33 @@ function sparqlToManga(sparqlResult: any): Manga {
  * @param sparqlResult The result coming from a response to a sparql request.
  */
 export function sparqlToAnime(sparqlResult: RawResultArray): Anime {
-  // TODO: collect data and build complete anime
-  const anime: Anime = <any> {};
+  let title: string = "";
+  if (sparqlResult.title.length > 0) {
+    title = sparqlResult.title[0];
+  }
+  let author: Author = {name: ""};
+  if (sparqlResult.author.length > 0) {
+    author = {name: resourceUrlToResource(sparqlResult.author[0])};
+  }
+  let description: string = "";
+  if (sparqlResult.abstract.length > 0) {
+    description = sparqlResult.abstract[0];
+  }
+
+  const anime: Anime = {
+    title,
+    author,
+    abstract: description
+  };
+
+  // Collect remaining keys
   for (const key in sparqlResult) {
-    if (!sparqlResult.hasOwnProperty(key)) {
+    if (!sparqlResult.hasOwnProperty(key) || key in anime || sparqlResult[key].length === 0) {
       continue;
     }
-    if (sparqlResult[key].length === 1) {
-      (<any> anime)[key] = (<any> sparqlResult[key][0]);
-    } else if (key === "author") {
-      (<any> anime)[key] = sparqlResult[key][0];
-    } else if (key === "abstract") {
-      (<any> anime)[key] = sparqlResult[key][0];
-    }
+    anime[<keyof Anime> key] = sparqlResult[key][0];
   }
+
   return anime;
 }
 
@@ -545,24 +586,26 @@ export function sparqlToAnime(sparqlResult: RawResultArray): Anime {
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
+// TODO: throw error on missing property ?
 export function sparqlToAuthor(sparqlResult: RawResultArray): Author {
-  // TODO: collect data and build complete author
-  const author: Author = <any> {};
-  for (const key in sparqlResult) {
-    if (!sparqlResult.hasOwnProperty(key)) {
-      continue;
-    }
-    if (sparqlResult[key].length === 1 && key === "title") {
-      author["name"] = (<any> sparqlResult[key][0]);
-    } else if (sparqlResult[key].length === 1) {
-      (<any> author)[key] = (<any> sparqlResult[key][0]);
-    } else if (key === "abstract") {
-      author[key] = sparqlResult[key][0];
-    } else if (key === "employer") {
-      author[key] = sparqlResult[key][0];
-    }
+  let name: string = "";
+  if (sparqlResult.title.length > 0) {
+    name = sparqlResult.title[0];
   }
-  return author;
+  let employer: string = "";
+  if (sparqlResult.employer.length > 0) {
+    employer = sparqlResult.employer[0];
+  }
+  let description: string = "";
+  if (sparqlResult.abstract.length > 0) {
+    description = sparqlResult.abstract[0];
+  }
+
+  return {
+    name,
+    employer,
+    abstract: description
+  };
 }
 
 /**
@@ -571,56 +614,76 @@ export function sparqlToAuthor(sparqlResult: RawResultArray): Author {
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
+// TODO: throw error on missing property ?
 export function sparqlToCharacter(sparqlResult: RawResultArray): Character {
-  // TODO: collect data and build complete character
-  const character: Character = <any> {};
-  for (const key in sparqlResult) {
-    if (!sparqlResult.hasOwnProperty(key)) {
-      continue;
-    }
-    if (sparqlResult[key].length === 1 && key === "title") {
-      character["name"] = (<any> sparqlResult[key][0]);
-    } else if (sparqlResult[key].length === 1 && key === "author") {
-      character["creator"] = (<any> sparqlResult[key][0]);
-    } else if (sparqlResult[key].length === 1) {
-      (<any> character)[key] = (<any> sparqlResult[key][0]);
-    } else if (key === "abstract") {
-      character[key] = sparqlResult[key][0];
-    } else if (key === "author") {
-      // TODO: fix this
-      (<any> character)["creator"] = sparqlResult[key][0];
-    }
+  let name: string = "";
+  if (sparqlResult.title.length > 0) {
+    name = sparqlResult.title[0];
   }
-  return character;
+  let creator: Author = {name: ""};
+  if (sparqlResult.author.length > 0) {
+    creator = {name: resourceUrlToResource(sparqlResult.author[0])};
+  }
+  let description: string = "";
+  if (sparqlResult.abstract.length > 0) {
+    description = sparqlResult.abstract[0];
+  }
+
+  return {
+    name,
+    creator,
+    abstract: description
+  };
 }
 
 /**
- * Transform an array of same type objects in a object with arrays as fields,
- * deleting duplicated values in the process.
+ * Converts an array of SPARQL result objects to an object with multi-valuated (array) properties.
  *
  * @param sparqlResult The raw result sent by dbpedia.
  */
-function crossArray(sparqlResult: any[]): RawResultArray {
-  const result: any = {};
-  let first: boolean = true;
-  for (const object of sparqlResult) {
+function sparqlCrossArray(sparqlResult: {[key: string]: {value: any}}[]): RawResultArray {
+  // For each property of each object, maps the member `value` to the property itself.
+  //
+  // [{foo: {value: 42}]
+  // ->
+  // [{foo: 42}]
+  const normalized: {[key: string]: any}[] = sparqlResult
+    .map((object: {[key: string]: {value: any}}) => {
+      const simple: {[key: string]: any} = {};
+      for (const key in object) {
+        if (!object.hasOwnProperty(key)) {
+          continue;
+        }
+        simple[key] = object[key].value;
+      }
+      return simple;
+    });
+  return <RawResultArray> crossArray(normalized);
+}
+
+/**
+ * Converts an array of objects to an object with array properties.
+ *
+ * Each property of the result object will be the set of unique values for this property for
+ * the objects in the input array.
+ *
+ * @param arr The array of objects.
+ */
+function crossArray<T>(arr: T[]): {[K in keyof T]: T[K][]} {
+  const result: {[K in keyof T]: any[]} = <any> {};
+  for (const object of arr) {
     for (const key in object) {
       if (!object.hasOwnProperty(key)) {
         continue;
       }
-
-      // TODO: simplify
-      if (first) {
-        result[key] = [object[key].value];
-      } else {
-        if (result[key].indexOf(object[key].value) !== -1) {
-          continue;
-        }
-        result[key].push(object[key].value);
+      if (!Array.isArray(result[key])) {
+        result[key] = [];
+      }
+      const val: any = object[key];
+      if (result[key].indexOf(val) === -1) {
+        result[key].push(val);
       }
     }
-
-    first = false;
   }
 
   return result;
@@ -664,6 +727,11 @@ export interface RawResultArray {
    * Publisher's name
    */
   publisher: string[];
+
+  /**
+   * Author's employer
+   */
+  employer: string[];
 
   /**
    * Manga/Anime's abstract or snippet about people
