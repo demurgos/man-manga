@@ -179,7 +179,7 @@ export async function search(name: string, lang: string = "en"): Promise<SearchR
  */
 export async function retrieveManga(mangaName: string): Promise<Manga> {
   const infos: Manga = await getMangaInfos(mangaName);
-  if(infos.author) {
+  if (infos.author) {
     const authorName: string = infos.author.name;
     delete infos.author;
     infos.author = await retrieveAuthor(authorName);
@@ -459,7 +459,7 @@ export function sparqlToObjects(sparqlResult: any): SearchResult {
   };
 
   for (const result of sparqlResult) {
-    if(!result["x"]) {
+    if (!result["x"]) {
       continue;
     }
     switch (result["x"].value) {

@@ -1,7 +1,8 @@
-import * as io from "../../lib/interfaces/io";
 import * as path from "path";
+import * as io from "../../lib/interfaces/io";
+
 import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
-import requestIO from "./request-io";
+import {requestIO} from "./request-io";
 
 /**
  * Root URL of a cover URL.
