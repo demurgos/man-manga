@@ -15,7 +15,6 @@ export interface Manga {
 
   /**
    * The main author's name.
-   * Expected to be found for each manga.
    */
   author?: Author;
 
