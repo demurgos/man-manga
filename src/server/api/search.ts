@@ -30,15 +30,14 @@ export async function search (query: string): Promise<string[]> {
  * A test pipeline using specific search.
  */
 export async function search2 (query: string): Promise<DBPedia.SearchResult[]> {
-  console.log("QUERYING...");
   // TODO: use function to build query
   const googlesearchQuery: string = `${query} manga OR anime site:en.wikipedia.org`;
   const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
   console.log("Google results");
   console.log(searchResults);
-  const dbpediaResultPromises: Promise<DBPedia.SearchResult>[] = searchResults
+  return Promise.all(searchResults
     .slice(0, 3)
-    .map(async function (searchResult: googlesearch.SearchResult): Promise<DBPedia.SearchResult> {
+    .map(async (searchResult: googlesearch.SearchResult): Promise<DBPedia.SearchResult> => {
       const url: string = searchResult.link;
       console.log(`dbpedia search for ${url}`);
       const dbpediaResult: DBPedia.SearchResult = await DBPedia.search(DBPedia.wikipediaArticleUrlToResourceUrl(url));
@@ -56,6 +55,5 @@ export async function search2 (query: string): Promise<DBPedia.SearchResult[]> {
       console.log("DBPedia result, maybe with cover");
       console.log(dbpediaResult);
       return dbpediaResult;
-    });
-  return Promise.all(dbpediaResultPromises);
+    }));
 }

@@ -1,4 +1,5 @@
 import * as io from "../../lib/interfaces/io";
+import * as path from "path";
 import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
 import requestIO from "./request-io";
 
@@ -26,14 +27,12 @@ const MCD_API_ROOT_URL: string = "http://mcd.iosphe.re/api/v1/";
  * @param name The manga's name.
  */
 export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
-  const requestOptions: io.PostOptions = {
+  const response: io.Response = await requestIO.post({
     uri: MCD_API_ROOT_URL + "search/",
-    body: {
+    body: JSON.stringify({
       Title: name
-    }
-  };
-
-  const response: io.Response = await requestIO.post(requestOptions);
+    })
+  });
   const data: any = JSON.parse(response.body);
   if (data.Results.length === 0) {
     throw new Error(`Manga ${name} not found`);
@@ -43,7 +42,6 @@ export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
   // TODO: confirm that the cover url is always the same
   return {
     title: name,
-    // TODO: use path.posix.join
-    coverUrl: mcdCoverRoot + data.Results[0][0] + mcdFontCoverTail
+    coverUrl: path.join(mcdCoverRoot, data.Results[0][0], mcdFontCoverTail)
   };
 }

@@ -12,14 +12,14 @@ export const apiRouter: Router = Router();
  * Just a test endpoint to see if the API is available.
  * Returns a JSON object.
  */
-apiRouter.get("/api/test", async function (req: Request, res: Response) {
+apiRouter.get("/api/test", async (req: Request, res: Response) => {
   res.status(200).json({"api-call": "You got it!"});
 });
 
 /**
  * A test pipeline using alchemy + spotlight.
  */
-apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Response) {
+apiRouter.get("/api/pipeline/:query", async (req: Request, res: Response) => {
   try {
     const query: string = req.params["query"];
     const result: string[] = await manmangaApi.search(query);
@@ -32,7 +32,7 @@ apiRouter.get("/api/pipeline/:query", async function (req: Request, res: Respons
 /**
  * A test pipeline using specific search.
  */
-apiRouter.get("/api/pipeline2/:query", async function (req: Request, res: Response) {
+apiRouter.get("/api/pipeline2/:query", async (req: any, res: Response) => {
   try {
     const query: string = req.params["query"];
     const result: DBPedia.SearchResult[] = await manmangaApi.search2(query);
