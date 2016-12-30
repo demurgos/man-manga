@@ -512,15 +512,15 @@ function sparqlToManga(sparqlResult: any): Manga {
   //   publicationDate = _.min(sparqlResult.publicationDate);
   // }
   let author: Author = {name: ""};
-  if (sparqlResult.author.length > 0) {
+  if (sparqlResult.author && sparqlResult.author.length > 0) {
     author = {name: resourceUrlToResource(sparqlResult.author[0])};
   }
   let snippet: string = "";
-  if (sparqlResult.snippet.length > 0) {
+  if (sparqlResult.snippet && sparqlResult.snippet.length > 0) {
     snippet = sparqlResult.snippet[0];
   }
   let volumes: number | undefined;
-  if (sparqlResult.volumes.length > 0) {
+  if (sparqlResult.volumes && sparqlResult.volumes.length > 0) {
     volumes = Math.max(...(sparqlResult.volumes.map((volume: string) => parseInt(volume, 10))));
   }
 
@@ -551,22 +551,22 @@ function sparqlToManga(sparqlResult: any): Manga {
  */
 export function sparqlToAnime(sparqlResult: RawResultArray): Anime {
   let title: string = "";
-  if (sparqlResult.title.length > 0) {
+  if (sparqlResult.title && sparqlResult.title.length > 0) {
     title = sparqlResult.title[0];
   }
   let author: Author = {name: ""};
-  if (sparqlResult.author.length > 0) {
+  if (sparqlResult.author && sparqlResult.author.length > 0) {
     author = {name: resourceUrlToResource(sparqlResult.author[0])};
   }
-  let description: string = "";
-  if (sparqlResult.abstract.length > 0) {
-    description = sparqlResult.abstract[0];
+  let snippet: string = "";
+  if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
+    snippet = sparqlResult.abstract[0];
   }
 
   const anime: Anime = {
     title,
     author,
-    abstract: description
+    abstract: snippet
   };
 
   // Collect remaining keys
@@ -589,22 +589,22 @@ export function sparqlToAnime(sparqlResult: RawResultArray): Anime {
 // TODO: throw error on missing property ?
 export function sparqlToAuthor(sparqlResult: RawResultArray): Author {
   let name: string = "";
-  if (sparqlResult.title.length > 0) {
+  if (sparqlResult.title && sparqlResult.title.length > 0) {
     name = sparqlResult.title[0];
   }
   let employer: string = "";
-  if (sparqlResult.employer.length > 0) {
+  if (sparqlResult.employer && sparqlResult.employer.length > 0) {
     employer = sparqlResult.employer[0];
   }
-  let description: string = "";
-  if (sparqlResult.abstract.length > 0) {
-    description = sparqlResult.abstract[0];
+  let snippet: string = "";
+  if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
+    snippet = sparqlResult.abstract[0];
   }
 
   return {
     name,
     employer,
-    abstract: description
+    abstract: snippet
   };
 }
 
@@ -617,22 +617,22 @@ export function sparqlToAuthor(sparqlResult: RawResultArray): Author {
 // TODO: throw error on missing property ?
 export function sparqlToCharacter(sparqlResult: RawResultArray): Character {
   let name: string = "";
-  if (sparqlResult.title.length > 0) {
+  if (sparqlResult.title && sparqlResult.title.length > 0) {
     name = sparqlResult.title[0];
   }
   let creator: Author = {name: ""};
-  if (sparqlResult.author.length > 0) {
+  if (sparqlResult.author && sparqlResult.author.length > 0) {
     creator = {name: resourceUrlToResource(sparqlResult.author[0])};
   }
-  let description: string = "";
-  if (sparqlResult.abstract.length > 0) {
-    description = sparqlResult.abstract[0];
+  let snippet: string = "";
+  if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
+    snippet = sparqlResult.abstract[0];
   }
 
   return {
     name,
     creator,
-    abstract: description
+    abstract: snippet
   };
 }
 
