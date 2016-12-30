@@ -9,15 +9,15 @@ export interface Manga {
   title: string;
 
   /**
-   * A short description of the manga
+   * An abstract of this manga.
    */
-  snippet?: string;
+  abstract?: string;
 
   /**
    * The main author's name.
    * Expected to be found for each manga.
    */
-  author: Author;
+  author?: Author;
 
   /**
    * The list of all known illustrators' names.
@@ -29,11 +29,6 @@ export interface Manga {
    */
   // TODO: not used for the moment
   characters?: Character[];
-
-  /**
-   * An abstract of this manga.
-   */
-  abstract?: string;
 
   /**
    * An URL to one cover.
