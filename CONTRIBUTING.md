@@ -2,6 +2,7 @@
 
 ## Environment
 
+- _python_ 2.7 (Does not work with Python 3)
 - [_node_ 7][notes-node]
 - [_npm_ **4**][notes-npm] (Node currently only bundles _npm_ 3)
 - [_gulp (CLI)_][notes-gulp]
