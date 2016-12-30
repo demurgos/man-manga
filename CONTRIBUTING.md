@@ -2,10 +2,20 @@
 
 ## Environment
 
-- _node_ 6
-- **_npm_ 4**: Solves a life-cycle issue (prepare and prepublish scripts)
-- _gulp-cli_
-- _typings_
+- [_node_ 7][notes-node]
+- [_npm_ **4**][notes-npm] (Node currently only bundles _npm_ 3)
+- [_gulp (CLI)_][notes-gulp]
+- [_typings_][notes-typings]
+
+## Install, build, run, test
+
+```shell
+npm install
+gulp all:clean-build
+# Run: (or "npm start" ?)
+node build/server/server/main.js
+npm test
+```
 
 ## Gulp tasks
 
@@ -53,3 +63,9 @@ Build and run `test` target (mocha unit tests for the server)
 ```shell
 gulp test
 ```
+
+
+[notes-gulp]: https://github.com/demurgos/notes/blob/master/tools/languages/javascript/gulp.md
+[notes-node]: https://github.com/demurgos/notes/blob/master/tools/languages/javascript/node.md
+[notes-npm]: https://github.com/demurgos/notes/blob/master/tools/languages/javascript/npm.md
+[notes-typings]: https://github.com/demurgos/notes/blob/master/tools/languages/typescript/typings.md
