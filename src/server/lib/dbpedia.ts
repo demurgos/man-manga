@@ -179,11 +179,12 @@ export async function search(name: string, lang: string = "en"): Promise<SearchR
  */
 export async function retrieveManga(mangaName: string): Promise<Manga> {
   const infos: Manga = await getMangaInfos(mangaName);
-  const authorName: string = infos.author.name;
-  delete infos.author;
-  const manga: Manga = infos;
-  manga.author = await retrieveAuthor(authorName);
-  return manga;
+  if(infos.author) {
+    const authorName: string = infos.author.name;
+    delete infos.author;
+    infos.author = await retrieveAuthor(authorName);
+  }
+  return infos;
 }
 
 /**
@@ -458,6 +459,9 @@ export function sparqlToObjects(sparqlResult: any): SearchResult {
   };
 
   for (const result of sparqlResult) {
+    if(!result["x"]) {
+      continue;
+    }
     switch (result["x"].value) {
       case "manga":
         typeToItems["manga"].push(result);
@@ -511,13 +515,13 @@ function sparqlToManga(sparqlResult: any): Manga {
   // if (sparqlResult.publicationDate.length > 0) {
   //   publicationDate = _.min(sparqlResult.publicationDate);
   // }
-  let author: Author = {name: ""};
+  let author: Author | undefined;
   if (sparqlResult.author && sparqlResult.author.length > 0) {
     author = {name: resourceUrlToResource(sparqlResult.author[0])};
   }
-  let snippet: string = "";
-  if (sparqlResult.snippet && sparqlResult.snippet.length > 0) {
-    snippet = sparqlResult.snippet[0];
+  let snippet: string | undefined;
+  if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
+    snippet = sparqlResult.abstract[0];
   }
   let volumes: number | undefined;
   if (sparqlResult.volumes && sparqlResult.volumes.length > 0) {
@@ -527,7 +531,7 @@ function sparqlToManga(sparqlResult: any): Manga {
   const manga: Manga = {
     title,
     author,
-    snippet,
+    abstract: snippet,
     volumes
   };
 
@@ -554,11 +558,11 @@ export function sparqlToAnime(sparqlResult: RawResultArray): Anime {
   if (sparqlResult.title && sparqlResult.title.length > 0) {
     title = sparqlResult.title[0];
   }
-  let author: Author = {name: ""};
+  let author: Author | undefined;
   if (sparqlResult.author && sparqlResult.author.length > 0) {
     author = {name: resourceUrlToResource(sparqlResult.author[0])};
   }
-  let snippet: string = "";
+  let snippet: string | undefined;
   if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
     snippet = sparqlResult.abstract[0];
   }
@@ -592,11 +596,11 @@ export function sparqlToAuthor(sparqlResult: RawResultArray): Author {
   if (sparqlResult.title && sparqlResult.title.length > 0) {
     name = sparqlResult.title[0];
   }
-  let employer: string = "";
+  let employer: string | undefined;
   if (sparqlResult.employer && sparqlResult.employer.length > 0) {
     employer = sparqlResult.employer[0];
   }
-  let snippet: string = "";
+  let snippet: string | undefined;
   if (sparqlResult.abstract && sparqlResult.abstract.length > 0) {
     snippet = sparqlResult.abstract[0];
   }
