@@ -5,6 +5,13 @@ export interface BaseOptions {
   // jar: request.CookieJar;
   headers?: Dictionary<any>;
   queryString?: Dictionary<any>;
+
+  /**
+   * Encoding of the response, use `null` to get a Buffer instead of a string.
+   *
+   * Default: "utf8"
+   */
+  encoding?: "utf8" | null;
 }
 
 export interface GetOptions extends BaseOptions {

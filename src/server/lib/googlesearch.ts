@@ -55,6 +55,13 @@ export interface Options {
   results?: number;
 
   /**
+   * Set the value of the "User-Agent" header of the HTTP request. This may solve encoding issues.
+   *
+   * Default: "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"
+   */
+  userAgent?: string;
+
+  /**
    * Override the default http library. You have to provide an object with a `get` method
    * accepting an options object {uri: string; queryString: {[key: string]: string;} and returns a promise for a
    * response object {statusCode: number; headers: {[name: string]: string}; body: string;} where body is the HTML
@@ -71,6 +78,7 @@ export interface CompleteOptions extends Options {
   host: string;
   language: string;
   results: number;
+  userAgent: string;
   httpIO: io.IO;
 }
 
@@ -79,6 +87,7 @@ export const defaultOptions: CompleteOptions = {
   host: "www.google.com",
   language: "en",
   results: 10,
+  userAgent: "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0",
   httpIO: requestIO
 };
 
@@ -115,8 +124,16 @@ export function resolveOptions(options: Options): CompleteOptions {
 export async function search(options: Options): Promise<SearchResult[]> {
   const response: io.Response = await httpRequest(options);
   if (response.statusCode !== 200) {
-    throw new Error("Unexpected status code");
+    throw new Error("googlesearch: Unexpected status code");
   }
+
+  // TODO: allow to disable warning on unknown header
+  if (response.headers["content-type"] !== "text/html; charset=UTF-8") {
+    const actual: string = response.headers["Content-Type"];
+    const msg: string = `Expected header "content-type" to be "text/html; charset=UTF-8", got ${actual}`;
+    console.warn(`googlesearch: ${msg}. Try to change your userAgent options`);
+  }
+
   return scrap(response.body);
 }
 
@@ -134,6 +151,10 @@ export async function httpRequest(options: Options): Promise<io.Response> {
       q: completeOptions.query,
       hl: completeOptions.language,
       num: completeOptions.results.toString(10)
+    },
+    headers: {
+      "Host": completeOptions.host,
+      "User-Agent": completeOptions.userAgent
     }
   };
 
@@ -151,7 +172,7 @@ export function scrap(html: string): SearchResult[] {
   const results: SearchResult[] = [];
   const $: cheerio.Static = cheerio.load(html);
   // ires: I... Results, g: ?
-  const resultNodes: cheerio.Cheerio = $("#ires").find("> ol > .g");
+  const resultNodes: cheerio.Cheerio = $("#ires").find(".g");
   resultNodes.each((i: number, e: cheerio.Element): void => {
     const elem: cheerio.Cheerio = $(e);
     // r: result
@@ -163,7 +184,7 @@ export function scrap(html: string): SearchResult[] {
       return;
     }
 
-    const link: string | null = getTargetLinkFromResultHref(titleLinkNode.attr("href"));
+    const link: string | null = getTargetUrlFromResultHref(titleLinkNode.attr("href"));
     const title: string = normalizeWhiteSpaces(titleLinkNode.text());
     const snippet: string = normalizeWhiteSpaces(snippetNode.text());
 
@@ -179,28 +200,39 @@ export function scrap(html: string): SearchResult[] {
 }
 
 /**
- * This functions returns the target link ("http://example.com") from the href value of a relust.
- * The href attribute of a value has the form "/url?q=http://example.com&...".
+ * This functions returns the target link ("http://example.com") from the href value of a result.
  *
- * The value can also be "/search?q=..." when redirecting to other searches (for example images), this value
- * is ignored (returns null).
+ * Here are the known forms of the href attribute:
+ * - "http://example.com"
+ *   Fully specified URI. Supported.
+ *
+ * - "/url?q=http://example.com&..."
+ *   Absolute path "/url" with the query string parameter "q" set to the target URL. Supported.
+ *
+ * - "/search?q=..."
+ *   Absolute path "/search", URL to an other search type (image, video). Unsupported.
  *
  * Returns `null` if the function is unable to extract the target link.
  *
  * @param href
  */
-export function getTargetLinkFromResultHref(href: string): string | null {
+export function getTargetUrlFromResultHref(href: string): string | null {
   const parsedUrl: url.Url = url.parse(href);
-  if (parsedUrl.pathname !== "/url" || typeof parsedUrl.query !== "string") {
-    return null;
-  }
-  const queryStringData: {[key: string]: any} = querystring.parse(parsedUrl.query);
 
-  if (typeof queryStringData["q"] !== "string") {
-    return null;
+  // Fully specified URI
+  if (parsedUrl.protocol !== null) {
+    return href;
   }
 
-  return queryStringData["q"];
+  // /url?q=
+  if (parsedUrl.pathname === "/url" && typeof parsedUrl.query === "string") {
+    const queryStringData: {[key: string]: any} = querystring.parse(parsedUrl.query);
+    if (typeof queryStringData["q"] === "string") {
+      return queryStringData["q"];
+    }
+  }
+
+  return null;
 }
 
 /**

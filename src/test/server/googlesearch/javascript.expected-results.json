@@ -1,12 +1,17 @@
 [
   {
-    "title": "JavaScript basics - Learn web development | MDN",
+    "title": "JavaScript - Wikipedia",
     "snippet": "",
-    "link": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics"
+    "link": "https://en.wikipedia.org/wiki/JavaScript"
+  },
+  {
+    "title": "JavaScript - Wikipedia",
+    "snippet": "",
+    "link": "https://en.wikipedia.org/wiki/JavaScript"
   },
   {
     "title": "JavaScript Tutorial - W3Schools",
-    "snippet": "JavaScript is the programming language of HTML and the Web. JavaScript is easy to learn. This tutorial will teach you JavaScript from basic to advanced.",
+    "snippet": "JavaScript is the programming language of HTML and the Web. JavaScript is easy to learn.",
     "link": "http://www.w3schools.com/js/"
   },
   {
@@ -16,7 +21,7 @@
   },
   {
     "title": "JavaScript - Wikipedia",
-    "snippet": "JavaScript (/ˈdʒ�vəˌskrɪpt/) is a high-level, dynamic, untyped, and interpreted programming language. It has been standardized in the ECMAScript language specification.",
+    "snippet": "JavaScript (/ˈdʒævəˌskrɪpt/) is a high-level, dynamic, untyped, and interpreted programming language. It has been standardized in the ECMAScript language specification.",
     "link": "https://en.wikipedia.org/wiki/JavaScript"
   },
   {
@@ -26,12 +31,12 @@
   },
   {
     "title": "JavaScript | MDN",
-    "snippet": "13 Dec 2016 ... JavaScript. JavaScript (JS) is a lightweight, interpreted, programming language with first-class functions. While it is most well-known as the scripting language for Web pages, many non-browser environments also use it, such as node.js and Apache CouchDB.",
+    "snippet": "Dec 13, 2016 - JavaScript (JS) is a lightweight, interpreted, programming language with first-class functions. While it is most well-known as the scripting ...",
     "link": "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
   },
   {
     "title": "JavaScript basics - Learn web development | MDN",
-    "snippet": "4 Dec 2016 ... JavaScript is a programming language that adds interactivity to your website (for example: games, responses when buttons are pressed or data ...",
+    "snippet": "Dec 4, 2016 - JavaScript is a programming language that adds interactivity to your website (for example: games, responses when buttons are pressed or data ...",
     "link": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics"
   },
   {

@@ -22,6 +22,7 @@ describe("googlesearch", function () {
           host: googlesearch.defaultOptions.host,
           language: googlesearch.defaultOptions.language,
           results: googlesearch.defaultOptions.results,
+          userAgent: googlesearch.defaultOptions.userAgent,
           httpIO: googlesearch.defaultOptions.httpIO
         }
       },
@@ -37,6 +38,7 @@ describe("googlesearch", function () {
           host: "www.google.fr",
           language: "fr",
           results: 50,
+          userAgent: googlesearch.defaultOptions.userAgent,
           httpIO: googlesearch.defaultOptions.httpIO
         }
       }
