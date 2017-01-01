@@ -6,6 +6,7 @@ import * as testConfig from "../../test/test-config";
 import * as googlesearch from "./googlesearch";
 
 describe("googlesearch", function () {
+  // Ensure that `resolveOptions` correctly completes the options
   describe("resolveOptions", function () {
     interface Item {
       options: googlesearch.Options;
@@ -49,6 +50,7 @@ describe("googlesearch", function () {
     }
   });
 
+  // Ensure that the html scrapping works
   describe("scrap", function() {
     interface Item {
       name: string;

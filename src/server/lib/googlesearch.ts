@@ -1,12 +1,27 @@
 import cheerio = require("cheerio");
+import {trim} from "lodash";
 import * as querystring from "querystring";
 import * as url from "url";
 import * as io from "../../lib/interfaces/io";
 import requestIO from "./request-io";
 
+/**
+ * A search result
+ */
 export interface SearchResult {
+  /**
+   * Title of the result
+   */
   title?: string;
+
+  /**
+   * Short description of the result
+   */
   snippet?: string;
+
+  /**
+   * Complete url to the page described by this result
+   */
   link: string;
 }
 
@@ -135,12 +150,28 @@ export async function httpRequest(options: Options): Promise<io.Response> {
 export function scrap(html: string): SearchResult[] {
   const results: SearchResult[] = [];
   const $: cheerio.Static = cheerio.load(html);
-  $("h3.r a").each((i: number, elem: cheerio.Element): void => {
-    const resultHref: string = $(elem).attr("href");
-    const targetLink: string | null = getTargetLinkFromResultHref(resultHref);
-    if (targetLink !== null) {
+  // ires: I... Results, g: ?
+  const resultNodes: cheerio.Cheerio = $("#ires").find("> ol > .g");
+  resultNodes.each((i: number, e: cheerio.Element): void => {
+    const elem: cheerio.Cheerio = $(e);
+    // r: result
+    const titleLinkNode: cheerio.Cheerio = elem.find("h3.r a");
+    // st: snippet text
+    const snippetNode: cheerio.Cheerio = elem.find(".st");
+
+    if (titleLinkNode.length === 0) {
+      return;
+    }
+
+    const link: string | null = getTargetLinkFromResultHref(titleLinkNode.attr("href"));
+    const title: string = normalizeWhiteSpaces(titleLinkNode.text());
+    const snippet: string = normalizeWhiteSpaces(snippetNode.text());
+
+    if (link !== null) {
       results.push({
-        link: targetLink
+        title,
+        snippet,
+        link
       });
     }
   });
@@ -150,6 +181,9 @@ export function scrap(html: string): SearchResult[] {
 /**
  * This functions returns the target link ("http://example.com") from the href value of a relust.
  * The href attribute of a value has the form "/url?q=http://example.com&...".
+ *
+ * The value can also be "/search?q=..." when redirecting to other searches (for example images), this value
+ * is ignored (returns null).
  *
  * Returns `null` if the function is unable to extract the target link.
  *
@@ -167,6 +201,17 @@ export function getTargetLinkFromResultHref(href: string): string | null {
   }
 
   return queryStringData["q"];
+}
+
+/**
+ * Trims the string and replaces all sequences of consecutive white spaces characters to a single space character.
+ *
+ * A white space is defined by the `\s` regular expression character class.
+ *
+ * See: https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
+ */
+export function normalizeWhiteSpaces(str: string): string {
+  return trim(str).replace(/\s+/g, " ");
 }
 
 /**
