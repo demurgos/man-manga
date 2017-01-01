@@ -11,11 +11,19 @@
 ## Install, build, run, test
 
 ```shell
+# Run as a normal user
+# Install
 npm install
+# Build & Run
+npm start
+# Build
 gulp all:clean-build
-# Run: (or "npm start" ?)
+# Run
 node build/server/server/main.js
+# Test
 npm test
+# Test, offline mode
+OFFLINE_TESTS=true npm test
 ```
 
 ## Gulp tasks

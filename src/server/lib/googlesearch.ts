@@ -38,19 +38,33 @@ export interface Options {
    * Default: 10
    */
   results?: number;
+
+  /**
+   * Override the default http library. You have to provide an object with a `get` method
+   * accepting an options object {uri: string; queryString: {[key: string]: string;} and returns a promise for a
+   * response object {statusCode: number; headers: {[name: string]: string}; body: string;} where body is the HTML
+   * content of the response.
+   *
+   * This allows to use this library in a browser, behind a proxy or simply mock the HTTP requests.
+   *
+   * Default: Implementation based on the `request` library (requires Node)
+   */
+  httpIO?: io.IO;
 }
 
 export interface CompleteOptions extends Options {
   host: string;
   language: string;
   results: number;
+  httpIO: io.IO;
 }
 
 export const defaultOptions: CompleteOptions = {
   query: "",
   host: "www.google.com",
   language: "en",
-  results: 10
+  results: 10,
+  httpIO: requestIO
 };
 
 /**
@@ -108,7 +122,7 @@ export async function httpRequest(options: Options): Promise<io.Response> {
     }
   };
 
-  return requestIO.get(getOptions);
+  return completeOptions.httpIO.get(getOptions);
 }
 
 /**

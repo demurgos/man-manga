@@ -1,0 +1,8 @@
+{
+  "uri": "http://www.google.com/search",
+  "queryString": {
+    "q": "goku",
+    "hl": "en",
+    "num": "10"
+  }
+}

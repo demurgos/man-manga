@@ -1,12 +1,20 @@
 language: node_js
+
+node_js:
+- stable
+
+env:
+# Do not send requests to external servers (DBPedia, Google, etc.) to not hit api limits
+- OFFLINE_TESTS=true
+
+before_install:
+- npm install -g typings gulp-cli npm
+
+script:
+- npm test
+
 notifications:
   slack: ifhexas1:5F8LnMG9s1X6zYnxrFaz9FZw
   email:
     on_success: never
     on_failure: change
-node_js:
-- stable
-before_install:
-- npm install -g typings gulp-cli npm@4
-script:
-- npm test

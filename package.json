@@ -11,9 +11,8 @@
   "scripts": {
     "prepare": "typings install && gulp all:tsconfig.json && gulp :tslint.json",
     "test": "gulp :lint && gulp test",
-    "prestart": "gulp server:build",
-    "start": "node build/server/server/main.js",
-    "build-client": "gulp client:build"
+    "prestart": "gulp all:clean-build",
+    "start": "node build/server/server/main.js"
   },
   "keywords": [],
   "license": "AGPL-3.0",
