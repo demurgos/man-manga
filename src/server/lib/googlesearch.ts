@@ -175,6 +175,12 @@ export function scrap(html: string): SearchResult[] {
   const resultNodes: cheerio.Cheerio = $("#ires").find(".g");
   resultNodes.each((i: number, e: cheerio.Element): void => {
     const elem: cheerio.Cheerio = $(e);
+
+    if (elem.parents("#ires .g").length > 0) {
+      // Nested node.
+      return;
+    }
+
     // r: result
     const titleLinkNode: cheerio.Cheerio = elem.find("h3.r a");
     // st: snippet text
