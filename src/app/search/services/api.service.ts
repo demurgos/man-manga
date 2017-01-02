@@ -10,6 +10,8 @@ import {Manga} from "../../../lib/interfaces/manga.interface";
 import {SearchResults} from "../../../lib/interfaces/search-result.interface";
 import {appConfig, Config} from "../../app.tokens";
 
+import * as url from "url";
+
 @Injectable()
 export class ApiService {
   private http: Http;
@@ -36,7 +38,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(encodeURI(`${this.appConfig.apiBaseUri}/pipeline2/${query}`))
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/pipeline2/${query}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -55,7 +57,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${this.appConfig.apiBaseUri}/manga/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/manga/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -74,7 +76,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${this.appConfig.apiBaseUri}/anime/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/anime/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -93,7 +95,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${this.appConfig.apiBaseUri}/author/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/author/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -112,7 +114,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${this.appConfig.apiBaseUri}/character/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/character/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
