@@ -11,6 +11,7 @@ import {platformNodeDynamic} from "angular2-universal/node";
 import * as bodyParser from "body-parser";
 import cookieParser = require("cookie-parser");
 import express = require("express");
+import morgan = require("morgan");
 import {AppServerModule} from "./app.server.module";
 import {FileSystemResourceLoader} from "./node-polyfill";
 import apiRouter from "./routes/server.api-router";
@@ -50,6 +51,9 @@ app.engine(".html", createEngine({
 // Set app variables
 app.set("views", staticRoot);
 app.set("view engine", "html");
+
+// Log the requests
+app.use(morgan("dev"));
 
 // Configure the server to parse body
 app.use(cookieParser("ManManGa awesome app!"));
