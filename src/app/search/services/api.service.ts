@@ -10,6 +10,7 @@ import {Manga} from "../../../lib/interfaces/manga.interface";
 import {SearchResults} from "../../../lib/interfaces/search-result.interface";
 import {appConfig, Config} from "../../app.tokens";
 
+import * as path from "path";
 import * as url from "url";
 
 @Injectable()
@@ -26,6 +27,16 @@ export class ApiService {
   }
 
   /**
+   * Return the URI /api/pipeline2/:query
+   * as a string.
+   * @param query Keywords of the query.
+   */
+  public getSearchUri(query: string): string {
+    return url.
+      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("pipeline2/", encodeURIComponent(query)));
+  }
+
+  /**
    * GET /api/pipeline2/:query
    * Search anything related to the keywords and manga/anime,
    * and returns them in an array wrapped in a promise.
@@ -38,7 +49,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/pipeline2/${query}`)))
+          .get(this.getSearchUri(query))
           .toPromise();
       })
       .then((response: any) => {
@@ -47,22 +58,42 @@ export class ApiService {
   }
 
   /**
+   * Return the URI /api/sparql/manga/:name
+   * as a string.
+   * @param name The manga's name.
+   */
+  public getMangaUri(name: string): string {
+    return url.
+      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("manga/", encodeURIComponent(name)));
+  }
+
+  /**
    * GET /api/sparql/manga/:name
    * Returns the wanted manga,
    * or a Promise rejection if there was a problem with the request
    * (or if no manga could be found).
-   * @param name The manga"s name.
+   * @param name The manga's name.
    */
   public getManga(name: string): Bluebird<Manga> {
     return Bluebird
       .try(() => {
         return this.http
-          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/manga/${name}`)))
+          .get(this.getMangaUri(name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
+  }
+
+  /**
+   * Return the URI /api/sparql/anime/:name
+   * as a string.
+   * @param name The anime's name.
+   */
+  public getAnimeUri(name: string): string {
+    return url.
+      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("anime/", encodeURIComponent(name)));
   }
 
   /**
@@ -76,12 +107,22 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/anime/${name}`)))
+          .get(this.getAnimeUri(name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
+  }
+
+  /**
+   * Return the URI /api/sparql/author/:name
+   * as a string.
+   * @param name The author's name.
+   */
+  public getAuthorUri(name: string): string {
+    return url.
+      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("author/", encodeURIComponent(name)));
   }
 
   /**
@@ -95,12 +136,22 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/author/${name}`)))
+          .get(this.getAuthorUri(name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
+  }
+
+  /**
+   * Return the URI /api/sparql/character/:name
+   * as a string.
+   * @param name The character's name.
+   */
+  public getCharacterUri(name: string): string {
+    return url.
+      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("character/", encodeURIComponent(name)));
   }
 
   /**
@@ -114,7 +165,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/character/${name}`)))
+          .get(this.getCharacterUri(name))
           .toPromise();
       })
       .then((response: any) => {
