@@ -19,7 +19,7 @@ export class AnimeComponent implements OnInit {
     console.log("Anime !");
   }
 
-  setAnime(anime: Anime): void{
-    this.anime=anime;
+  setAnime(anime: Anime): void {
+    this.anime = anime;
   }
 }

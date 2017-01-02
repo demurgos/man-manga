@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Author} from "../../../lib/interfaces/author.interface"
+import {Author} from "../../../lib/interfaces/author.interface";
 
 @Component({
   selector: "mmg-author-response",
@@ -18,6 +18,6 @@ export class AuthorComponent implements OnInit {
   }
 
   setAuthor(auth: Author): void {
-    this.author=auth;
+    this.author = auth;
   }
 }

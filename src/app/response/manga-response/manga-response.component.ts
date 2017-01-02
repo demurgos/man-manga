@@ -21,15 +21,15 @@ export class MangaComponent implements OnInit {
   protected manga: Manga;
 
   constructor() {
-    //this.manga = manga;
+    // this.manga = manga;
   }
 
   ngOnInit(): void {
     console.log("Manga !");
-    //this.manga = MANGATEST;
+    // this.manga = MANGATEST;
   }
 
-  setManga(manga:Manga): void {
-    this.manga=manga;
+  setManga(manga: Manga): void {
+    this.manga = manga;
   }
 }
