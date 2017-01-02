@@ -20,10 +20,16 @@ const MANGATEST: Manga = {
 export class MangaComponent implements OnInit {
   protected manga: Manga;
 
-  constructor() {}
+  constructor() {
+    // this.manga = manga;
+  }
 
   ngOnInit(): void {
     console.log("Manga !");
-    this.manga = MANGATEST;
+    // this.manga = MANGATEST;
+  }
+
+  setManga(manga: Manga): void {
+    this.manga = manga;
   }
 }

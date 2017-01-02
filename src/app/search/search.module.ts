@@ -1,3 +1,4 @@
+import {CommonModule} from "@angular/common";
 import {NgModule} from "@angular/core";
 import {SearchBarComponent} from "./search-bar/search-bar.component";
 import {SearchRoutingModule} from "./search-routing.module";
@@ -5,7 +6,8 @@ import {ApiService} from "./services/api.service";
 
 @NgModule({
   imports: [
-    SearchRoutingModule
+    SearchRoutingModule,
+    CommonModule
   ],
   providers: [
     ApiService

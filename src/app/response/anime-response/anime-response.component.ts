@@ -12,10 +12,14 @@ const ANIMETEST: Anime = {
   styleUrls: ["anime-response.component.css"]
 })
 export class AnimeComponent implements OnInit {
-  anime: Anime = ANIMETEST;
+  anime: Anime;
   test: number = 10;
 
   ngOnInit(): void {
     console.log("Anime !");
+  }
+
+  setAnime(anime: Anime): void {
+    this.anime = anime;
   }
 }
