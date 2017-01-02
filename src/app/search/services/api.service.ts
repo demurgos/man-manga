@@ -1,6 +1,6 @@
 import "rxjs/add/operator/toPromise";
 
-import {Injectable} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {Http} from "@angular/http";
 import * as Bluebird  from "bluebird";
 import {Anime} from "../../../lib/interfaces/anime.interface";
@@ -8,19 +8,21 @@ import {Author} from "../../../lib/interfaces/author.interface";
 import {Character} from "../../../lib/interfaces/character.interface";
 import {Manga} from "../../../lib/interfaces/manga.interface";
 import {SearchResults} from "../../../lib/interfaces/search-result.interface";
+import {appConfig, Config} from "../../app.tokens";
 
-const serverUrl: string = "http://localhost:3000";
-const apiBaseUrl: string = serverUrl + "/api";
+import * as url from "url";
 
 @Injectable()
 export class ApiService {
   private http: Http;
+  private appConfig: Config;
 
   /**
    * Instantiates the service and inject sub-services.
    */
-  public constructor(http: Http) {
+  public constructor(http: Http, @Inject(appConfig) config: Config) {
     this.http = http;
+    this.appConfig = config;
   }
 
   /**
@@ -36,7 +38,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(encodeURI(`${apiBaseUrl}/pipeline2/${query}`))
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/pipeline2/${query}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -55,7 +57,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${apiBaseUrl}/manga/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/manga/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -74,7 +76,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${apiBaseUrl}/anime/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/anime/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -93,7 +95,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(`${apiBaseUrl}/author/${name}`)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/author/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
@@ -112,7 +114,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(apiBaseUrl + "/character/" + name)
+          .get(url.format(url.parse(`${this.appConfig.apiBaseUri}/character/${name}`)))
           .toPromise();
       })
       .then((response: any) => {
