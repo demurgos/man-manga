@@ -20,6 +20,8 @@ export class AnimeComponent implements OnInit {
   }
 
   setAnime(anime: Anime): void {
+    this.anime.posterUrl="";
     this.anime = anime;
+
   }
 }
