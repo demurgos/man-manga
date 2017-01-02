@@ -13,6 +13,61 @@ import {appConfig, Config} from "../../app.tokens";
 import * as path from "path";
 import * as url from "url";
 
+/**
+ * Return the URI /api/pipeline2/:query
+ * as a string.
+ *
+ * @param apiBaseUri Base URI of the API
+ * @param query Keywords of the query.
+ */
+export function getSearchUri(apiBaseUri: string, query: string): string {
+  return url.resolve(`${apiBaseUri}/`, path.posix.join("pipeline2/", encodeURIComponent(query)));
+}
+
+/**
+ * Return the URI /api/sparql/manga/:name
+ * as a string.
+ *
+ * @param apiBaseUri Base URI of the API
+ * @param name The manga's name.
+ */
+export function getMangaUri(apiBaseUri: string, name: string): string {
+  return url.resolve(`${apiBaseUri}/`, path.posix.join("manga/", encodeURIComponent(name)));
+}
+
+/**
+ * Return the URI /api/sparql/author/:name
+ * as a string.
+ *
+ * @param apiBaseUri Base URI of the API
+ * @param name The author's name.
+ */
+export function getAuthorUri(apiBaseUri: string, name: string): string {
+  return url.resolve(`${apiBaseUri}/`, path.posix.join("author/", encodeURIComponent(name)));
+}
+
+/**
+ * Return the URI /api/sparql/anime/:name
+ * as a string.
+ *
+ * @param apiBaseUri Base URI of the API
+ * @param name The anime's name.
+ */
+export function getAnimeUri(apiBaseUri: string, name: string): string {
+  return url.resolve(`${apiBaseUri}/`, path.posix.join("anime/", encodeURIComponent(name)));
+}
+
+/**
+ * Return the URI /api/sparql/character/:name
+ * as a string.
+ *
+ * @param apiBaseUri Base URI of the API
+ * @param name The character's name.
+ */
+export function getCharacterUri(apiBaseUri: string, name: string): string {
+  return url.resolve(`${apiBaseUri}/`, path.posix.join("character/", encodeURIComponent(name)));
+}
+
 @Injectable()
 export class ApiService {
   private http: Http;
@@ -24,16 +79,6 @@ export class ApiService {
   public constructor(http: Http, @Inject(appConfig) config: Config) {
     this.http = http;
     this.appConfig = config;
-  }
-
-  /**
-   * Return the URI /api/pipeline2/:query
-   * as a string.
-   * @param query Keywords of the query.
-   */
-  public getSearchUri(query: string): string {
-    return url.
-      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("pipeline2/", encodeURIComponent(query)));
   }
 
   /**
@@ -49,22 +94,12 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(this.getSearchUri(query))
+          .get(getSearchUri(this.appConfig.apiBaseUri, query))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
-  }
-
-  /**
-   * Return the URI /api/sparql/manga/:name
-   * as a string.
-   * @param name The manga's name.
-   */
-  public getMangaUri(name: string): string {
-    return url.
-      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("manga/", encodeURIComponent(name)));
   }
 
   /**
@@ -78,22 +113,12 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(this.getMangaUri(name))
+          .get(getMangaUri(this.appConfig.apiBaseUri, name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
-  }
-
-  /**
-   * Return the URI /api/sparql/anime/:name
-   * as a string.
-   * @param name The anime's name.
-   */
-  public getAnimeUri(name: string): string {
-    return url.
-      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("anime/", encodeURIComponent(name)));
   }
 
   /**
@@ -107,22 +132,12 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(this.getAnimeUri(name))
+          .get(getAnimeUri(this.appConfig.apiBaseUri, name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
-  }
-
-  /**
-   * Return the URI /api/sparql/author/:name
-   * as a string.
-   * @param name The author's name.
-   */
-  public getAuthorUri(name: string): string {
-    return url.
-      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("author/", encodeURIComponent(name)));
   }
 
   /**
@@ -136,22 +151,12 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(this.getAuthorUri(name))
+          .get(getAuthorUri(this.appConfig.apiBaseUri, name))
           .toPromise();
       })
       .then((response: any) => {
         return response.json();
       });
-  }
-
-  /**
-   * Return the URI /api/sparql/character/:name
-   * as a string.
-   * @param name The character's name.
-   */
-  public getCharacterUri(name: string): string {
-    return url.
-      resolve(`${this.appConfig.apiBaseUri}/`, path.posix.join("character/", encodeURIComponent(name)));
   }
 
   /**
@@ -165,7 +170,7 @@ export class ApiService {
     return Bluebird
       .try(() => {
         return this.http
-          .get(this.getCharacterUri(name))
+          .get(getCharacterUri(this.appConfig.apiBaseUri, name))
           .toPromise();
       })
       .then((response: any) => {
