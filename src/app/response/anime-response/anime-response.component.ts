@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {Anime} from "../../../lib/interfaces/anime.interface";
 
 const ANIMETEST: Anime = {
@@ -12,16 +12,13 @@ const ANIMETEST: Anime = {
   styleUrls: ["anime-response.component.css"]
 })
 export class AnimeComponent implements OnInit {
-  anime: Anime;
-  test: number = 10;
+  @Input() anime: Anime;
 
   ngOnInit(): void {
     console.log("Anime !");
   }
 
   setAnime(anime: Anime): void {
-    this.anime.posterUrl="";
     this.anime = anime;
-
   }
 }

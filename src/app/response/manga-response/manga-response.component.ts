@@ -1,14 +1,8 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {Manga} from "../../../lib/interfaces/manga.interface";
 
-const MANGATEST: Manga = {
-  title: "Death Note",
-  author: {name: "Tsugumi Oba"},
-  illustrator: ["Takeshi Obata"],
-  volumes: 12,
-  genres: ["Thriller", "Drama"],
-  abstract: "Kira kill the world with a book from hell",
-  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+const EMPTYMANGA: Manga = {
+  title: "No manga !"
 };
 
 @Component({
@@ -18,15 +12,14 @@ const MANGATEST: Manga = {
   styleUrls: ["manga-response.component.css"]
 })
 export class MangaComponent implements OnInit {
-  protected manga: Manga;
+  @Input() manga: Manga;
 
   constructor() {
-    // this.manga = manga;
   }
 
   ngOnInit(): void {
     console.log("Manga !");
-    // this.manga = MANGATEST;
+    // this.manga = EMPTYMANGA;
   }
 
   setManga(manga: Manga): void {

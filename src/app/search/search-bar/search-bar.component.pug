@@ -3,7 +3,7 @@ div(class="searchbar")
     .subTitle MOE !
   div(class="comp")
     div Search
-      <Input #searchfield>
+      .input <Input #searchfield>
       button("(click)"="add(searchfield.value)") envoyer
       p Message : {{clickMessage}}
     div(class="sort")
@@ -25,4 +25,12 @@ div(class="searchbar")
             .card(class="card teal lighten-2")
               .card-content
                 span.card-title Author
-
+.mangasresponses("*ngIf"="mangas")
+  .mangaresponse("*ngFor"="let manga of mangas")
+    <mmg-manga-response [manga]="manga"></mmg-manga-response>
+.animesresponses("*ngIf"="animes")
+  .animeresponse("*ngFor"="let anime of animes")
+    <mmg-anime-response [anime]="anime"></mmg-anime-response>
+.authorsresponses("*ngIf"="authors")
+  .authorresponse("*ngFor"="let author of authors")
+    <mmg-author-response [author]="author"></mmg-author-response>

@@ -9,7 +9,7 @@ import {AuthorComponent} from "../../response/author-response/author-response.co
 import {MangaComponent} from "../../response/manga-response/manga-response.component";
 import {ApiService} from "../services/api.service";
 
-const MANGATEST: Manga = {
+const MANGATEST1: Manga = {
   title: "Death Note",
   author: {name: "Tsugumi Oba"},
   illustrator: ["Takeshi Obata"],
@@ -17,6 +17,28 @@ const MANGATEST: Manga = {
   genres: ["Thriller", "Drama"],
   abstract: "Kira kill the world with a book from hell",
   coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+};
+
+const MANGATEST2: Manga = {
+  title: "Something else",
+  author: {name: "Takeshi Obutu Oba"},
+  illustrator: ["Blabla Obata"],
+  volumes: 145,
+  genres: ["Thriller", "Drama", "Action"],
+  abstract: "Kira  hell",
+  coverUrl: ""
+};
+
+const ANIMETEST1: Anime = {
+  title: "One piece"
+};
+
+const ANIMETEST2: Anime = {
+  title: "Naruto",
+  author: {name: "Kishimoto"},
+  abstract: "Naruto wants to become the greatest ninja of all time",
+  episodes: 165,
+  posterUrl: "http://2.bp.blogspot.com/-jHfXDVdyEMk/UHUUAF1S95I/AAAAAAAAAac/YN0j_iNcmYk/s1600/Naruto+Cover.jpg"
 };
 
 // TODO: does this component really perform any request ?
@@ -30,62 +52,63 @@ const MANGATEST: Manga = {
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
   res: SearchResults;
-  tmpMangaComponent: MangaComponent;
+  //tmpMangaComponent: MangaComponent;
   mangas: Manga[];
-  mangasComp: MangaComponent[];
-  tmpAnimeComponent: AnimeComponent;
+  //mangasComp: MangaComponent[];
+  //tmpAnimeComponent: AnimeComponent;
   animes: Anime[];
-  animesComp: AnimeComponent[];
-  tmpAuthorComponent: AuthorComponent;
+  //animesComp: AnimeComponent[];
+  //tmpAuthorComponent: AuthorComponent;
   authors: Author[];
-  authorsComp: AuthorComponent[];
-  go: boolean;
+  //authorsComp: AuthorComponent[];
   clickMessage: string;
 
   add(str: string): void {
     console.log(str);
     this.clickMessage = str;
+    // this.search(str);
   }
   /**
    * Properly initialize component.
    */
   ngOnInit(): void {
+
     // Nothing to do for the moment
     // document.addEventListener('click',this.searchQuery.bind(this))
-    this.go = false;
-    this.tmpMangaComponent = new MangaComponent();
-    this.tmpMangaComponent.setManga(MANGATEST);
-    this.tmpAnimeComponent = new AnimeComponent();
-    this.tmpAuthorComponent = new AuthorComponent();
-    this.mangasComp = [this.tmpMangaComponent];
-    this.mangas = [];
-    this.animesComp = [];
-    this.animes = [];
-    this.authorsComp = [];
+
+    //this.tmpMangaComponent = new MangaComponent();
+    // this.tmpMangaComponent.setManga(MANGATEST);
+    //this.tmpAnimeComponent = new AnimeComponent();
+    //this.tmpAuthorComponent = new AuthorComponent();
+    //this.mangasComp = [this.tmpMangaComponent];
+    this.mangas = [MANGATEST1, MANGATEST2];
+    //this.animesComp = [];
+    this.animes = [ANIMETEST1, ANIMETEST2];
+    //this.authorsComp = [];
     this.authors = [];
-    this.search("One Piece");
     this.clickMessage = "e";
+    // this.search("One Piece");
+    // console.log( "Mangas :" +this.mangas.toString());
   }
 
   fillresponses(): void {
     for (const i of this.res) {
-      console.log( i.anime + " " + i.manga + " " + i.author);
+      // console.log( i.anime + " " + i.manga + " " + i.author);
       if ( !isUndefined( i.anime ) ) {
-        ( <AnimeComponent> this.tmpAnimeComponent ).setAnime( <Anime> i.anime );
-        this.animesComp.push( <AnimeComponent> this.tmpAnimeComponent );
+        //( <AnimeComponent> this.tmpAnimeComponent ).setAnime( <Anime> i.anime );
+        //this.animesComp.push( <AnimeComponent> this.tmpAnimeComponent );
         this.animes.push( <Anime> i.anime );
       } else if ( !isUndefined( i.manga ) ) {
-        (<MangaComponent> this.tmpMangaComponent).setManga(<Manga> i.manga);
-        this.mangasComp.push(<MangaComponent> this.tmpMangaComponent);
+        //(<MangaComponent> this.tmpMangaComponent).setManga(<Manga> i.manga);
+        //this.mangasComp.push(<MangaComponent> this.tmpMangaComponent);
         this.mangas.push(<Manga> i.manga);
       } else if ( !isUndefined( i.author ) ) {
-        ( <AuthorComponent> this.tmpAuthorComponent ).setAuthor( <Author> i.author );
-        this.authorsComp.push( <AuthorComponent> this.tmpAuthorComponent );
+        //( <AuthorComponent> this.tmpAuthorComponent ).setAuthor( <Author> i.author );
+        //this.authorsComp.push( <AuthorComponent> this.tmpAuthorComponent );
         this.authors.push( <Author> i.author );
       }
     }
-    console.log( this.mangasComp );
-    this.go = true;
+    //console.log( this.mangasComp );
   }
   /**
    * An experimental search.
@@ -99,7 +122,6 @@ export class SearchBarComponent implements OnInit {
         this.res = results;
         this.fillresponses();
       });
-
   }
 
   /**

@@ -1,5 +1,17 @@
-import {Component, Inject} from "@angular/core";
+import {Component, Inject, OnInit} from "@angular/core";
+import {SearchBarComponent} from "./search/search-bar/search-bar.component"
 import {appEnvironment, Environment} from "./app.tokens";
+import {Manga} from "../lib/interfaces/manga.interface";
+
+const MANGATEST: Manga = {
+  title: "Death Note",
+  author: {name: "Tsugumi Oba"},
+  illustrator: ["Takeshi Obata"],
+  volumes: 12,
+  genres: ["Thriller", "Drama"],
+  abstract: "Kira kill the world with a book from hell",
+  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+};
 
 @Component({
   selector: "mmg-app",
@@ -11,10 +23,18 @@ import {appEnvironment, Environment} from "./app.tokens";
 })
 export class AppComponent {
   private environment: Environment;
+  manga: Manga;
+  search: SearchBarComponent;
 
   constructor(@Inject(appEnvironment) environment: Environment) {
     this.environment = environment;
     console.log("Environment:");
     console.log(this.environment);
   }
+
+  ngOnInit(): void {
+    this.manga=MANGATEST;
+    console.log(this.manga.title);
+  }
+
 }

@@ -3,10 +3,12 @@ import {NgModule} from "@angular/core";
 import {SearchBarComponent} from "./search-bar/search-bar.component";
 import {SearchRoutingModule} from "./search-routing.module";
 import {ApiService} from "./services/api.service";
+import {ResponseModule} from "../response/response.module";
 
 @NgModule({
   imports: [
     SearchRoutingModule,
+    ResponseModule,
     CommonModule
   ],
   providers: [

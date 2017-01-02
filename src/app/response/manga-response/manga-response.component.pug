@@ -6,7 +6,7 @@
       .card-stacked
         .card-content
           span.card-title {{manga.title}}
-          .author Author : {{manga.author.name}}
+          .author("*ngIf"="manga.author") Author : {{manga.author.name}}
           .illustrator("*ngIf"="manga.illustrator") Illustrator : {{manga.illustrator}}
           .abstract("*ngIf"="manga.abstract") {{manga.abstract}}
           .genres("*ngIf"="manga.genres") Genres:&nbsp;
