@@ -1,5 +1,5 @@
 import {NgModule} from "@angular/core";
-
+import {CommonModule} from "@angular/common";
 import {AboutModule} from "./about/about.module";
 import {AppRoutingModule} from "./app-routing.module";
 import {HomeModule} from "./home/home.module";
@@ -15,7 +15,8 @@ import {AppComponent} from "./app.component";
     AboutModule,
     SearchModule,
     ResponseModule,
-    AppRoutingModule
+    AppRoutingModule,
+    CommonModule
   ],
   exports: [
     HomeModule,

@@ -8,6 +8,13 @@ div.wrapper
           li
             a(routerLink="/about") About
     router-outlet
+    .mangaresponses("*ngIf"="go")
+      .mangaresponse("*ngFor"="let man of mangas") mmg-manga-response([manga]="{{man}}")
+    //.animeresponses("*ngIf"="animesComp")
+      //.animeresponse("*ngFor"="let animcomp of animesComp") mmg-anime-response(anime="{{animcomp}}")
+    //.authorresponses("*ngIf"="authorsComp")
+      //.animeresponse("*ngFor"="let authcomp of authorsComp") mmg-author-response(author="{{authcomp}}")
     mmg-search
     mmg-anime-response
-    mmg-manga-response
+    .mangaresponses("*ngIf"="mangas")
+      mmg-manga-response(manga="mangas[1]")
