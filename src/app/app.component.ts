@@ -1,4 +1,5 @@
-import {Component} from "@angular/core";
+import {Component, Inject} from "@angular/core";
+import {appEnvironment, Environment} from "./app.tokens";
 
 @Component({
   selector: "mmg-app",
@@ -9,4 +10,11 @@ import {Component} from "@angular/core";
   ]
 })
 export class AppComponent {
+  private environment: Environment;
+
+  constructor(@Inject(appEnvironment) environment: Environment) {
+    this.environment = environment;
+    console.log("Environment:");
+    console.log(this.environment);
+  }
 }
