@@ -26,6 +26,7 @@ apiRouter.get("/api/pipeline/:query", async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({error: {name: err.name, stack: err.stack}});
+    console.error(err);
   }
 });
 
@@ -39,6 +40,7 @@ apiRouter.get("/api/pipeline2/:query", async (req: any, res: Response) => {
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({error: {name: err.name, stack: err.stack}});
+    console.error(err);
   }
 });
 

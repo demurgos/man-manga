@@ -11,6 +11,7 @@ import {platformNodeDynamic} from "angular2-universal/node";
 import * as bodyParser from "body-parser";
 import cookieParser = require("cookie-parser");
 import express = require("express");
+import {Server} from "http";
 import morgan = require("morgan");
 import {AppServerModule} from "./app.server.module";
 import {FileSystemResourceLoader} from "./node-polyfill";
@@ -66,6 +67,6 @@ app.use(apiRouter);
 app.use(mainRouter);
 
 // Instantiate the server
-const server: any = app.listen(process.env.PORT || serverPort, () => {
+const server: Server = app.listen(process.env.PORT || serverPort, () => {
   console.log(`Listening on: http://localhost:${server.address().port}`);
 });
