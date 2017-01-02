@@ -40,11 +40,18 @@ export class SearchBarComponent implements OnInit {
   authors: Author[];
   authorsComp: AuthorComponent[];
   go: boolean;
+  clickMessage: string;
+
+  add(str: string): void {
+    console.log(str);
+    this.clickMessage = str;
+  }
   /**
    * Properly initialize component.
    */
   ngOnInit(): void {
     // Nothing to do for the moment
+    // document.addEventListener('click',this.searchQuery.bind(this))
     this.go = false;
     this.tmpMangaComponent = new MangaComponent();
     this.tmpMangaComponent.setManga(MANGATEST);
@@ -57,6 +64,7 @@ export class SearchBarComponent implements OnInit {
     this.authorsComp = [];
     this.authors = [];
     this.search("One Piece");
+    this.clickMessage = "e";
   }
 
   fillresponses(): void {

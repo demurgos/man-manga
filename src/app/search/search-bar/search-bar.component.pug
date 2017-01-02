@@ -3,10 +3,9 @@ div(class="searchbar")
     .subTitle MOE !
   div(class="comp")
     div Search
-    div
-      input#search-field(class="input")
-    div
-      button#search-button(class="button" type="submit" value="Submit") envoyer
+      <Input #searchfield>
+      button("(click)"="add(searchfield.value)") envoyer
+      p Message : {{clickMessage}}
     div(class="sort")
       .row
         .manga
