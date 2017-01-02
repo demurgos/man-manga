@@ -1,0 +1,19 @@
+{
+  "statusCode": 200,
+  "body": "\n{ \"head\": { \"link\": [], \"vars\": [\"x\", \"animeTitle\", \"animeAuthor\", \"animeAbstract\", \"authorTitle\", \"authorAbstract\", \"authorEmployer\", \"authorBirthDate\", \"characterTitle\", \"characterAuthor\", \"characterAbstract\", \"mangaTitle\", \"mangaAuthor\", \"mangaVolumes\", \"mangaPublicationDate\", \"mangaIllustrator\", \"mangaPublisher\", \"mangaAbstract\"] },\n  \"results\": { \"distinct\": false, \"ordered\": true, \"bindings\": [\n    { \"x\": { \"type\": \"literal\", \"value\": \"author\" }\t, \"authorTitle\": { \"type\": \"uri\", \"value\": \"http://dbpedia.org/resource/Masashi_Kishimoto\" }\t, \"authorAbstract\": { \"type\": \"literal\", \"xml:lang\": \"en\", \"value\": \"Masashi Kishimoto (\\u5CB8\\u672C \\u6589\\u53F2 Kishimoto Masashi, born November 8, 1974) is a Japanese manga artist, well known for creating the manga series Naruto which was in serialization from 1999 to 2014. As of October 2015, Naruto manga has sold over 220 million copies worldwide. it is the third best-selling manga series of all time. Besides the Naruto manga, Kishimoto also participated in the making of the anime films Road to Ninja: Naruto the Movie, The Last: Naruto the Movie, Boruto: Naruto the Movie, and has written several one-shot stories. A reader of manga ever since a young age, Kishimoto showed a desire to write his own manga, citing authors Akira Toriyama and Katsuhiro Otomo as his main inspirations. As a result, Kishimoto spent several years working to write his own sh\\u014Dnen manga for Weekly Sh\\u014Dnen Jump magazine which he was a fan of.\" }\t, \"authorBirthDate\": { \"type\": \"typed-literal\", \"datatype\": \"http://www.w3.org/2001/XMLSchema#date\", \"value\": \"1974-11-08\" }} ] } }",
+  "headers": {
+    "date": "Tue, 03 Jan 2017 02:41:41 GMT",
+    "content-type": "application/json",
+    "content-length": "1624",
+    "connection": "close",
+    "vary": "Accept-Encoding",
+    "server": "Virtuoso/07.20.3217 (Linux) i686-generic-linux-glibc212-64  VDB",
+    "expires": "Tue, 10 Jan 2017 02:41:41 GMT",
+    "cache-control": "max-age=604800",
+    "access-control-allow-origin": "*",
+    "access-control-allow-credentials": "true",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-headers": "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding",
+    "accept-ranges": "bytes"
+  }
+}

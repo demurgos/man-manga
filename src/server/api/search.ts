@@ -1,7 +1,7 @@
-import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
-import {Manga} from "../../lib/interfaces/manga.interface";
+import * as apiInterfaces from "../../lib/interfaces/api/index";
+import {MangaCover} from "../../lib/interfaces/resources/index";
 import * as alchemy from "../lib/alchemy";
-import * as DBPedia from "../lib/dbpedia";
+import * as DBPedia from "../lib/dbpedia/search";
 import * as googlesearch from "../lib/googlesearch";
 import * as McdIOSphere from "../lib/mcd-iosphere";
 import * as spotlight from "../lib/spotlight";
@@ -26,34 +26,47 @@ export async function search (query: string): Promise<string[]> {
   return spotlightResult;
 }
 
+function buildGooglesearchQuery(userQuery: string): string {
+  // TODO: configuration options
+  return `${userQuery} manga OR anime site:en.wikipedia.org`;
+}
+
 /**
  * A test pipeline using specific search.
  */
-export async function search2 (query: string): Promise<DBPedia.SearchResult[]> {
-  // TODO: use function to build query
-  const googlesearchQuery: string = `${query} manga OR anime site:en.wikipedia.org`;
+export async function search2 (query: string): Promise<apiInterfaces.search.SearchResult[]> {
+  const googlesearchQuery: string = buildGooglesearchQuery(query);
   const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
   console.log("Google results");
   console.log(searchResults);
-  return Promise.all(searchResults
+  const dirtyResults: (apiInterfaces.search.SearchResult | null)[] = await Promise.all(searchResults
     .slice(0, 3)
-    .map(async (searchResult: googlesearch.SearchResult): Promise<DBPedia.SearchResult> => {
+    .map(async (searchResult: googlesearch.SearchResult): Promise<apiInterfaces.search.SearchResult | null> => {
       const url: string = searchResult.link;
-      console.log(`dbpedia search for ${url}`);
-      const dbpediaResult: DBPedia.SearchResult = await DBPedia.search(DBPedia.wikipediaArticleUrlToResourceUrl(url));
-      if (dbpediaResult && dbpediaResult.manga !== undefined) {
-        const manga: Manga = dbpediaResult.manga;
+      const resourceIri: string = "" + url; // DBPedia.wikipediaArticleUrlToResourceUrl(url);
+      const result: apiInterfaces.search.SearchResult | null = await DBPedia.search(resourceIri);
+      if (result === null) {
+        return null;
+      }
+
+      // Resolve cover
+      if (result.type === "manga") {
         try {
-          const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(DBPedia.resourceUrlToName(manga.title));
-          manga.coverUrl = cover.coverUrl;
+          const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(result.title); // resourceToName
+          result.coverUrl = cover.coverUrl;
         } catch (err) {
-          // At this point, it's not a problem if we don't find any cover
-          // Just return the result
+          // Ignore undefined cover
           // TODO: try to get something with anilist ?
         }
       }
-      console.log("DBPedia result, maybe with cover");
-      console.log(dbpediaResult);
-      return dbpediaResult;
+      return result;
     }));
+
+  const results: apiInterfaces.search.SearchResult[] = [];
+  for (const result of dirtyResults) {
+    if (result !== null) {
+      results.push(result);
+    }
+  }
+  return results;
 }

@@ -1,17 +1,14 @@
 import "rxjs/add/operator/toPromise";
 
 import {Inject, Injectable} from "@angular/core";
-import {Http} from "@angular/http";
+import {Http, Response} from "@angular/http";
 import * as Bluebird  from "bluebird";
-import {Anime} from "../../../lib/interfaces/anime.interface";
-import {Author} from "../../../lib/interfaces/author.interface";
-import {Character} from "../../../lib/interfaces/character.interface";
-import {Manga} from "../../../lib/interfaces/manga.interface";
-import {SearchResults} from "../../../lib/interfaces/search-result.interface";
-import {appConfig, Config} from "../../app.tokens";
-
 import * as path from "path";
 import * as url from "url";
+import {Api} from "../../../lib/interfaces/api/index";
+import {SearchResult} from "../../../lib/interfaces/api/search";
+import {Anime, Author, Character, Manga} from "../../../lib/interfaces/resources/index";
+import {appConfig, Config} from "../../app.tokens";
 
 /**
  * Return the URI /api/pipeline2/:query
@@ -69,7 +66,7 @@ export function getCharacterUri(apiBaseUri: string, name: string): string {
 }
 
 @Injectable()
-export class ApiService {
+export class ApiService implements Api {
   private http: Http;
   private appConfig: Config;
 
@@ -90,16 +87,9 @@ export class ApiService {
    * The result can be an array full of empty objects.
    * @param query Keywords of the query.
    */
-  public search(query: string): Bluebird<SearchResults> {
-    return Bluebird
-      .try(() => {
-        return this.http
-          .get(getSearchUri(this.appConfig.apiBaseUri, query))
-          .toPromise();
-      })
-      .then((response: any) => {
-        return response.json();
-      });
+  public async search(query: string): Promise<SearchResult[]> {
+    const response: Response = await this.http.get(getSearchUri(this.appConfig.apiBaseUri, query)).toPromise();
+    return response.json();
   }
 
   /**
@@ -109,11 +99,11 @@ export class ApiService {
    * (or if no manga could be found).
    * @param name The manga's name.
    */
-  public getManga(name: string): Bluebird<Manga> {
+  public getManga(name: number): Bluebird<Manga> {
     return Bluebird
       .try(() => {
         return this.http
-          .get(getMangaUri(this.appConfig.apiBaseUri, name))
+          .get(getMangaUri(this.appConfig.apiBaseUri, name.toString(10)))
           .toPromise();
       })
       .then((response: any) => {

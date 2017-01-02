@@ -1,8 +1,10 @@
 import {Component, OnInit} from "@angular/core";
-import {Anime} from "../../../lib/interfaces/anime.interface";
+import {Anime} from "../../../lib/interfaces/resources/anime";
 
 const ANIMETEST: Anime = {
-  title: "One piece"
+  type: "anime",
+  title: "One piece",
+  others: {}
 };
 
 @Component({

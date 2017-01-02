@@ -1,14 +1,20 @@
 import {Component, OnInit} from "@angular/core";
-import {Manga} from "../../../lib/interfaces/manga.interface";
+import {Manga} from "../../../lib/interfaces/resources/manga";
 
 const MANGATEST: Manga = {
+  type: "manga",
   title: "Death Note",
-  author: {name: "Tsugumi Oba"},
+  author: {
+    type: "author",
+    name: "Tsugumi Oba",
+    others: {}
+  },
   illustrator: ["Takeshi Obata"],
   volumes: 12,
   genres: ["Thriller", "Drama"],
   abstract: "Kira kill the world with a book from hell",
-  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/",
+  others: {}
 };
 
 @Component({

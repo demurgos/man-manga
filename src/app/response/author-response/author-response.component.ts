@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Author} from "../../../lib/interfaces/author.interface";
+import {Author} from "../../../lib/interfaces/resources/author";
 
 @Component({
   selector: "mmg-author-response",

@@ -1,22 +1,26 @@
 import {Component, OnInit} from "@angular/core";
 import {isUndefined} from "util";
-import {Anime} from "../../../lib/interfaces/anime.interface";
-import {Author} from "../../../lib/interfaces/author.interface";
-import {Manga} from "../../../lib/interfaces/manga.interface";
-import {SearchResults} from "../../../lib/interfaces/search-result.interface";
+import {SearchResult} from "../../../lib/interfaces/api/search";
+import {Anime, Author, Manga} from "../../../lib/interfaces/resources/index";
 import {AnimeComponent} from "../../response/anime-response/anime-response.component";
 import {AuthorComponent} from "../../response/author-response/author-response.component";
 import {MangaComponent} from "../../response/manga-response/manga-response.component";
 import {ApiService} from "../services/api.service";
 
 const MANGATEST: Manga = {
+  type: "manga",
   title: "Death Note",
-  author: {name: "Tsugumi Oba"},
+  author: {
+    type: "author",
+    name: "Tsugumi Oba",
+    others: {}
+  },
   illustrator: ["Takeshi Obata"],
   volumes: 12,
   genres: ["Thriller", "Drama"],
   abstract: "Kira kill the world with a book from hell",
-  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/",
+  others: {}
 };
 
 // TODO: does this component really perform any request ?
@@ -29,7 +33,7 @@ const MANGATEST: Manga = {
 
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
-  res: SearchResults;
+  res: SearchResult[];
   tmpMangaComponent: MangaComponent;
   mangas: Manga[];
   mangasComp: MangaComponent[];
@@ -40,6 +44,7 @@ export class SearchBarComponent implements OnInit {
   authors: Author[];
   authorsComp: AuthorComponent[];
   go: boolean;
+
   /**
    * Properly initialize component.
    */
@@ -60,32 +65,37 @@ export class SearchBarComponent implements OnInit {
   }
 
   fillresponses(): void {
-    for (const i of this.res) {
-      console.log( i.anime + " " + i.manga + " " + i.author);
-      if ( !isUndefined( i.anime ) ) {
-        ( <AnimeComponent> this.tmpAnimeComponent ).setAnime( <Anime> i.anime );
-        this.animesComp.push( <AnimeComponent> this.tmpAnimeComponent );
-        this.animes.push( <Anime> i.anime );
-      } else if ( !isUndefined( i.manga ) ) {
-        (<MangaComponent> this.tmpMangaComponent).setManga(<Manga> i.manga);
-        this.mangasComp.push(<MangaComponent> this.tmpMangaComponent);
-        this.mangas.push(<Manga> i.manga);
-      } else if ( !isUndefined( i.author ) ) {
-        ( <AuthorComponent> this.tmpAuthorComponent ).setAuthor( <Author> i.author );
-        this.authorsComp.push( <AuthorComponent> this.tmpAuthorComponent );
-        this.authors.push( <Author> i.author );
+    for (const result of this.res) {
+      switch (result.type) {
+        case "anime":
+          this.tmpAnimeComponent.setAnime(result);
+          this.animesComp.push(this.tmpAnimeComponent);
+          this.animes.push(result);
+          break;
+        case "manga":
+          this.tmpMangaComponent.setManga(result);
+          this.mangasComp.push(this.tmpMangaComponent);
+          this.mangas.push(result);
+          break;
+        case "author":
+          this.tmpAuthorComponent.setAuthor(result);
+          this.authorsComp.push(this.tmpAuthorComponent);
+          this.authors.push(result);
+          break;
+        default:
+          console.warn(`Unsupported resource type: ${result.type}`);
       }
     }
-    console.log( this.mangasComp );
     this.go = true;
   }
+
   /**
    * An experimental search.
    */
   protected search(query: string): void {
     this.apiService
       .search(query)
-      .then((results: SearchResults) => {
+      .then((results: SearchResult[]) => {
         console.log("RESULTS RECEIVED:");
         // console.log(results);
         this.res = results;

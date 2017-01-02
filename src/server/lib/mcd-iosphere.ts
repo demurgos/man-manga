@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as io from "../../lib/interfaces/io";
 
-import {MangaCover} from "../../lib/interfaces/manga-cover.interface";
+import {MangaCover} from "../../lib/interfaces/resources/manga-cover";
 import {requestIO} from "./request-io";
 
 /**
@@ -42,6 +42,7 @@ export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
   // http://mcd.iosphe.re/n/{ID}/1/front/a/ : the requested manga's volume 1 cover (in theory)
   // TODO: confirm that the cover url is always the same
   return {
+    type: "manga-cover",
     title: name,
     coverUrl: path.join(mcdCoverRoot, data.Results[0][0], mcdFontCoverTail)
   };

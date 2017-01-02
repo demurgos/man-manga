@@ -1,6 +1,9 @@
-import {Author} from "./author.interface";
+import {Author} from "./author";
+import {ResourceBase} from "./resource-base";
 
-export interface Character {
+export interface Character extends ResourceBase {
+  type: "character";
+
   /**
    * The character's name.
    * Expected to be found for each character.
@@ -26,4 +29,11 @@ export interface Character {
    * A snippet about the character.
    */
   abstract?: string;
+
+  /**
+   * Other Sparql variables
+   */
+  others: {
+    [variableName: string]: string[];
+  };
 }

@@ -1,0 +1,19 @@
+{
+  "type": "manga",
+  "title": "http://dbpedia.org/resource/One_Piece",
+  "author": {
+    "type": "author",
+    "name": "http://dbpedia.org/resource/Eiichiro_Oda",
+    "others": {}
+  },
+  "abstract": "One Piece (Japanese: ワンピース Hepburn: Wan Pīsu) is a Japanese manga series written and illustrated by Eiichiro Oda. It has been serialized in Shueisha's Weekly Shōnen Jump magazine since July 19, 1997, with the chapters collected into eighty tankōbon volumes to date. One Piece follows the adventures of Monkey D. Luffy, a funny young man whose body gained the properties of rubber after unintentionally eating a Devil Fruit. With his diverse crew of pirates, named the Straw Hat Pirates, Luffy explores the grand line in search of the world's ultimate treasure known as \"One Piece\" in order to become the next King of the Pirates. The manga has been adapted into an original video animation (OVA) produced by Production I.G in 1998, and an anime series produced by Toei Animation, which began broadcasting in Japan in 1999 and has aired 731 episodes to date. Additionally, Toei has developed thirteen animated feature films, two OVAs, and five television specials. Several companies have developed various types of merchandising such as a trading card game, and a large number of video games. The manga series was licensed for an English language release in North America & the United Kingdom by Viz Media and in Australia by Madman Entertainment. The anime series was licensed by 4Kids Entertainment for an English-language release in North America, before the license was dropped and subsequently acquired by Funimation in 2007. One Piece has received widespread critical acclaim, primarily for its art, characterization and humor. Several volumes of the manga have broken publishing records, including highest initial print run of any book in Japan. The official website for Eiichiro Oda's One Piece manga announced that the manga has set a Guinness World Record for \"the most copies published for the same comic book series by a single author\". As of June 2015, the manga has 320 million copies printed worldwide, making it the best-selling manga series in history.",
+  "volumes": 80,
+  "others": {
+    "x": [
+      "manga"
+    ],
+    "mangaPublisher": [
+      "http://dbpedia.org/resource/Shueisha"
+    ]
+  }
+}

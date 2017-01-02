@@ -1,3 +1,7 @@
+import {assert} from "chai";
+import {SearchResult} from "../../../lib/interfaces/api/search";
+import * as dbpediaSearch from "./search";
+
 // dbpedia search result for "goku"
 /* tslint:disable:max-line-length object-literal-key-quotes */
 // tslint:disable-next-line:typedef
@@ -46,3 +50,7 @@ const data = {
 /* tslint:enable */
 
 // TODO: tests...
+
+describe.skip("dbpedia.search", function () {
+  // TODO: Use the saved files to tests the formatter
+});

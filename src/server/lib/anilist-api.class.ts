@@ -1,5 +1,5 @@
-import {Character} from "../../lib/interfaces/character.interface";
 import * as io from "../../lib/interfaces/io";
+import {Character} from "../../lib/interfaces/resources/character";
 import {
   Anime as AnilistAnime,
   Character as AnilistCharacter,
@@ -107,10 +107,12 @@ export class AnilistApi {
     }
 
     return {
+      type: "character",
       name: `${character.name_first} ${character.name_last}`,
       pictureUrl: character.image_url_lge,
       from: from,
-      abstract: character.info
+      abstract: character.info,
+      others: {}
     };
   }
 
