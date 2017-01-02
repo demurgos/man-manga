@@ -3,14 +3,14 @@ import "rxjs/add/operator/toPromise";
 import {Inject, Injectable} from "@angular/core";
 import {Http} from "@angular/http";
 import * as Bluebird  from "bluebird";
+import * as path from "path";
+import * as url from "url";
 import {Anime} from "../../../lib/interfaces/anime.interface";
 import {Author} from "../../../lib/interfaces/author.interface";
 import {Character} from "../../../lib/interfaces/character.interface";
 import {Manga} from "../../../lib/interfaces/manga.interface";
 import {SearchResults} from "../../../lib/interfaces/search-result.interface";
 import {appConfig, Config} from "../../app.tokens";
-import * as path from "path";
-import * as url from "url";
 
 const posixPath: typeof path.posix = "posix" in path ? path.posix : path;
 
