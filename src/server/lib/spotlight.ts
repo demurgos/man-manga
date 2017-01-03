@@ -53,6 +53,10 @@ function scrapHtmlResult(html: string): string[] {
 }
 
 function scrapJsonResult(result: any[]): string[] {
+  if (result === undefined) {
+    return [];
+  }
+
   const res: any[] = [];
   for (const object of result) {
     res.push(object["@URI"]);

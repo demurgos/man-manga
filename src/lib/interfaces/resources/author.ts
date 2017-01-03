@@ -1,4 +1,8 @@
-export interface Author {
+import {ResourceBase} from "./resource-base";
+
+export interface Author extends ResourceBase {
+  type: "author";
+
   /**
    * The author's name.
    * Expected to be found for each author.
@@ -20,4 +24,11 @@ export interface Author {
    * (usually a publisher).
    */
   employer?: string;
+
+  /**
+   * Other Sparql variables
+   */
+  others: {
+    [variableName: string]: string[];
+  };
 }

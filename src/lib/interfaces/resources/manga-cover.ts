@@ -1,4 +1,8 @@
-export interface MangaCover {
+import {ResourceBase} from "./resource-base";
+
+export interface MangaCover extends ResourceBase {
+  type: "manga-cover";
+
   /**
    * The manga's title.
    */

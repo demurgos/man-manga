@@ -1,12 +1,8 @@
 import {NextFunction, Request, Response, Router} from "express";
-import {Anime} from "../../../lib/interfaces/anime.interface";
-import {Author} from "../../../lib/interfaces/author.interface";
-import {Character} from "../../../lib/interfaces/character.interface";
+import * as apiInterfaces from "../../../lib/interfaces/api/index";
 import * as io from "../../../lib/interfaces/io";
-import {MangaCover} from "../../../lib/interfaces/manga-cover.interface";
-import {Manga} from "../../../lib/interfaces/manga.interface";
-import {AnilistApi} from "../../lib/anilist-api.class";
-import * as dbpedia from "../../lib/dbpedia";
+import {Anime, Author, Character, Manga, MangaCover} from "../../../lib/interfaces/resources/index";
+import * as dbpedia from "../../lib/dbpedia/index";
 import * as mcdIOSphe from "../../lib/mcd-iosphere";
 import requestIO from "../../lib/request-io";
 
@@ -63,7 +59,7 @@ manmangaApiRouter.get("/isManga/:resource", async function (req: Request, res: R
 manmangaApiRouter.get("/resource/:name", async function (req: Request, res: Response) {
   try {
     const resourceName: string = req.params["name"];
-    const resource: dbpedia.SearchResult = await dbpedia.search(resourceName);
+    const resource: apiInterfaces.search.SearchResult | null = await dbpedia.search(resourceName);
     res.status(200).json(resource);
   } catch (err) {
     console.error(`ERROR with the request to ${req.originalUrl}`);
@@ -83,10 +79,14 @@ manmangaApiRouter.get("/resource/:name", async function (req: Request, res: Resp
 //       this will still returns a coverURL => correct this ?
 manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Response) {
   const mangaName: string = req.params["name"];
-  let manga: Manga;
+  let manga: Manga | null;
 
   try {
     manga = await dbpedia.retrieveManga(mangaName);
+    if (manga === null) {
+      res.status(404).json({error: {name: "resource-not-found"}});
+      return;
+    }
   } catch (err) {
     console.error(`ERROR with the request from /api/sparql/manga/${mangaName}`);
     console.error(err);
@@ -116,7 +116,11 @@ manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Respons
 manmangaApiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Response) {
   try {
     const animeName: string = req.params["name"];
-    const anime: Anime = await dbpedia.retrieveAnime(animeName);
+    const anime: Anime | null = await dbpedia.retrieveAnime(animeName);
+    if (anime === null) {
+      res.status(404).json({error: {name: "resource-not-found"}});
+      return;
+    }
     res.status(200).json(anime);
   } catch (err) {
     console.error(`ERROR with the request to ${req.originalUrl}`);
@@ -135,7 +139,11 @@ manmangaApiRouter.get("/api/sparql/anime/:name", async function (req: Request, r
 manmangaApiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Response) {
   try {
     const authorName: string = req.params["name"];
-    const author: Author = await dbpedia.retrieveAuthor(authorName);
+    const author: Author | null = await dbpedia.retrieveAuthor(authorName);
+    if (author === null) {
+      res.status(404).json({error: {name: "resource-not-found"}});
+      return;
+    }
     res.status(200).json(author);
   } catch (err) {
     console.error(`ERROR with the request to ${req.originalUrl}`);
@@ -154,7 +162,11 @@ manmangaApiRouter.get("/api/sparql/author/:name", async function (req: Request, 
 manmangaApiRouter.get("/character/:name", async function (req: Request, res: Response) {
   try {
     const characterName: string = req.params["name"];
-    const character: Character = await dbpedia.retrieveCharacter(characterName);
+    const character: Character | null = await dbpedia.retrieveCharacter(characterName);
+    if (character === null) {
+      res.status(404).json({error: {name: "resource-not-found"}});
+      return;
+    }
     res.status(200).json(character);
   } catch (err) {
     console.error(`ERROR with the request to ${req.originalUrl}`);

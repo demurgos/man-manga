@@ -1,44 +1,62 @@
 import {Component, OnInit} from "@angular/core";
 import {isUndefined} from "util";
-import {Anime} from "../../../lib/interfaces/anime.interface";
-import {Author} from "../../../lib/interfaces/author.interface";
-import {Manga} from "../../../lib/interfaces/manga.interface";
-import {SearchResults} from "../../../lib/interfaces/search-result.interface";
+import {SearchResult} from "../../../lib/interfaces/api/search";
+import {Anime, Author, Manga} from "../../../lib/interfaces/resources/index";
 import {AnimeComponent} from "../../response/anime-response/anime-response.component";
 import {AuthorComponent} from "../../response/author-response/author-response.component";
 import {MangaComponent} from "../../response/manga-response/manga-response.component";
 import {ApiService} from "../services/api.service";
 
 const MANGATEST1: Manga = {
+  type: "manga",
   title: "Death Note",
-  author: {name: "Tsugumi Oba"},
+  author: {
+    type: "author",
+    name: "Tsugumi Oba",
+    others: {}
+  },
   illustrator: ["Takeshi Obata"],
   volumes: 12,
   genres: ["Thriller", "Drama"],
   abstract: "Kira kill the world with a book from hell",
-  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/"
+  coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/",
+  others: {}
 };
 
 const MANGATEST2: Manga = {
+  type: "manga",
   title: "Something else",
-  author: {name: "Takeshi Obutu Oba"},
+  author: {
+    type: "author",
+    name: "Takeshi Obutu Oba",
+    others: {}
+  },
   illustrator: ["Blabla Obata"],
   volumes: 145,
   genres: ["Thriller", "Drama", "Action"],
   abstract: "Kira  hell",
-  coverUrl: ""
+  coverUrl: "",
+  others: {}
 };
 
 const ANIMETEST1: Anime = {
-  title: "One piece"
+  type: "anime",
+  title: "One piece",
+  others: {}
 };
 
 const ANIMETEST2: Anime = {
+  type: "anime",
   title: "Naruto",
-  author: {name: "Kishimoto"},
+  author: {
+    type: "author",
+    name: "Kishimoto",
+    others: {}
+  },
   abstract: "Naruto wants to become the greatest ninja of all time",
   episodes: 165,
-  posterUrl: "http://2.bp.blogspot.com/-jHfXDVdyEMk/UHUUAF1S95I/AAAAAAAAAac/YN0j_iNcmYk/s1600/Naruto+Cover.jpg"
+  posterUrl: "http://2.bp.blogspot.com/-jHfXDVdyEMk/UHUUAF1S95I/AAAAAAAAAac/YN0j_iNcmYk/s1600/Naruto+Cover.jpg",
+  others: {}
 };
 
 // TODO: does this component really perform any request ?
@@ -51,14 +69,22 @@ const ANIMETEST2: Anime = {
 
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
-  res: SearchResults;
-  mangas: Manga[];
-  animes: Anime[];
-  authors: Author[];
+  res: SearchResult[];
+  mangas: Manga[] = [];
+  animes: Anime[] = [];
+  authors: Author[] = [];
   clickMessage: string;
   mangaFilterOn: boolean;
   animeFilterOn: boolean;
   authorFilterOn: boolean;
+
+  /**
+   * Instantiates the component,
+   * and initializes needed services.
+   */
+  constructor(apiService: ApiService) {
+    this.apiService = apiService;
+  }
 
   chgManga(mgfltr: boolean): void {
     this.mangaFilterOn = mgfltr;
@@ -73,19 +99,18 @@ export class SearchBarComponent implements OnInit {
   add(str: string): void {
     console.log(str);
     this.clickMessage = str;
-    this.search(str);
     this.mangas = [];
     this.animes = [];
     this.authors = [];
+    this.search(str);
   }
   /**
    * Properly initialize component.
    */
   ngOnInit(): void {
-
     // Nothing to do for the moment
-    this.mangas = [MANGATEST1, MANGATEST2];
-    this.animes = [ANIMETEST1, ANIMETEST2];
+    this.mangas = [];
+    this.animes = [];
     this.authors = [];
     this.clickMessage = "e";
     this.mangaFilterOn = true;
@@ -95,35 +120,31 @@ export class SearchBarComponent implements OnInit {
   }
 
   fillresponses(): void {
-    for (const i of this.res) {
-      if ( !isUndefined( i.anime ) ) {
-        this.animes.push( <Anime> i.anime );
-      } else if ( !isUndefined( i.manga ) ) {
-        this.mangas.push(<Manga> i.manga);
-      } else if ( !isUndefined( i.author ) ) {
-        this.authors.push( <Author> i.author );
+    for (const result of this.res) {
+      switch (result.type) {
+        case "anime":
+          this.animes.push(result);
+          break;
+        case "manga":
+          this.mangas.push(result);
+          break;
+        case "author":
+          this.authors.push(result);
+          break;
+        default:
+          console.warn(`Unsupported resource type: ${result.type}`);
       }
     }
   }
+
   /**
    * An experimental search.
    */
-  protected search(query: string): void {
-    this.apiService
-      .search(query)
-      .then((results: SearchResults) => {
-        console.log("RESULTS RECEIVED:");
-        // console.log(results);
-        this.res = results;
-        this.fillresponses();
-      });
-  }
-
-  /**
-   * Instantiates the component,
-   * and initializes needed services.
-   */
-  constructor(apiService: ApiService) {
-    this.apiService = apiService;
+  protected async search(query: string): Promise<void> {
+    const results: SearchResult[] = await this.apiService.search(query);
+    console.log("RESULTS RECEIVED:");
+    console.log(results);
+    this.res = results;
+    this.fillresponses();
   }
 }

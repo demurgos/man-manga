@@ -1,7 +1,8 @@
 import Bluebird = require("bluebird");
 import {Request, Response, Router} from "express";
-import * as manmangaApi from "../api/index";
-import * as DBPedia from "../lib/dbpedia";
+import * as apiInterfaces from "../../lib/interfaces/api/index";
+import api from "../api/index";
+import * as DBPedia from "../lib/dbpedia/search";
 import {anilistApiRouter} from "./api/anilist";
 import {manmangaApiRouter} from "./api/manmanga";
 
@@ -20,14 +21,7 @@ apiRouter.get("/api/test", async (req: Request, res: Response) => {
  * A test pipeline using alchemy + spotlight.
  */
 apiRouter.get("/api/pipeline/:query", async (req: Request, res: Response) => {
-  try {
-    const query: string = req.params["query"];
-    const result: string[] = await manmangaApi.search(query);
-    res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json({error: {name: err.name, stack: err.stack}});
-    console.error(err);
-  }
+  res.status(500).json({error: {name: "error", message: "Use /api/pipeline2/query"}});
 });
 
 /**
@@ -36,7 +30,7 @@ apiRouter.get("/api/pipeline/:query", async (req: Request, res: Response) => {
 apiRouter.get("/api/pipeline2/:query", async (req: any, res: Response) => {
   try {
     const query: string = req.params["query"];
-    const result: DBPedia.SearchResult[] = await manmangaApi.search2(query);
+    const result: apiInterfaces.search.SearchResult[] = await api.search(query);
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({error: {name: err.name, stack: err.stack}});

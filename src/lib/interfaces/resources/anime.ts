@@ -1,7 +1,10 @@
-import {Author} from "./author.interface";
-import {Manga} from "./manga.interface";
+import {Author} from "./author";
+import {Manga} from "./manga";
+import {ResourceBase} from "./resource-base";
 
-export interface Anime {
+export interface Anime extends ResourceBase {
+  type: "anime";
+
   /**
    * The title of the anime.
    * Expected to be found for each anime.
@@ -39,4 +42,11 @@ export interface Anime {
    * The list of all known genres for this anime.
    */
   genres?: string[];
+
+  /**
+   * Other Sparql variables
+   */
+  others: {
+    [variableName: string]: string[];
+  };
 }

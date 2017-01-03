@@ -1,7 +1,10 @@
-import {Author} from "./author.interface";
-import {Character} from "./character.interface";
+import {Author} from "./author";
+import {Character} from "./character";
+import {ResourceBase} from "./resource-base";
 
-export interface Manga {
+export interface Manga extends ResourceBase {
+  type: "manga";
+
   /**
    * The title of the manga.
    * Expected to be found for each manga.
@@ -53,4 +56,11 @@ export interface Manga {
    * The manga's list of known publishers.
    */
   publishers?: string[];
+
+  /**
+   * Other Sparql variables
+   */
+  others: {
+    [variableName: string]: string[];
+  };
 }

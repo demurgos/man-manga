@@ -1,0 +1,19 @@
+{
+  "statusCode": 200,
+  "body": "\n{ \"head\": { \"link\": [], \"vars\": [\"x\", \"animeTitle\", \"animeAuthor\", \"animeAbstract\", \"authorTitle\", \"authorAbstract\", \"authorEmployer\", \"authorBirthDate\", \"characterTitle\", \"characterAuthor\", \"characterAbstract\", \"mangaTitle\", \"mangaAuthor\", \"mangaVolumes\", \"mangaPublicationDate\", \"mangaIllustrator\", \"mangaPublisher\", \"mangaAbstract\"] },\n  \"results\": { \"distinct\": false, \"ordered\": true, \"bindings\": [\n    { \"x\": { \"type\": \"literal\", \"value\": \"anime\" }\t, \"animeTitle\": { \"type\": \"uri\", \"value\": \"http://dbpedia.org/resource/Steins;Gate\" }\t, \"animeAuthor\": { \"type\": \"uri\", \"value\": \"http://dbpedia.org/resource/Jukki_Hanada\" }\t, \"animeAbstract\": { \"type\": \"literal\", \"xml:lang\": \"en\", \"value\": \"Steins;Gate (\\u30B7\\u30E5\\u30BF\\u30A4\\u30F3\\u30BA\\u30FB\\u30B2\\u30FC\\u30C8 Shutainzu G\\u0113to) is a Japanese visual novel developed by 5pb. and Nitroplus and released for the Xbox 360 on October 15, 2009. It is the second game in 5pb. and Nitroplus' Science Adventure series following Chaos;Head and is succeeded by Robotics;Notes. The game was ported to Windows on August 26, 2010, PlayStation Portable on June 23, 2011, iOS on August 25, 2011, PlayStation 3 on May 24, 2012, PlayStation Vita on March 14, 2013, and Android on June 27, 2013. The game is described by the development team as a \\\"hypothetical science ADV\\\" (\\u60F3\\u5B9A\\u79D1\\u5B66ADV S\\u014Dtei Kagaku ADV). The gameplay in Steins;Gate follows non-linear plot lines which offer branching scenarios with courses of interaction. JAST USA released the PC version in North America on March 31, 2014, both digitally and as a physical collector's edition, while PQube released the PS3 and Vita versions in North America and Europe in 2015, and will follow by an English translation of the iOS version. A manga adaptation of the story illustrated by Sarachi Yomi began serialization in Media Factory's Monthly Comic Alive magazine on September 26, 2009. A second manga series, illustrated by Kenji Mizuta, began serialization in Mag Garden's Monthly Comic Blade on December 28, 2009. An anime adaptation by White Fox aired in Japan between April 6, 2011 and September 14, 2011, and has been licensed in North America by Funimation Entertainment. An animated film premiered in Japanese theaters on April 20, 2013. A fan disc of the game, titled Steins;Gate: Hiyoku Renri no Darling, was released on June 16, 2011. An 8-bit sequel to the game, titled Steins;Gate: Hen'i Kuukan no Octet, was released on October 28, 2011. Another game, Steins;Gate K\\u014Dsoku no Phenogram was released on April 25, 2013. A follow-up game, Steins;Gate 0, was released on December 10, 2015 for PS3, PlayStation 4 and Vita, with an anime adaptation in production.\" }} ] } }",
+  "headers": {
+    "date": "Tue, 03 Jan 2017 02:36:06 GMT",
+    "content-type": "application/json",
+    "content-length": "2710",
+    "connection": "close",
+    "vary": "Accept-Encoding",
+    "server": "Virtuoso/07.20.3217 (Linux) i686-generic-linux-glibc212-64  VDB",
+    "expires": "Tue, 10 Jan 2017 02:36:06 GMT",
+    "cache-control": "max-age=604800",
+    "access-control-allow-origin": "*",
+    "access-control-allow-credentials": "true",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-headers": "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Accept-Encoding",
+    "accept-ranges": "bytes"
+  }
+}

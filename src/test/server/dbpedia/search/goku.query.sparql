@@ -1,0 +1,84 @@
+SELECT
+  ?x
+  ?animeTitle ?animeAuthor ?animeAbstract
+  ?authorTitle ?authorAbstract ?authorEmployer ?authorBirthDate
+  ?characterTitle ?characterAuthor ?characterAbstract
+  ?mangaTitle ?mangaAuthor ?mangaVolumes ?mangaPublicationDate
+  ?mangaIllustrator ?mangaPublisher ?mangaAbstract
+WHERE {
+  {
+    values ?animeTitle {<http://dbpedia.org/resource/Goku>}.
+    bind(exists {?animeTitle a dbo:Anime.} as ?is).
+    bind(IF(?is=1, 'anime', 0) as ?x).
+    OPTIONAL {
+      ?animeTitle dbo:writer ?animeAuthor
+    }.
+    OPTIONAL {
+      ?animeTitle dbo:abstract ?animeAbstract.
+      filter(langMatches(lang(?animeAbstract), 'en'))
+    }.
+  } UNION {
+    values ?authorTitle {<http://dbpedia.org/resource/Goku>}.
+    bind(exists {?m a dbo:Anime. ?m dbo:writer ?authorTitle.} as ?is).
+    bind(IF(?is=1, 'author', 0) as ?x).
+    OPTIONAL {
+      ?authorTitle dbo:employer ?authorEmployer
+    }.
+    OPTIONAL {
+      ?authorTitle dbo:birthDate ?authorBirthDate
+    }.
+    OPTIONAL {
+      ?authorTitle dbo:abstract ?authorAbstract.
+      filter(langMatches(lang(?authorAbstract), 'en'))
+    }.
+  } UNION {
+    values ?authorTitle {<http://dbpedia.org/resource/Goku>}.
+    bind(exists {?m a dbo:Manga. ?m dbo:author ?authorTitle.} as ?is).
+    bind(IF(?is=1, 'author', 0) as ?x).
+    OPTIONAL {
+      ?authorTitle dbo:employer ?authorEmployer
+    }.
+    OPTIONAL {
+      ?authorTitle dbo:birthDate ?authorBirthDate
+    }.
+    OPTIONAL {
+      ?authorTitle dbo:abstract ?authorAbstract.
+      filter(langMatches(lang(?authorAbstract), 'en'))
+    }.
+  } UNION {
+    values ?characterTitle {<http://dbpedia.org/resource/Goku>}.
+    bind(exists {?characterTitle a dbo:FictionalCharacter.} as ?is).
+    bind(IF(?is=1, 'character', 0) as ?x).
+    OPTIONAL {
+      ?characterTitle dbo:creator ?characterAuthor
+    }.
+    OPTIONAL {
+      ?characterTitle dbo:abstract ?characterAbstract.
+      filter(langMatches(lang(?characterAbstract), 'en'))
+    }.
+  } UNION {
+    values ?mangaTitle {<http://dbpedia.org/resource/Goku>}.
+    bind(exists {?mangaTitle a dbo:Manga.} as ?is).
+    bind(IF(?is=1, 'manga', 0) as ?x).
+    OPTIONAL {
+      ?mangaTitle dbo:author ?mangaAuthor
+    }.
+    OPTIONAL {
+      ?mangaTitle dbo:numberOfVolumes ?mangaVolumes
+    }.
+    OPTIONAL {
+      ?mangaTitle dbo:firstPublicationDate ?mangaPublicationDate
+    }.
+    OPTIONAL {
+      ?mangaTitle dbo:illustrator ?mangaIllustrator
+    }.
+    OPTIONAL {
+      ?mangaTitle dbo:publisher ?mangaPublisher
+    }.
+    OPTIONAL {
+      ?mangaTitle dbo:abstract ?mangaAbstract.
+      filter(langMatches(lang(?mangaAbstract), 'en'))
+    }.
+  }
+  filter(?is != 0).
+}

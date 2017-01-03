@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {Character} from "../../../lib/interfaces/character.interface";
+import {Character} from "../../../lib/interfaces/resources/character";
 import {AnilistApi} from "../../lib/anilist-api.class";
 import * as Anilist from "../../lib/anilist-api.interfaces";
 

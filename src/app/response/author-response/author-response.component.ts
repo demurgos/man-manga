@@ -1,8 +1,10 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {Author} from "../../../lib/interfaces/author.interface";
+import {Author} from "../../../lib/interfaces/resources/author";
 
 const AUTHORTEST: Author = {
-  name: "yolo"
+  type: "author",
+  name: "yolo",
+  others: {}
 };
 
 @Component({
