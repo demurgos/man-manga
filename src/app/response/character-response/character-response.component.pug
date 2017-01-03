@@ -1,0 +1,11 @@
+.col.s12.m6
+  .card.horizontal("*ngIf"="character")
+    .card-image("*ngIf"="character.pictureUrl")
+      img(src="{{character.pictureUrl}}")
+    .card-stacked
+      .card-content
+        span.card-title {{character.name}}
+        .creator("*ngIf"="character.creator") Creator: {{anime.creator.name}}
+        .abstract("*ngIf"="character.abstract") Abstract: {{anime.abstract}}
+      .card-action
+        a(href="#") See it online

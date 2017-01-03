@@ -2,6 +2,7 @@ import {CommonModule} from "@angular/common";
 import {NgModule} from "@angular/core";
 import {AnimeComponent} from "./anime-response/anime-response.component";
 import {AuthorComponent} from "./author-response/author-response.component";
+import {CharacterComponent} from "./character-response/character-response.component";
 import {MangaComponent} from "./manga-response/manga-response.component";
 import {ResponseRoutingModule} from "./response-routing.module";
 
@@ -13,6 +14,7 @@ import {ResponseRoutingModule} from "./response-routing.module";
   declarations: [
     AnimeComponent,
     AuthorComponent,
+    CharacterComponent,
     MangaComponent
   ],
   exports: [
