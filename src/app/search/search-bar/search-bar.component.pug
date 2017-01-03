@@ -28,7 +28,6 @@ div.searchbar
                 span.card-title Author
                 <input type="checkbox" class="filled-in" id="testAuthor" checked="checked" #authorFilter (change)="chgAuthor(authorFilter.checked)">
                 <label for="testAuthor"></label>
-  .val("*ngIf"="searchfield.value") Results for {{searchfield.value}}
 .row
   .mangasresponses("*ngIf"="mangas")
     .filter1("*ngIf"="mangaFilterOn")
