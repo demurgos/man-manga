@@ -1,6 +1,6 @@
 {
   "name": "man-manga",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Web sémantique",
   "main": "dist/node/node/main.js",
   "private": true,
