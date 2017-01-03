@@ -1,12 +1,16 @@
+import Bluebird = require("bluebird");
 import * as _ from "lodash";
 import * as path from "path";
 import * as url from "url";
 import * as apiInterfaces from "../../lib/interfaces/api/index";
 import {Anime, Author, Character, Manga} from "../../lib/interfaces/resources/index";
 import * as alchemy from "../lib/alchemy";
+import {AnilistApi} from "../lib/anilist-api.class";
 import {search as dbpediaSearch} from "../lib/dbpedia/index";
 import * as googlesearch from "../lib/googlesearch";
 import * as spotlight from "../lib/spotlight";
+
+const anilist: AnilistApi = new AnilistApi();
 
 export interface SearchTypes {
   anime?: boolean;
@@ -103,6 +107,7 @@ async function getResourceIrisFromWikipedia(userQuery: string,
       }
     } catch (err) {
       // ignore parse / access errors
+      console.warn(err);
     }
   }
   return _.uniq(wikipediaResources);
@@ -122,15 +127,40 @@ export async function search(query: string,
   console.log("Resources:");
   console.log(resources);
 
-  const semanticPromises: Promise<apiInterfaces.search.SearchResult | null>[] = [];
-  for (const resource of resources) {
-    semanticPromises.push(dbpediaSearch(resource));
-  }
-  const semanticResults: (apiInterfaces.search.SearchResult | null)[] = await Promise.all(semanticPromises);
+  resources.length = Math.min(resources.length, 25);
+
+  const semanticPromises: Bluebird<(apiInterfaces.search.SearchResult | null)[]> = Bluebird.map(
+    resources,
+    async function (resourceIri: string): Promise<apiInterfaces.search.SearchResult | null> {
+      try {
+        const semanticResult: apiInterfaces.search.SearchResult | null = await dbpediaSearch(resourceIri);
+        console.log(semanticResult);
+        return semanticResult;
+      } catch (err) {
+        // Ignore errors
+        console.warn(err);
+      }
+      return null;
+    },
+    {concurrency: 5}
+  );
+
+  const semanticResults: (apiInterfaces.search.SearchResult | null)[] = await semanticPromises;
 
   const cleanedResults: apiInterfaces.search.SearchResult[] = [];
   for (const result of semanticResults) {
     if (result !== null) {
+      if (result.type === "manga") {
+        try {
+          const coverUrl: string | null = await anilist.getCoverUrl(result.title);
+          if (coverUrl !== null) {
+            result.coverUrl = coverUrl;
+          }
+        } catch (err) {
+          // Ignore missing cover
+          console.warn(err);
+        }
+      }
       cleanedResults.push(result);
     }
   }
