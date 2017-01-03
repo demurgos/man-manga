@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import * as path from "path";
+import * as url from "url";
 import * as apiInterfaces from "../../lib/interfaces/api/index";
 import {Anime, Author, Character, Manga} from "../../lib/interfaces/resources/index";
 import * as alchemy from "../lib/alchemy";
@@ -34,7 +36,7 @@ function buildGooglesearchQuery(userQuery: string, searchTypes: SearchTypes | nu
   return `${userQuery} ${keywords.join("OR")}`;
 }
 
-async function getResources(uri: string): Promise<string[]> {
+async function getSpotlightResources(uri: string): Promise<string[]> {
   try {
     console.log("Alchemy");
     const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(uri);
@@ -51,22 +53,72 @@ async function getResources(uri: string): Promise<string[]> {
   }
 }
 
+async function getResourcesFromSpotlight(userQuery: string, searchTypes: SearchTypes | null = null): Promise<string[]> {
+  const googlesearchQuery: string = buildGooglesearchQuery(userQuery, searchTypes);
+  const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
+  console.log("Google results:");
+  console.log(searchResults);
+  const spotLightPromises: Promise<string[]>[] = [];
+  for (const searchResult of searchResults) {
+    spotLightPromises.push(getSpotlightResources(searchResult.link));
+  }
+
+  const resolvedSpotLight: string[][] = await Promise.all(spotLightPromises);
+  return _.uniq(_.flatten(resolvedSpotLight));
+}
+
+const wikipediaHost: string = "en.wikipedia.org";
+const dbpediaHost: string = "dbpedia.org";
+
+function wikipediaArticleUriToDbpediaResourceIri(articleUri: string): string | null {
+  const parsedUri: url.Url = url.parse(articleUri);
+  if (parsedUri.host !== wikipediaHost || parsedUri.pathname === null || parsedUri.pathname === undefined) {
+    return null;
+  }
+  const articlePath: path.ParsedPath = path.posix.parse(parsedUri.pathname);
+  if (articlePath.dir !== "/wiki") {
+    return null;
+  }
+  const resouceId: string = articlePath.base;
+  const dbpediaIri: url.Url = {
+    protocol: "http",
+    hostname: dbpediaHost,
+    pathname: path.posix.join("/", "resource", resouceId)
+  };
+  return url.format(dbpediaIri);
+}
+
+async function getResourceIrisFromWikipedia(userQuery: string,
+                                            searchTypes: SearchTypes | null = null): Promise<string[]> {
+  const googlesearchQuery: string = buildGooglesearchQuery(`${userQuery} site:${wikipediaHost}`, searchTypes);
+  const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
+  console.log("Google results:");
+  console.log(searchResults);
+  const wikipediaResources: string[] = [];
+  for (const searchResult of searchResults) {
+    try {
+      const dbpediaIri: string | null = wikipediaArticleUriToDbpediaResourceIri(searchResult.link);
+      if (dbpediaIri !== null) {
+        wikipediaResources.push(dbpediaIri);
+      }
+    } catch (err) {
+      // ignore parse / access errors
+    }
+  }
+  return _.uniq(wikipediaResources);
+}
+
 /**
  * A test pipeline using specific search.
  */
 export async function search(query: string,
                              searchTypes: SearchTypes | null = null): Promise<apiInterfaces.search.SearchResult[]> {
   console.log(`Search: ${JSON.stringify(query)}`);
-  const googlesearchQuery: string = buildGooglesearchQuery(query, searchTypes);
-  const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
-  console.log("Google results:");
-  const spotLightPromises: Promise<string[]>[] = [];
-  for (const searchResult of searchResults) {
-    spotLightPromises.push(getResources(searchResult.link));
-  }
 
-  const resolvedSpotLight: string[][] = await Promise.all(spotLightPromises);
-  const resources: string[] = _.uniq(_.flatten(resolvedSpotLight));
+  const spotlightResources: string[] = await getResourcesFromSpotlight(query, searchTypes);
+  const wikipediaResources: string[] = await getResourceIrisFromWikipedia(query, searchTypes);
+
+  const resources: string[] = _.uniq(_.concat(spotlightResources, wikipediaResources));
   console.log("Resources:");
   console.log(resources);
 
