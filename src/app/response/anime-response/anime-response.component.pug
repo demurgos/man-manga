@@ -1,15 +1,14 @@
-.row
-  .col.s12.m6
-    .card.horizontal
-      .card-image("*ngIf"="anime.posterUrl")
-        img(src="{{anime.posterUrl}}")
-      .card-stacked
-        .card-content
-          span.card-title {{anime.title}}
-          .author("*ngIf"="anime.author") Author : {{anime.author}}
-          .abstract("*ngIf"="anime.abstract") Abstract : br {{anime.abstract}}
-          .episodes("*ngIf"="anime.episodes")  {{anime.episodes}} episodes
-          .genres("*ngIf"="anime.genres") Genres:&nbsp;
-            span.genre("*ngFor"="let genre of anime.genres") {{genre}}&nbsp;
-        .card-action
-          a(href="#") See it online
+.col.s12.m6
+  .card.horizontal
+    .card-image("*ngIf"="anime.posterUrl")
+      img(src="{{anime.posterUrl}}")
+    .card-stacked
+      .card-content
+        span.card-title {{anime.title}}
+        .author("*ngIf"="anime.author") Author : {{anime.author}}
+        .abstract("*ngIf"="anime.abstract") Abstract : br {{anime.abstract}}
+        .episodes("*ngIf"="anime.episodes")  {{anime.episodes}} episodes
+        .genres("*ngIf"="anime.genres") Genres:&nbsp;
+          span.genre("*ngFor"="let genre of anime.genres") {{genre}}&nbsp;
+      .card-action
+        a(href="#") See it online

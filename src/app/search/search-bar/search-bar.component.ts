@@ -52,21 +52,31 @@ const ANIMETEST2: Anime = {
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
   res: SearchResults;
-  //tmpMangaComponent: MangaComponent;
   mangas: Manga[];
-  //mangasComp: MangaComponent[];
-  //tmpAnimeComponent: AnimeComponent;
   animes: Anime[];
-  //animesComp: AnimeComponent[];
-  //tmpAuthorComponent: AuthorComponent;
   authors: Author[];
-  //authorsComp: AuthorComponent[];
   clickMessage: string;
+  mangaFilterOn: boolean;
+  animeFilterOn: boolean;
+  authorFilterOn: boolean;
+
+  chgManga(mgfltr: boolean): void {
+    this.mangaFilterOn=mgfltr;
+  }
+  chgAnime(anmfltr: boolean): void {
+    this.animeFilterOn=anmfltr;
+  }
+  chgAuthor(athfltr: boolean): void {
+    this.authorFilterOn=athfltr;
+  }
 
   add(str: string): void {
     console.log(str);
     this.clickMessage = str;
     // this.search(str);
+    // this.mangas = [];
+    // this.animes = [];
+    // this.authors = [];
   }
   /**
    * Properly initialize component.
@@ -74,41 +84,26 @@ export class SearchBarComponent implements OnInit {
   ngOnInit(): void {
 
     // Nothing to do for the moment
-    // document.addEventListener('click',this.searchQuery.bind(this))
-
-    //this.tmpMangaComponent = new MangaComponent();
-    // this.tmpMangaComponent.setManga(MANGATEST);
-    //this.tmpAnimeComponent = new AnimeComponent();
-    //this.tmpAuthorComponent = new AuthorComponent();
-    //this.mangasComp = [this.tmpMangaComponent];
     this.mangas = [MANGATEST1, MANGATEST2];
-    //this.animesComp = [];
     this.animes = [ANIMETEST1, ANIMETEST2];
-    //this.authorsComp = [];
     this.authors = [];
     this.clickMessage = "e";
+    this.mangaFilterOn=true;
+    this.animeFilterOn=true;
+    this.authorFilterOn=true;
     // this.search("One Piece");
-    // console.log( "Mangas :" +this.mangas.toString());
   }
 
   fillresponses(): void {
     for (const i of this.res) {
-      // console.log( i.anime + " " + i.manga + " " + i.author);
       if ( !isUndefined( i.anime ) ) {
-        //( <AnimeComponent> this.tmpAnimeComponent ).setAnime( <Anime> i.anime );
-        //this.animesComp.push( <AnimeComponent> this.tmpAnimeComponent );
         this.animes.push( <Anime> i.anime );
       } else if ( !isUndefined( i.manga ) ) {
-        //(<MangaComponent> this.tmpMangaComponent).setManga(<Manga> i.manga);
-        //this.mangasComp.push(<MangaComponent> this.tmpMangaComponent);
         this.mangas.push(<Manga> i.manga);
       } else if ( !isUndefined( i.author ) ) {
-        //( <AuthorComponent> this.tmpAuthorComponent ).setAuthor( <Author> i.author );
-        //this.authorsComp.push( <AuthorComponent> this.tmpAuthorComponent );
         this.authors.push( <Author> i.author );
       }
     }
-    //console.log( this.mangasComp );
   }
   /**
    * An experimental search.

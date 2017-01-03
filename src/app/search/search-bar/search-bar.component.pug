@@ -2,35 +2,44 @@ div(class="searchbar")
   div(class="title") ManManga
     .subTitle MOE !
   div(class="comp")
-    div Search
-      .input <Input #searchfield>
-      button("(click)"="add(searchfield.value)") envoyer
-      p Message : {{clickMessage}}
+    div
+      <Input #searchfield>
+      .buttonSend
+        button(class="waves-effect waves-light btn" "(click)"="add(searchfield.value)") envoyer
     div(class="sort")
       .row
         .manga
           .col.s4
-            .card(class="card red lighten-2")
+            .card(class="card blue darken-2")
               .card-content
                 span.card-title Manga
-
+                <input type="checkbox" class="filled-in" id="testManga" checked="checked" #mangaFilter (change)="chgManga(mangaFilter.checked)" >
+                <label for="testManga"></label>
         .anime
           .col.s4
             .card(class="card green lighten-2")
               .card-content
                 span.card-title Anime
-
+                <input type="checkbox" class="filled-in" id="testAnime" checked="checked"  #animeFilter (change)="chgAnime(animeFilter.checked)">
+                <label for="testAnime"></label>
         .author
           .col.s4
             .card(class="card teal lighten-2")
               .card-content
                 span.card-title Author
-.mangasresponses("*ngIf"="mangas")
-  .mangaresponse("*ngFor"="let manga of mangas")
-    <mmg-manga-response [manga]="manga"></mmg-manga-response>
-.animesresponses("*ngIf"="animes")
-  .animeresponse("*ngFor"="let anime of animes")
-    <mmg-anime-response [anime]="anime"></mmg-anime-response>
-.authorsresponses("*ngIf"="authors")
-  .authorresponse("*ngFor"="let author of authors")
-    <mmg-author-response [author]="author"></mmg-author-response>
+                <input type="checkbox" class="filled-in" id="testAuthor" checked="checked" #authorFilter (change)="chgAuthor(authorFilter.checked)">
+                <label for="testAuthor"></label>
+  .val("*ngIf"="searchfield.value") Results for {{searchfield.value}}
+.row
+  .mangasresponses("*ngIf"="mangas")
+    .filter1("*ngIf"="mangaFilterOn")
+      .mangaresponse("*ngFor"="let manga of mangas")
+        <mmg-manga-response [manga]="manga"></mmg-manga-response>
+  .animesresponses("*ngIf"="animes")
+    .filter2("*ngIf"="animeFilterOn")
+      .animeresponse("*ngFor"="let anime of animes")
+        <mmg-anime-response [anime]="anime"></mmg-anime-response>
+  .authorsresponses("*ngIf"="authors")
+    .filter3("*ngIf"="authorFilterOn")
+      .authorresponse("*ngFor"="let author of authors")
+        <mmg-author-response [author]="author"></mmg-author-response>
