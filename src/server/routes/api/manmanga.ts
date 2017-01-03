@@ -178,7 +178,7 @@ manmangaApiRouter.get("/manga/:name/coverUrl", async function (req: Request, res
   try {
     const mangaName: string = req.params["name"];
     const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(mangaName);
-    res.status(200).json(cover);
+      res.status(200).json(cover);
   } catch (err) {
     console.error(`ERROR with the request to ${req.originalUrl}`);
     console.error(err);

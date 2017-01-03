@@ -34,6 +34,7 @@ export async function getMangaCoverUrl(name: string): Promise<MangaCover> {
       Title: name
     })
   });
+  console.log(response);
   const data: any = JSON.parse(response.body);
   if (data.Results.length === 0) {
     throw new Error(`Manga ${name} not found`);

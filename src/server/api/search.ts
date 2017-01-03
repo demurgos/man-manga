@@ -5,6 +5,7 @@ import * as DBPedia from "../lib/dbpedia";
 import * as googlesearch from "../lib/googlesearch";
 import * as McdIOSphere from "../lib/mcd-iosphere";
 import * as spotlight from "../lib/spotlight";
+import {AnilistApi} from "../lib/anilist-api.class";
 
 /**
  * Returns a list of spotlight URLs related to the query.
@@ -26,6 +27,8 @@ export async function search (query: string): Promise<string[]> {
   return spotlightResult;
 }
 
+let anilist: AnilistApi = new AnilistApi();
+
 /**
  * A test pipeline using specific search.
  */
@@ -44,8 +47,9 @@ export async function search2 (query: string): Promise<DBPedia.SearchResult[]> {
       if (dbpediaResult && dbpediaResult.manga !== undefined) {
         const manga: Manga = dbpediaResult.manga;
         try {
-          const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(DBPedia.resourceUrlToName(manga.title));
-          manga.coverUrl = cover.coverUrl;
+          console.log("COVERING: " + DBPedia.resourceUrlToName(manga.title));
+          const cover: string = await anilist.getCoverUrl(DBPedia.resourceUrlToName(manga.title));
+          manga.coverUrl = cover;
         } catch (err) {
           // At this point, it's not a problem if we don't find any cover
           // Just return the result

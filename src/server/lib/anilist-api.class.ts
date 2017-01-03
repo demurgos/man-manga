@@ -120,7 +120,11 @@ export class AnilistApi {
    * separated by spaces.
    */
   public async searchManga(keywords: string): Promise<AnilistManga> {
-    return this.search("manga", keywords);
+    return this
+      .search("manga", keywords)
+      .then((res: any[]) => {
+        return res[0];
+      });
   }
 
   /**
@@ -157,6 +161,20 @@ export class AnilistApi {
    */
   public searchStaff(keywords: string): Promise<AnilistStaff> {
     return this.search("staff", keywords);
+  }
+
+  /**
+   * TODO: cmment
+   * @param keywords
+   * @returns {any}
+   */
+  public getCoverUrl(keywords: string): Promise<string> {
+    return this
+      .searchManga(keywords)
+      .then((manga: AnilistManga) => {
+        console.log(manga);
+        return manga.image_url_lge;
+      });
   }
 
   /**

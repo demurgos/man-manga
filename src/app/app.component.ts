@@ -34,7 +34,7 @@ export class AppComponent {
 
   ngOnInit(): void {
     // this.manga = MANGATEST;
-    console.log(this.manga.title);
+    // console.log(this.manga.title);
   }
 
 }

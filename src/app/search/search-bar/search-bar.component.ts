@@ -73,10 +73,10 @@ export class SearchBarComponent implements OnInit {
   add(str: string): void {
     console.log(str);
     this.clickMessage = str;
-    // this.search(str);
-    // this.mangas = [];
-    // this.animes = [];
-    // this.authors = [];
+    this.search(str);
+    this.mangas = [];
+    this.animes = [];
+    this.authors = [];
   }
   /**
    * Properly initialize component.
