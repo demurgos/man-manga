@@ -142,15 +142,16 @@ export async function search(query: string,
   const semanticPromises: Bluebird<(apiInterfaces.search.SearchResult | null)[]> = Bluebird.map(
     resources,
     async function (resourceIri: string): Promise<apiInterfaces.search.SearchResult | null> {
-      try {
-        const semanticResult: apiInterfaces.search.SearchResult | null = await dbpediaSearch(resourceIri);
-        console.log(semanticResult);
-        return semanticResult;
-      } catch (err) {
-        // Ignore errors
-        console.warn(err);
-      }
-      return null;
+      return Bluebird
+        .try((): Promise<apiInterfaces.search.SearchResult | null> => {
+          return dbpediaSearch(resourceIri);
+        })
+        .timeout(2000)
+        .catch((err: Error) => {
+          console.warn(err);
+          return null;
+        })
+        .tap(console.log);
     },
     {concurrency: 5}
   );
