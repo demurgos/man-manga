@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as apiInterfaces from "../../lib/interfaces/api/index";
 import {MangaCover} from "../../lib/interfaces/resources/index";
 import * as alchemy from "../lib/alchemy";
@@ -28,45 +29,53 @@ export async function search (query: string): Promise<string[]> {
 
 function buildGooglesearchQuery(userQuery: string): string {
   // TODO: configuration options
-  return `${userQuery} manga OR anime site:en.wikipedia.org`;
+  return `${userQuery} manga OR anime`;
+}
+
+async function getResources(uri: string): Promise<string[]> {
+  console.log("Alchemy");
+  const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(uri);
+  console.log("Alchemy result:");
+  console.log(alchemyResult);
+  console.log("Spotlight");
+  const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
+  console.log("Spotlight result:");
+  console.log(spotlightResult);
+  return spotlightResult;
 }
 
 /**
  * A test pipeline using specific search.
  */
 export async function search2 (query: string): Promise<apiInterfaces.search.SearchResult[]> {
+  console.log(`Search: ${JSON.stringify(query)}`);
   const googlesearchQuery: string = buildGooglesearchQuery(query);
   const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
-  console.log("Google results");
-  console.log(searchResults);
-  const dirtyResults: (apiInterfaces.search.SearchResult | null)[] = await Promise.all(searchResults
-    .slice(0, 3)
-    .map(async (searchResult: googlesearch.SearchResult): Promise<apiInterfaces.search.SearchResult | null> => {
-      const url: string = searchResult.link;
-      const resourceIri: string = "" + url; // DBPedia.wikipediaArticleUrlToResourceUrl(url);
-      const result: apiInterfaces.search.SearchResult | null = await DBPedia.search(resourceIri);
-      if (result === null) {
-        return null;
-      }
+  console.log("Google results:");
+  const spotLightPromises: Promise<string[]>[] = [];
+  for (const searchResult of searchResults) {
+    spotLightPromises.push(getResources(searchResult.link));
+  }
 
-      // Resolve cover
-      if (result.type === "manga") {
-        try {
-          const cover: MangaCover = await McdIOSphere.getMangaCoverUrl(result.title); // resourceToName
-          result.coverUrl = cover.coverUrl;
-        } catch (err) {
-          // Ignore undefined cover
-          // TODO: try to get something with anilist ?
-        }
-      }
-      return result;
-    }));
+  const resolvedSpotLight: string[][] = await Promise.all(spotLightPromises);
+  const resources: string[] = _.uniq(_.flatten(resolvedSpotLight));
+  console.log("Resources:");
+  console.log(resources);
 
-  const results: apiInterfaces.search.SearchResult[] = [];
-  for (const result of dirtyResults) {
+  const semanticPromises: Promise<apiInterfaces.search.SearchResult | null>[] = [];
+  for (const resource of resources) {
+    semanticPromises.push(DBPedia.search(resource));
+  }
+  const semanticResults: (apiInterfaces.search.SearchResult | null)[] = await Promise.all(semanticPromises);
+
+  const cleanedResults: apiInterfaces.search.SearchResult[] = [];
+  for (const result of semanticResults) {
     if (result !== null) {
-      results.push(result);
+      cleanedResults.push(result);
     }
   }
-  return results;
+  console.log("Final results:");
+  console.log(cleanedResults);
+
+  return cleanedResults;
 }
