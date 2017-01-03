@@ -7,7 +7,7 @@ import {AuthorComponent} from "../../response/author-response/author-response.co
 import {MangaComponent} from "../../response/manga-response/manga-response.component";
 import {ApiService} from "../services/api.service";
 
-const MANGATEST: Manga = {
+const MANGATEST1: Manga = {
   type: "manga",
   title: "Death Note",
   author: {
@@ -23,6 +23,42 @@ const MANGATEST: Manga = {
   others: {}
 };
 
+const MANGATEST2: Manga = {
+  type: "manga",
+  title: "Something else",
+  author: {
+    type: "author",
+    name: "Takeshi Obutu Oba",
+    others: {}
+  },
+  illustrator: ["Blabla Obata"],
+  volumes: 145,
+  genres: ["Thriller", "Drama", "Action"],
+  abstract: "Kira  hell",
+  coverUrl: "",
+  others: {}
+};
+
+const ANIMETEST1: Anime = {
+  type: "anime",
+  title: "One piece",
+  others: {}
+};
+
+const ANIMETEST2: Anime = {
+  type: "anime",
+  title: "Naruto",
+  author: {
+    type: "author",
+    name: "Kishimoto",
+    others: {}
+  },
+  abstract: "Naruto wants to become the greatest ninja of all time",
+  episodes: 165,
+  posterUrl: "http://2.bp.blogspot.com/-jHfXDVdyEMk/UHUUAF1S95I/AAAAAAAAAac/YN0j_iNcmYk/s1600/Naruto+Cover.jpg",
+  others: {}
+};
+
 // TODO: does this component really perform any request ?
 @Component({
   selector: "mmg-search",
@@ -34,59 +70,63 @@ const MANGATEST: Manga = {
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
   res: SearchResult[];
-  tmpMangaComponent: MangaComponent;
   mangas: Manga[];
-  mangasComp: MangaComponent[];
-  tmpAnimeComponent: AnimeComponent;
   animes: Anime[];
-  animesComp: AnimeComponent[];
-  tmpAuthorComponent: AuthorComponent;
   authors: Author[];
-  authorsComp: AuthorComponent[];
-  go: boolean;
+  clickMessage: string;
+  mangaFilterOn: boolean;
+  animeFilterOn: boolean;
+  authorFilterOn: boolean;
 
+  chgManga(mgfltr: boolean): void {
+    this.mangaFilterOn = mgfltr;
+  }
+  chgAnime(anmfltr: boolean): void {
+    this.animeFilterOn = anmfltr;
+  }
+  chgAuthor(athfltr: boolean): void {
+    this.authorFilterOn = athfltr;
+  }
+
+  add(str: string): void {
+    console.log(str);
+    this.clickMessage = str;
+    // this.search(str);
+    // this.mangas = [];
+    // this.animes = [];
+    // this.authors = [];
+  }
   /**
    * Properly initialize component.
    */
   ngOnInit(): void {
     // Nothing to do for the moment
-    this.go = false;
-    this.tmpMangaComponent = new MangaComponent();
-    this.tmpMangaComponent.setManga(MANGATEST);
-    this.tmpAnimeComponent = new AnimeComponent();
-    this.tmpAuthorComponent = new AuthorComponent();
-    this.mangasComp = [this.tmpMangaComponent];
-    this.mangas = [];
-    this.animesComp = [];
-    this.animes = [];
-    this.authorsComp = [];
+    this.mangas = [MANGATEST1, MANGATEST2];
+    this.animes = [ANIMETEST1, ANIMETEST2];
     this.authors = [];
-    this.search("One Piece");
+    this.clickMessage = "e";
+    this.mangaFilterOn = true;
+    this.animeFilterOn = true;
+    this.authorFilterOn = true;
+    // this.search("One Piece");
   }
 
   fillresponses(): void {
     for (const result of this.res) {
       switch (result.type) {
         case "anime":
-          this.tmpAnimeComponent.setAnime(result);
-          this.animesComp.push(this.tmpAnimeComponent);
           this.animes.push(result);
           break;
         case "manga":
-          this.tmpMangaComponent.setManga(result);
-          this.mangasComp.push(this.tmpMangaComponent);
           this.mangas.push(result);
           break;
         case "author":
-          this.tmpAuthorComponent.setAuthor(result);
-          this.authorsComp.push(this.tmpAuthorComponent);
           this.authors.push(result);
           break;
         default:
           console.warn(`Unsupported resource type: ${result.type}`);
       }
     }
-    this.go = true;
   }
 
   /**
@@ -101,7 +141,6 @@ export class SearchBarComponent implements OnInit {
         this.res = results;
         this.fillresponses();
       });
-
   }
 
   /**

@@ -1,5 +1,6 @@
 import {Component, Inject} from "@angular/core";
 import {appEnvironment, Environment} from "./app.tokens";
+import {SearchBarComponent} from "./search/search-bar/search-bar.component";
 
 @Component({
   selector: "mmg-app",
@@ -11,10 +12,9 @@ import {appEnvironment, Environment} from "./app.tokens";
 })
 export class AppComponent {
   private environment: Environment;
+  search: SearchBarComponent;
 
   constructor(@Inject(appEnvironment) environment: Environment) {
     this.environment = environment;
-    console.log("Environment:");
-    console.log(this.environment);
   }
 }

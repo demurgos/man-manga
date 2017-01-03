@@ -1,5 +1,11 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {Author} from "../../../lib/interfaces/resources/author";
+
+const AUTHORTEST: Author = {
+  type: "author",
+  name: "yolo",
+  others: {}
+};
 
 @Component({
   selector: "mmg-author-response",
@@ -8,10 +14,7 @@ import {Author} from "../../../lib/interfaces/resources/author";
   styleUrls: ["author-response.component.css"]
 })
 export class AuthorComponent implements OnInit {
-  author: Author;
-  name: string;
-  lastname: string;
-  works: string[];
+  @Input() author: Author;
 
   ngOnInit(): void {
     console.log("Author !");

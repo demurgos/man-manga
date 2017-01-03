@@ -10,6 +10,8 @@ import {SearchResult} from "../../../lib/interfaces/api/search";
 import {Anime, Author, Character, Manga} from "../../../lib/interfaces/resources/index";
 import {appConfig, Config} from "../../app.tokens";
 
+const posixPath: typeof path.posix = "posix" in path ? path.posix : path;
+
 /**
  * Return the URI /api/pipeline2/:query
  * as a string.
@@ -18,7 +20,7 @@ import {appConfig, Config} from "../../app.tokens";
  * @param query Keywords of the query.
  */
 export function getSearchUri(apiBaseUri: string, query: string): string {
-  return url.resolve(`${apiBaseUri}/`, path.posix.join("pipeline2/", encodeURIComponent(query)));
+  return url.resolve(`${apiBaseUri}/`, posixPath.join("pipeline2/", encodeURIComponent(query)));
 }
 
 /**
@@ -29,7 +31,7 @@ export function getSearchUri(apiBaseUri: string, query: string): string {
  * @param name The manga's name.
  */
 export function getMangaUri(apiBaseUri: string, name: string): string {
-  return url.resolve(`${apiBaseUri}/`, path.posix.join("manga/", encodeURIComponent(name)));
+  return url.resolve(`${apiBaseUri}/`, posixPath.join("manga/", encodeURIComponent(name)));
 }
 
 /**
@@ -40,7 +42,7 @@ export function getMangaUri(apiBaseUri: string, name: string): string {
  * @param name The author's name.
  */
 export function getAuthorUri(apiBaseUri: string, name: string): string {
-  return url.resolve(`${apiBaseUri}/`, path.posix.join("author/", encodeURIComponent(name)));
+  return url.resolve(`${apiBaseUri}/`, posixPath.join("author/", encodeURIComponent(name)));
 }
 
 /**
@@ -51,7 +53,7 @@ export function getAuthorUri(apiBaseUri: string, name: string): string {
  * @param name The anime's name.
  */
 export function getAnimeUri(apiBaseUri: string, name: string): string {
-  return url.resolve(`${apiBaseUri}/`, path.posix.join("anime/", encodeURIComponent(name)));
+  return url.resolve(`${apiBaseUri}/`, posixPath.join("anime/", encodeURIComponent(name)));
 }
 
 /**
@@ -62,7 +64,7 @@ export function getAnimeUri(apiBaseUri: string, name: string): string {
  * @param name The character's name.
  */
 export function getCharacterUri(apiBaseUri: string, name: string): string {
-  return url.resolve(`${apiBaseUri}/`, path.posix.join("character/", encodeURIComponent(name)));
+  return url.resolve(`${apiBaseUri}/`, posixPath.join("character/", encodeURIComponent(name)));
 }
 
 @Injectable()
@@ -99,11 +101,11 @@ export class ApiService implements Api {
    * (or if no manga could be found).
    * @param name The manga's name.
    */
-  public getManga(name: number): Bluebird<Manga> {
+  public getManga(name: string): Bluebird<Manga> {
     return Bluebird
       .try(() => {
         return this.http
-          .get(getMangaUri(this.appConfig.apiBaseUri, name.toString(10)))
+          .get(getMangaUri(this.appConfig.apiBaseUri, name))
           .toPromise();
       })
       .then((response: any) => {
