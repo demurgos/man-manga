@@ -181,6 +181,21 @@ export class AnilistApi {
   }
 
   /**
+   * TODO: cmment
+   * @param keywords
+   * @returns {any}
+   */
+  public getPosterUrl(keywords: string): Promise<string> {
+    console.log(keywords);
+    return this
+        .searchAnime(keywords)
+        .then((anime: AnilistAnime) => {
+          console.log(anime);
+          return anime.image_url_lge;
+        });
+  }
+
+  /**
    * Searches all studios matching the given keywords.
    * @param keywords A string containing all keywords to search,
    * separated by spaces.

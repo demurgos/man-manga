@@ -7,6 +7,9 @@ import * as googlesearch from "../lib/googlesearch";
 import * as spotlight from "../lib/spotlight";
 import {AnilistApi} from "../lib/anilist-api.class";
 import {Manga} from "../../lib/interfaces/resources/manga";
+import {Anime} from "../../lib/interfaces/resources/anime";
+import {Author} from "../../lib/interfaces/resources/author";
+import {Character} from "../../lib/interfaces/resources/character";
 
 let anilist: AnilistApi = new AnilistApi();
 
@@ -39,11 +42,24 @@ export async function search(query: string): Promise<apiInterfaces.search.Search
 
   const cleanedResults: apiInterfaces.search.SearchResult[] = [];
   for (const result of semanticResults) {
-    if (result !== null) {
+    if (result) {
       if(result.type === "manga") {
-        console.log("RESULTTTTTTTTTTTTTT");
-        console.log(result);
-        (<Manga>result).coverUrl = await anilist.getCoverUrl(DBPediaUtils.resourceUrlToName((<Manga>result).title));
+        const manga = <Manga>result;
+        manga.title = DBPediaUtils.resourceUrlToName(manga.title);
+        if (manga && manga.author && manga.author.name) {
+          manga.author.name = DBPediaUtils.resourceUrlToName(manga.author.name);
+        }
+        manga.coverUrl = await anilist.getCoverUrl(manga.title);
+      }
+      if(result.type === "anime") {
+        (<Anime>result).title = DBPediaUtils.resourceUrlToName((<Anime>result).title);
+        (<Anime>result).posterUrl = await anilist.getPosterUrl((<Anime> result).title);
+      }
+      if(result.type === "author") {
+        (<Author>result).name = DBPediaUtils.resourceUrlToName((<Author>result).name);
+      }
+      if(result.type === "character") {
+        (<Character>result).name = DBPediaUtils.resourceUrlToName((<Character>result).name);
       }
       cleanedResults.push(result);
     }

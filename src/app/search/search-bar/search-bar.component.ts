@@ -18,7 +18,7 @@ const MANGATEST1: Manga = {
   illustrator: ["Takeshi Obata"],
   volumes: 12,
   genres: ["Thriller", "Drama"],
-  abstract: "Kira kill the world with a book from hell",
+  abstract: "Kira kill the world with a book from hell   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   coverUrl: "http://mcd.iosphe.re/n/41/1/front/a/",
   others: {}
 };
@@ -70,7 +70,7 @@ const ANIMETEST2: Anime = {
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
   res: SearchResult[];
-  mangas: Manga[] = [];
+  mangas: Manga[] = [MANGATEST1, MANGATEST2];
   animes: Anime[] = [];
   authors: Author[] = [];
   clickMessage: string;
@@ -99,9 +99,13 @@ export class SearchBarComponent implements OnInit {
   add(str: string): void {
     console.log(str);
     this.clickMessage = str;
+    delete this.mangas;
     this.mangas = [];
+    delete this.animes;
     this.animes = [];
+    delete this.authors;
     this.authors = [];
+    console.log(this.mangas);
     this.search(str);
   }
   /**
@@ -120,13 +124,16 @@ export class SearchBarComponent implements OnInit {
   }
 
   fillresponses(): void {
+    this.mangas = [];
+    this.animes = [];
+    this.authors = [];
     for (const result of this.res) {
       switch (result.type) {
         case "anime":
-          this.animes.push(result);
+          this.animes.push(<Anime> result);
           break;
         case "manga":
-          this.mangas.push(result);
+          this.mangas.push(<Manga> result);
           break;
         case "author":
           this.authors.push(result);
