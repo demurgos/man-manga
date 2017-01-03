@@ -76,7 +76,7 @@ export async function getAuthorInfos(resourceIri: string, lang: string = "en"): 
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
-export function sparqlToAuthor(sparqlResult: sparql.SelectResult): Author | null {
+export async function sparqlToAuthor(sparqlResult: sparql.SelectResult): Promise<Author | null> {
   const data: {[varName: string]: Set<string>} = dbpediaUtils.mergeSelectBindings(sparqlResult.results.bindings);
   const collectedVariables: Set<string> = new Set();
 
@@ -116,7 +116,7 @@ export function sparqlToAuthor(sparqlResult: sparql.SelectResult): Author | null
 
   return {
     type: "author",
-    name,
+    name: await dbpediaUtils.getLabel(name),
     employer,
     abstract: snippet,
     others

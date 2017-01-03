@@ -1,7 +1,8 @@
-import {NextFunction, Request, Response, Router} from "express";
+import { Request, Response, Router} from "express";
 import * as apiInterfaces from "../../../lib/interfaces/api/index";
 import * as io from "../../../lib/interfaces/io";
 import {Anime, Author, Character, Manga, MangaCover} from "../../../lib/interfaces/resources/index";
+import * as search from "../../api/search";
 import * as dbpedia from "../../lib/dbpedia/index";
 import * as mcdIOSphe from "../../lib/mcd-iosphere";
 import requestIO from "../../lib/request-io";
@@ -19,91 +20,32 @@ export const manmangaApiRouter: Router = Router();
  *    isManga : whether the given resource is a manga or not.
  * Or 500 if there was an error with the request.
  */
-manmangaApiRouter.get("/isManga/:resource", async function (req: Request, res: Response, next: NextFunction) {
-  // TODO: move the logic to lib/dbpedia
+manmangaApiRouter.get("/isManga/:resource", async function (req: Request, res: Response) {
+  // TODO: move the logic to src/server/api
   try {
-    const resource: string = req.params["resource"];
-    const query: string = `select distinct ?p ?o where {
-    values ?title {dbr:${resource}}.
-    ?title rdf:type dbo:Manga."
-    ?title ?p ?o. }`;
-
-    const response: io.Response = await requestIO.get({
-      uri: "http://dbpedia.org/sparql",
-      queryString: {
-        query: query,
-        format: "application/json"
-      }
-    });
-
-    const data: any = JSON.parse(response.body);
-
-    if (data.results.bindings.length === 0) {
-      res.status(200).json({
-        resource: resource,
-        isManga: false
-      });
+    const results: Manga[] = await search.searchManga(req.params["resource"]);
+    if (results.length > 0) {
+      res.status(200).json({isManga: true, result: results[0]});
     } else {
-      res.status(200).json({
-        resource: resource,
-        isManga: true
-      });
+      res.status(200).json({isManga: false, result: null});
     }
   } catch (err) {
-    console.error("ERROR with the request");
-    console.error(err);
-    res.status(500).send(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 
 manmangaApiRouter.get("/resource/:name", async function (req: Request, res: Response) {
   try {
-    const resourceName: string = req.params["name"];
-    const resource: apiInterfaces.search.SearchResult | null = await dbpedia.search(resourceName);
-    res.status(200).json(resource);
-  } catch (err) {
-    console.error(`ERROR with the request to ${req.originalUrl}`);
-    console.error(err);
-    res.status(500).send(err);
-  }
-});
-
-/**
- * GET /manga/:name
- *    :name  The name of the manga (according to dbpedia; beware of the case)
- * Gather all available information about the manga named ':name'.
- * Returns a manga as JSON,
- * or a 500 error if there was a problem with the request.
- */
-// TODO: if the manga is unknown of dbpedia, but known to McdIOSphere,
-//       this will still returns a coverURL => correct this ?
-manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Response) {
-  const mangaName: string = req.params["name"];
-  let manga: Manga | null;
-
-  try {
-    manga = await dbpedia.retrieveManga(mangaName);
-    if (manga === null) {
-      res.status(404).json({error: {name: "resource-not-found"}});
-      return;
+    const query: string = req.params["name"];
+    const results: apiInterfaces.search.SearchResult[] = await search.searchResource(query);
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
     }
   } catch (err) {
-    console.error(`ERROR with the request from /api/sparql/manga/${mangaName}`);
-    console.error(err);
-    res.status(500).send(err);
-    return;
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
-
-  try {
-    const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(mangaName.replace(/_/g, " "));
-    manga.coverUrl = cover.coverUrl;
-  } catch (err) {
-    // At this point, the error is coming from McdIOSphere;
-    // but we can still return the manga without any coverUrl
-    console.warn(err);
-  }
-
-  res.status(200).json(manga);
 });
 
 /**
@@ -113,19 +55,17 @@ manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Respons
  * Returns an anime as JSON,
  * or a 404 error if there was a problem with the request.
  */
-manmangaApiRouter.get("/api/sparql/anime/:name", async function (req: Request, res: Response) {
+manmangaApiRouter.get("/anime/:name", async function (req: Request, res: Response) {
   try {
-    const animeName: string = req.params["name"];
-    const anime: Anime | null = await dbpedia.retrieveAnime(animeName);
-    if (anime === null) {
-      res.status(404).json({error: {name: "resource-not-found"}});
-      return;
+    const query: string = req.params["name"];
+    const results: Anime[] = await search.searchAnime(query);
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
     }
-    res.status(200).json(anime);
   } catch (err) {
-    console.error(`ERROR with the request to ${req.originalUrl}`);
-    console.error(err);
-    res.status(500).send(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 
@@ -136,19 +76,17 @@ manmangaApiRouter.get("/api/sparql/anime/:name", async function (req: Request, r
  * Returns an author as JSON,
  * or a 500 error if there was a problem with the request.
  */
-manmangaApiRouter.get("/api/sparql/author/:name", async function (req: Request, res: Response) {
+manmangaApiRouter.get("/author/:name", async function (req: Request, res: Response) {
   try {
-    const authorName: string = req.params["name"];
-    const author: Author | null = await dbpedia.retrieveAuthor(authorName);
-    if (author === null) {
-      res.status(404).json({error: {name: "resource-not-found"}});
-      return;
+    const query: string = req.params["name"];
+    const results: Author[] = await search.searchAuthor(query);
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
     }
-    res.status(200).json(author);
   } catch (err) {
-    console.error(`ERROR with the request to ${req.originalUrl}`);
-    console.error(err);
-    res.status(404).send(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 
@@ -161,17 +99,36 @@ manmangaApiRouter.get("/api/sparql/author/:name", async function (req: Request, 
  */
 manmangaApiRouter.get("/character/:name", async function (req: Request, res: Response) {
   try {
-    const characterName: string = req.params["name"];
-    const character: Character | null = await dbpedia.retrieveCharacter(characterName);
-    if (character === null) {
-      res.status(404).json({error: {name: "resource-not-found"}});
-      return;
+    const query: string = req.params["name"];
+    const results: Character[] = await search.searchCharacter(query);
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
     }
-    res.status(200).json(character);
   } catch (err) {
-    console.error(`ERROR with the request to ${req.originalUrl}`);
-    console.error(err);
-    res.status(500).send(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
+  }
+});
+
+/**
+ * GET /manga/:name
+ *    :name  The name of the manga (according to dbpedia; beware of the case)
+ * Gather all available information about the manga named ':name'.
+ * Returns a manga as JSON,
+ * or a 500 error if there was a problem with the request.
+ */
+manmangaApiRouter.get("/manga/:name", async function (req: Request, res: Response) {
+  try {
+    const query: string = req.params["name"];
+    const results: Manga[] = await search.searchManga(query);
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
+    }
+  } catch (err) {
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
 
@@ -184,20 +141,17 @@ manmangaApiRouter.get("/character/:name", async function (req: Request, res: Res
  *    coverUrl : an url to the manga's first volume front cover.
  * Or 404 if there was an error with the request.
  */
-// TODO: maybe this endpoint is not needed,
-// since the cover url is supposed to be sent when gathering all manga's information.
 manmangaApiRouter.get("/manga/:name/coverUrl", async function (req: Request, res: Response) {
   try {
-    const mangaName: string = req.params["name"];
-    const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(mangaName);
-    res.status(200).json(cover);
+    const query: string = req.params["name"];
+    const results: Manga[] = await search.searchManga(query);
+    if (results.length > 0) {
+      const cover: MangaCover = await mcdIOSphe.getMangaCoverUrl(results[0].title);
+      res.status(200).json(cover);
+    } else {
+      res.status(404).json({error: {name: "resource-not-found", message: `${query} not found`}});
+    }
   } catch (err) {
-    console.error(`ERROR with the request to ${req.originalUrl}`);
-    console.error(err);
-    res.status(500).send(err);
+    res.status(500).json({error: {name: err.name, stack: err.stack}});
   }
 });
-
-export default manmangaApiRouter;
-
-// wikiPageID => can be interesting!

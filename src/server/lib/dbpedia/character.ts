@@ -82,7 +82,7 @@ export async function getCharacterInfos(resourceIri: string, lang: string = "en"
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
-export function sparqlToCharacter(sparqlResult: sparql.SelectResult): Character | null {
+export async function sparqlToCharacter(sparqlResult: sparql.SelectResult): Promise<Character | null> {
   const data: {[varName: string]: Set<string>} = dbpediaUtils.mergeSelectBindings(sparqlResult.results.bindings);
   const collectedVariables: Set<string> = new Set();
 
@@ -96,12 +96,11 @@ export function sparqlToCharacter(sparqlResult: sparql.SelectResult): Character 
   // creator
   let creator: Author | undefined;
   if (sparqlVariables.author in data) {
-    const creatorName: string = data[sparqlVariables.author].values().next().value;
-    creator = {
-      type: "author",
-      name: creatorName,
-      others: {}
-    };
+    const creatorIri: string = data[sparqlVariables.author].values().next().value;
+    const creatorResult: Author | null = await retrieveAuthor(creatorIri);
+    if (creatorResult !== null) {
+      creator = creatorResult;
+    }
     collectedVariables.add(sparqlVariables.author);
   }
 
@@ -127,7 +126,7 @@ export function sparqlToCharacter(sparqlResult: sparql.SelectResult): Character 
 
   return {
     type: "character",
-    name,
+    name: await dbpediaUtils.getLabel(name),
     creator,
     abstract: snippet,
     others

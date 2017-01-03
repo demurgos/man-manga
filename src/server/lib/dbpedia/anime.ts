@@ -79,26 +79,25 @@ export async function getAnimeInfos(resourceIri: string, lang: string = "en"): P
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
-export function sparqlToAnime(sparqlResult: sparql.SelectResult): Anime | null {
+export async function sparqlToAnime(sparqlResult: sparql.SelectResult): Promise<Anime | null> {
   const data: {[varName: string]: Set<string>} = dbpediaUtils.mergeSelectBindings(sparqlResult.results.bindings);
   const collectedVariables: Set<string> = new Set();
 
-  // title
-  let title: string | undefined;
+  // titleIri
+  let titleIri: string | undefined;
   if (sparqlVariables.title in data) {
-    title = data[sparqlVariables.title].values().next().value;
+    titleIri = data[sparqlVariables.title].values().next().value;
     collectedVariables.add(sparqlVariables.title);
   }
 
   // author
   let author: Author | undefined;
   if (sparqlVariables.author in data) {
-    const authorName: string = data[sparqlVariables.author].values().next().value;
-    author = {
-      type: "author",
-      name: authorName,
-      others: {}
-    };
+    const authorIri: string = data[sparqlVariables.author].values().next().value;
+    const authorResult: Author | null = await retrieveAuthor(authorIri);
+    if (authorResult !== null) {
+      author = authorResult;
+    }
     collectedVariables.add(sparqlVariables.author);
   }
 
@@ -118,13 +117,13 @@ export function sparqlToAnime(sparqlResult: sparql.SelectResult): Anime | null {
     others[varName] = Array.from(data[varName]);
   }
 
-  if (title === undefined) {
+  if (titleIri === undefined) {
     return null;
   }
 
   return {
     type: "anime",
-    title,
+    title: await dbpediaUtils.getLabel(titleIri),
     author,
     abstract: snippet,
     others
