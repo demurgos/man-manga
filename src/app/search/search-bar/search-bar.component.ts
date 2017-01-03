@@ -70,13 +70,21 @@ const ANIMETEST2: Anime = {
 export class SearchBarComponent implements OnInit {
   private apiService: ApiService;
   res: SearchResult[];
-  mangas: Manga[];
-  animes: Anime[];
-  authors: Author[];
+  mangas: Manga[] = [];
+  animes: Anime[] = [];
+  authors: Author[] = [];
   clickMessage: string;
   mangaFilterOn: boolean;
   animeFilterOn: boolean;
   authorFilterOn: boolean;
+
+  /**
+   * Instantiates the component,
+   * and initializes needed services.
+   */
+  constructor(apiService: ApiService) {
+    this.apiService = apiService;
+  }
 
   chgManga(mgfltr: boolean): void {
     this.mangaFilterOn = mgfltr;
@@ -132,22 +140,11 @@ export class SearchBarComponent implements OnInit {
   /**
    * An experimental search.
    */
-  protected search(query: string): void {
-    this.apiService
-      .search(query)
-      .then((results: SearchResult[]) => {
-        console.log("RESULTS RECEIVED:");
-        // console.log(results);
-        this.res = results;
-        this.fillresponses();
-      });
-  }
-
-  /**
-   * Instantiates the component,
-   * and initializes needed services.
-   */
-  constructor(apiService: ApiService) {
-    this.apiService = apiService;
+  protected async search(query: string): Promise<void> {
+    const results: SearchResult[] = await this.apiService.search(query);
+    console.log("RESULTS RECEIVED:");
+    console.log(results);
+    this.res = results;
+    this.fillresponses();
   }
 }

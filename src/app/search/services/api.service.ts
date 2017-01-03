@@ -90,6 +90,7 @@ export class ApiService implements Api {
    * @param query Keywords of the query.
    */
   public async search(query: string): Promise<SearchResult[]> {
+    console.log(`Searching: ${query}`);
     const response: Response = await this.http.get(getSearchUri(this.appConfig.apiBaseUri, query)).toPromise();
     return response.json();
   }

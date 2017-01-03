@@ -1,10 +1,8 @@
 import * as _ from "lodash";
 import * as apiInterfaces from "../../lib/interfaces/api/index";
-import {MangaCover} from "../../lib/interfaces/resources/index";
 import * as alchemy from "../lib/alchemy";
 import * as DBPedia from "../lib/dbpedia/search";
 import * as googlesearch from "../lib/googlesearch";
-import * as McdIOSphere from "../lib/mcd-iosphere";
 import * as spotlight from "../lib/spotlight";
 
 /**
@@ -13,7 +11,7 @@ import * as spotlight from "../lib/spotlight";
  * @param query
  * @returns {Promise<string[]>}
  */
-export async function search (query: string): Promise<string[]> {
+export async function search(query: string): Promise<string[]> {
   console.log("QUERYING...");
   const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: query});
   console.log(searchResults);
@@ -33,21 +31,26 @@ function buildGooglesearchQuery(userQuery: string): string {
 }
 
 async function getResources(uri: string): Promise<string[]> {
-  console.log("Alchemy");
-  const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(uri);
-  console.log("Alchemy result:");
-  console.log(alchemyResult);
-  console.log("Spotlight");
-  const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
-  console.log("Spotlight result:");
-  console.log(spotlightResult);
-  return spotlightResult;
+  try {
+    console.log("Alchemy");
+    const alchemyResult: alchemy.Result = await alchemy.getTextFromURL(uri);
+    console.log("Alchemy result:");
+    console.log(alchemyResult);
+    console.log("Spotlight");
+    const spotlightResult: string[] = await spotlight.query(alchemyResult.text, alchemyResult.language);
+    console.log("Spotlight result:");
+    console.log(spotlightResult);
+    return spotlightResult;
+  } catch (err) {
+    console.warn(err);
+    return [];
+  }
 }
 
 /**
  * A test pipeline using specific search.
  */
-export async function search2 (query: string): Promise<apiInterfaces.search.SearchResult[]> {
+export async function search2(query: string): Promise<apiInterfaces.search.SearchResult[]> {
   console.log(`Search: ${JSON.stringify(query)}`);
   const googlesearchQuery: string = buildGooglesearchQuery(query);
   const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
