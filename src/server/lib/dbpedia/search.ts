@@ -168,7 +168,7 @@ export async function search(resourceIri: string, lang: string = "en",
  *
  * @param sparqlResult The raw sparql result.
  */
-export function sparqlToResult(sparqlResult: sparql.SelectResult): SearchResult | null {
+export async function sparqlToResult(sparqlResult: sparql.SelectResult): Promise<SearchResult | null> {
   const bindings: sparql.SelectBinding[] = sparqlResult.results.bindings;
 
   for (const binding of bindings) {

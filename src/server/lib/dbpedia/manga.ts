@@ -105,7 +105,7 @@ export async function getMangaInfos(resourceIri: string, lang: string = "en"): P
  *
  * @param sparqlResult The result coming from a response to a sparql request.
  */
-export function sparqlToManga(sparqlResult: sparql.SelectResult): Manga | null {
+export async function sparqlToManga(sparqlResult: sparql.SelectResult): Promise<Manga | null> {
   const data: {[varName: string]: Set<string>} = dbpediaUtils.mergeSelectBindings(sparqlResult.results.bindings);
   const collectedVariables: Set<string> = new Set();
 
@@ -132,12 +132,11 @@ export function sparqlToManga(sparqlResult: sparql.SelectResult): Manga | null {
   // author
   let author: Author | undefined;
   if (sparqlVariables.author in data) {
-    const authorName: string = data[sparqlVariables.author].values().next().value;
-    author = {
-      type: "author",
-      name: authorName,
-      others: {}
-    };
+    const authorIri: string = data[sparqlVariables.author].values().next().value;
+    const authorResult: Author | null = await retrieveAuthor(authorIri);
+    if (authorResult !== null) {
+      author = authorResult;
+    }
     collectedVariables.add(sparqlVariables.author);
   }
 
@@ -176,7 +175,7 @@ export function sparqlToManga(sparqlResult: sparql.SelectResult): Manga | null {
 
   return {
     type: "manga",
-    title,
+    title: await dbpediaUtils.getLabel(title),
     author,
     abstract: snippet,
     volumes,

@@ -121,12 +121,8 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public async searchManga(keywords: string): Promise<AnilistManga> {
-    return this
-      .search("manga", keywords)
-      .then((res: any[]) => {
-        return res[0];
-      });
+  public async searchManga(keywords: string): Promise<AnilistManga[]> {
+    return this.search("manga", keywords);
   }
 
   /**
@@ -134,7 +130,7 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchAnime(keywords: string): Promise<AnilistAnime> {
+  public searchAnime(keywords: string): Promise<AnilistAnime[]> {
     return this.search("anime", keywords);
   }
 
@@ -161,38 +157,8 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchStaff(keywords: string): Promise<AnilistStaff> {
+  public searchStaff(keywords: string): Promise<AnilistStaff[]> {
     return this.search("staff", keywords);
-  }
-
-  /**
-   * TODO: cmment
-   * @param keywords
-   * @returns {any}
-   */
-  public getCoverUrl(keywords: string): Promise<string> {
-    console.log(keywords);
-    return this
-      .searchManga(keywords)
-      .then((manga: AnilistManga) => {
-        console.log(manga);
-        return manga.image_url_lge;
-      });
-  }
-
-  /**
-   * TODO: cmment
-   * @param keywords
-   * @returns {any}
-   */
-  public getPosterUrl(keywords: string): Promise<string> {
-    console.log(keywords);
-    return this
-        .searchAnime(keywords)
-        .then((anime: AnilistAnime) => {
-          console.log(anime);
-          return anime.image_url_lge;
-        });
   }
 
   /**
@@ -200,8 +166,40 @@ export class AnilistApi {
    * @param keywords A string containing all keywords to search,
    * separated by spaces.
    */
-  public searchStudio(keywords: string): Promise<AnilistStudio> {
+  public searchStudio(keywords: string): Promise<AnilistStudio[]> {
     return this.search("studio", keywords);
+  }
+
+  /**
+   * TODO: comment
+   * @param keywords
+   * @returns {any}
+   */
+  public async getCoverUrl(keywords: string): Promise<string | null> {
+    const mangas: AnilistManga[] = await this.searchManga(keywords);
+    if (mangas.length > 0) {
+      const manga: AnilistManga = mangas[0];
+      if (typeof manga.image_url_lge === "string") {
+        return manga.image_url_lge;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * TODO: comment
+   * @param keywords
+   * @returns {any}
+   */
+  public async getPosterUrl(keywords: string): Promise<string | null> {
+    const animes: AnilistAnime[] = await this.searchAnime(keywords);
+    if (animes.length > 0) {
+      const anime: AnilistAnime = animes[0];
+      if (typeof anime.image_url_lge === "string") {
+        return anime.image_url_lge;
+      }
+    }
+    return null;
   }
 
   /**
@@ -211,7 +209,7 @@ export class AnilistApi {
    * @param kind The object to search. Must be in ["anime", "character", "manga", "staff", "studio"].
    * @param keywords The keywords that must be searched.
    */
-  protected async search(kind: "anime" | "character" | "manga" | "staff" | "studio", keywords: string): Promise<any> {
+  protected async search(kind: "anime" | "character" | "manga" | "staff" | "studio", keywords: string): Promise<any[]> {
     const kindsWhitelist: string[] = ["anime", "character", "manga", "staff", "studio"];
     if (kindsWhitelist.indexOf(kind) === -1) {
       throw new Error(`Search kind must be one of ${kindsWhitelist}, got: ${kind}`);
