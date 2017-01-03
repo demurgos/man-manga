@@ -1,7 +1,6 @@
-div(class="searchbar")
-  div(class="title") ManManga
-    .subTitle MOE !
-  div(class="comp")
+div.searchbar
+  div.title ManManga
+  div.comp
     div
       <Input #searchfield>
       .buttonSend
@@ -10,21 +9,21 @@ div(class="searchbar")
       .row
         .manga
           .col.s4
-            .card(class="card blue darken-2")
+            .card.blue.darken-2
               .card-content
                 span.card-title Manga
                 <input type="checkbox" class="filled-in" id="testManga" checked="checked" #mangaFilter (change)="chgManga(mangaFilter.checked)" >
                 <label for="testManga"></label>
         .anime
           .col.s4
-            .card(class="card green lighten-2")
+            .card.green.lighten-2
               .card-content
                 span.card-title Anime
                 <input type="checkbox" class="filled-in" id="testAnime" checked="checked"  #animeFilter (change)="chgAnime(animeFilter.checked)">
                 <label for="testAnime"></label>
         .author
           .col.s4
-            .card(class="card teal lighten-2")
+            .card.teal.lighten-2
               .card-content
                 span.card-title Author
                 <input type="checkbox" class="filled-in" id="testAuthor" checked="checked" #authorFilter (change)="chgAuthor(authorFilter.checked)">
