@@ -11,10 +11,15 @@
 
 .card-stacked {
   background-color: white;
+  max-width: 100%;
 }
+
 
 // Abstract
 .abstract {
   // Make it italic
   font-style: italic;
+  overflow-wrap: break-word;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

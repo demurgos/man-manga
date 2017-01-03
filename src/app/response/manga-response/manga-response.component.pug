@@ -7,7 +7,7 @@
         span.card-title {{manga.title}}
         .author("*ngIf"="manga.author") Author : {{manga.author.name}}
         .illustrator("*ngIf"="manga.illustrator") Illustrator : {{manga.illustrator}}
-        .abstract("*ngIf"="manga.abstract") {{manga.abstract}}
+        .abstract("*ngIf"="manga.abstract") {{ manga.abstract.length > 350 ? manga.abstract.substring(0,350) : manga.abstract}}
         .genres("*ngIf"="manga.genres") Genres:&nbsp;
           span.genre("*ngFor"="let genre of manga.genres") {{genre}}&nbsp;
         .volumes("*ngIf"="manga.volumes") Volumes : {{manga.volumes}}

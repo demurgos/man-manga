@@ -12,7 +12,7 @@ export const wikipediaBaseUrl: string = "https://en.wikipedia.org/wiki/";
 /**
  * The base URL to access dbpedia.
  */
-export const dbpediaBaseUrl: string = "https://dbpedia.org/";
+export const dbpediaBaseUrl: string = "http://dbpedia.org/";
 
 /**
  * The base URL to access any dbpedia resource.
@@ -31,13 +31,19 @@ export const dbpediaSparqlUri: string = url.resolve(dbpediaBaseUrl, "sparql");
  * @param httpIO override the default `request`-based http requests library
  */
 export async function selectQuery(query: string, httpIO: io.IO = requestIO): Promise<sparql.SelectResult> {
-  const response: io.Response = await httpIO.get({
-    uri: dbpediaSparqlUri,
-    queryString: {
-      query: query,
-      format: "application/json"
-    }
-  });
+  let response: io.Response;
+  try {
+    response = await httpIO.get({
+      uri: dbpediaSparqlUri,
+      queryString: {
+        query: query,
+        format: "application/json"
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    throw new Error("DbpediaHttpError");
+  }
 
   if (response.statusCode !== 200) {
     throw new Error("Unexpected status code for SPARQL query");

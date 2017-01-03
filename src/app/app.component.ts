@@ -16,5 +16,12 @@ export class AppComponent {
 
   constructor(@Inject(appEnvironment) environment: Environment) {
     this.environment = environment;
+    console.log("Environment:");
+    console.log(this.environment);
+  }
+
+  ngOnInit(): void {
+    // this.manga = MANGATEST;
+    // console.log(this.manga.title);
   }
 }

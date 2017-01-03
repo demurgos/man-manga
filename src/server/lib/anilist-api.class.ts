@@ -171,7 +171,7 @@ export class AnilistApi {
   }
 
   /**
-   * TODO: cmment
+   * TODO: comment
    * @param keywords
    * @returns {any}
    */
@@ -181,6 +181,22 @@ export class AnilistApi {
       const manga: AnilistManga = mangas[0];
       if (typeof manga.image_url_lge === "string") {
         return manga.image_url_lge;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * TODO: comment
+   * @param keywords
+   * @returns {any}
+   */
+  public async getPosterUrl(keywords: string): Promise<string | null> {
+    const animes: AnilistAnime[] = await this.searchAnime(keywords);
+    if (animes.length > 0) {
+      const anime: AnilistAnime = animes[0];
+      if (typeof anime.image_url_lge === "string") {
+        return anime.image_url_lge;
       }
     }
     return null;

@@ -58,17 +58,22 @@ async function getSpotlightResources(uri: string): Promise<string[]> {
 }
 
 async function getResourcesFromSpotlight(userQuery: string, searchTypes: SearchTypes | null = null): Promise<string[]> {
-  const googlesearchQuery: string = buildGooglesearchQuery(userQuery, searchTypes);
-  const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
-  console.log("Google results:");
-  console.log(searchResults);
-  const spotLightPromises: Promise<string[]>[] = [];
-  for (const searchResult of searchResults) {
-    spotLightPromises.push(getSpotlightResources(searchResult.link));
-  }
+  try {
+    const googlesearchQuery: string = buildGooglesearchQuery(userQuery, searchTypes);
+    const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
+    console.log("Google results:");
+    console.log(searchResults);
+    const spotLightPromises: Promise<string[]>[] = [];
+    for (const searchResult of searchResults) {
+      spotLightPromises.push(getSpotlightResources(searchResult.link));
+    }
 
-  const resolvedSpotLight: string[][] = await Promise.all(spotLightPromises);
-  return _.uniq(_.flatten(resolvedSpotLight));
+    const resolvedSpotLight: string[][] = await Promise.all(spotLightPromises);
+    return _.uniq(_.flatten(resolvedSpotLight));
+  } catch (err) {
+    console.warn(err);
+    return [];
+  }
 }
 
 const wikipediaHost: string = "en.wikipedia.org";
@@ -94,23 +99,28 @@ function wikipediaArticleUriToDbpediaResourceIri(articleUri: string): string | n
 
 async function getResourceIrisFromWikipedia(userQuery: string,
                                             searchTypes: SearchTypes | null = null): Promise<string[]> {
-  const googlesearchQuery: string = buildGooglesearchQuery(`${userQuery} site:${wikipediaHost}`, searchTypes);
-  const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
-  console.log("Google results:");
-  console.log(searchResults);
-  const wikipediaResources: string[] = [];
-  for (const searchResult of searchResults) {
-    try {
-      const dbpediaIri: string | null = wikipediaArticleUriToDbpediaResourceIri(searchResult.link);
-      if (dbpediaIri !== null) {
-        wikipediaResources.push(dbpediaIri);
+  try {
+    const googlesearchQuery: string = buildGooglesearchQuery(`${userQuery} site:${wikipediaHost}`, searchTypes);
+    const searchResults: googlesearch.SearchResult[] = await googlesearch.search({query: googlesearchQuery});
+    console.log("Google results:");
+    console.log(searchResults);
+    const wikipediaResources: string[] = [];
+    for (const searchResult of searchResults) {
+      try {
+        const dbpediaIri: string | null = wikipediaArticleUriToDbpediaResourceIri(searchResult.link);
+        if (dbpediaIri !== null) {
+          wikipediaResources.push(dbpediaIri);
+        }
+      } catch (err) {
+        // ignore parse / access errors
+        console.warn(err);
       }
-    } catch (err) {
-      // ignore parse / access errors
-      console.warn(err);
     }
+    return _.uniq(wikipediaResources);
+  } catch (err) {
+    console.warn(err);
+    return [];
   }
-  return _.uniq(wikipediaResources);
 }
 
 /**
@@ -158,6 +168,17 @@ export async function search(query: string,
           }
         } catch (err) {
           // Ignore missing cover
+          console.warn(err);
+        }
+      }
+      if (result.type === "anime") {
+        try {
+          const posterUrl: string | null = await anilist.getPosterUrl(result.title);
+          if (posterUrl !== null) {
+            result.posterUrl = posterUrl;
+          }
+        } catch (err) {
+          // Ignore missing poster
           console.warn(err);
         }
       }
