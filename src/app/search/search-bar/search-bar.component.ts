@@ -61,13 +61,13 @@ export class SearchBarComponent implements OnInit {
   authorFilterOn: boolean;
 
   chgManga(mgfltr: boolean): void {
-    this.mangaFilterOn=mgfltr;
+    this.mangaFilterOn = mgfltr;
   }
   chgAnime(anmfltr: boolean): void {
-    this.animeFilterOn=anmfltr;
+    this.animeFilterOn = anmfltr;
   }
   chgAuthor(athfltr: boolean): void {
-    this.authorFilterOn=athfltr;
+    this.authorFilterOn = athfltr;
   }
 
   add(str: string): void {
@@ -88,9 +88,9 @@ export class SearchBarComponent implements OnInit {
     this.animes = [ANIMETEST1, ANIMETEST2];
     this.authors = [];
     this.clickMessage = "e";
-    this.mangaFilterOn=true;
-    this.animeFilterOn=true;
-    this.authorFilterOn=true;
+    this.mangaFilterOn = true;
+    this.animeFilterOn = true;
+    this.authorFilterOn = true;
     // this.search("One Piece");
   }
 

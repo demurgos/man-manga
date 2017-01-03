@@ -15,7 +15,7 @@ import {SearchModule} from "./search/search.module";
     SearchModule,
     ResponseModule,
     AppRoutingModule,
-    CommonModule,
+    CommonModule
   ],
   exports: [
     HomeModule,

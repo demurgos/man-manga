@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from "@angular/core";
-import {SearchBarComponent} from "./search/search-bar/search-bar.component"
-import {appEnvironment, Environment} from "./app.tokens";
 import {Manga} from "../lib/interfaces/manga.interface";
+import {appEnvironment, Environment} from "./app.tokens";
+import {SearchBarComponent} from "./search/search-bar/search-bar.component";
 
 const MANGATEST: Manga = {
   title: "Death Note",
@@ -33,7 +33,7 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    this.manga=MANGATEST;
+    // this.manga = MANGATEST;
     console.log(this.manga.title);
   }
 
